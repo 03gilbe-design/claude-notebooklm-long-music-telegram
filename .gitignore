@@ -1,0 +1,28 @@
+# === SEGRETI — mai su GitHub ===
+.env
+*storage_state*.json
+hf_token.txt
+
+# === dati personali NotebookLM (audio + prompt scaricati) ===
+out/
+jingles/*.mp3
+jingles/*.wav
+jingles/*.m4a
+clips/
+
+# === dipendenza clonata (si installa con pip) ===
+notebooklm-py/
+
+# === roba di sistema / cache ===
+__pycache__/
+*.pyc
+*.tmp
+*.log
+.ipynb_checkpoints/
+
+# === dati personali / test locali ===
+prompt_personalizzati.json
+LISTA_DA_FARE.txt
+*_test.mp3
+test[0-9]*.mp3
+test[0-9]*.json
