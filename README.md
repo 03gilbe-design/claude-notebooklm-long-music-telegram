@@ -1,10 +1,12 @@
-# notebooklm-podcast-lab
+# Claude · NotebookLM · Long · Music · Telegram
 
-**Turn any topic into multi-part NotebookLM podcasts — with music — and build a searchable dataset of prompts + transcripts + speaker diarization + sources.**
+**Turn any topic into long multi-part NotebookLM podcasts — with music — and build a searchable dataset of prompts + transcripts + speaker diarization + sources. Comes with a Claude Code skill.**
 
 Not another "NotebookLM alternative". This *uses* the real NotebookLM: it automates it end to end, and captures everything it produces into a reusable dataset that doesn't exist anywhere else.
 
-> Built with [Claude Code](https://claude.com/claude-code).
+> Built with [Claude Code](https://claude.com/claude-code) — and ships as a Claude Code skill (`skill/SKILL.md`).
+
+![demo](docs/demo.gif)
 
 ---
 
