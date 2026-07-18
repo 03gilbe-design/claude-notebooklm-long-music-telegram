@@ -1,6 +1,6 @@
 """Esegue il notebook Colab VERO in locale (CPU) con librerie VERE e audio VERO.
 
-Non mocka trascrizione/diarizzazione: gira faster-whisper + pyannote per davvero,
+Does not mock transcription/diarization: runs faster-whisper + pyannote for real,
 solo con google.colab stubbato (drive.mount -> cartella locale, userdata -> None).
 Così testa il notebook end-to-end come su Colab, ma senza GPU/account.
 
@@ -113,7 +113,7 @@ def main():
         print("\n❌ Notebook FALLITO — errore reale sopra.")
         return 1
 
-    # verifica che abbia prodotto il JSON di trascrizione
+    # verify it produced the transcript JSON
     outdir = mydrive / "PodcastLab" / "out"
     jsons = list(outdir.glob("*.json")) if outdir.exists() else []
     print(f"\n📄 JSON prodotti in PodcastLab/out: {len(jsons)}")

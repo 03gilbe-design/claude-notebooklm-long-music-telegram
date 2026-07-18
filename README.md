@@ -1,5 +1,10 @@
 # Claude · NotebookLM · Long · Music · Telegram
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/03gilbe-design/claude-notebooklm-long-music-telegram/blob/main/PodcastLab_Colab.ipynb)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](https://github.com/03gilbe-design/claude-notebooklm-long-music-telegram/pulls)
+
 **Turn any topic into long multi-part NotebookLM podcasts — with music — and build a searchable dataset of prompts + transcripts + speaker diarization + sources. Comes with a Claude Code skill.**
 
 Not another "NotebookLM alternative". This *uses* the real NotebookLM: it automates it end to end, and captures everything it produces into a reusable dataset that doesn't exist anywhere else.
@@ -37,11 +42,11 @@ Nobody combines NotebookLM → podcast → music + diarized dataset. Verified ac
 
 ```json
 {
-  "titolo": "How data travels the network",
+  "title": "How data travels the network",
   "prompt": "Impersonate each step... no intro/outro... topics: socket programming...",
-  "trascrizione": "[SPEAKER_00] Welcome... [SPEAKER_01] Exactly, so...",
+  "transcript": "[SPEAKER_00] Welcome... [SPEAKER_01] Exactly, so...",
   "n_speaker": 2,
-  "link_fonti": ["RFC 791", "Beej's Guide to Network Programming"]
+  "source_links": ["RFC 791", "Beej's Guide to Network Programming"]
 }
 ```
 

@@ -2,7 +2,7 @@
 
 Mocka google.colab, torch, faster_whisper, pyannote, numpy così le celle 1-2
 girano a secco e vengono a galla NameError / variabili non definite / ordine sbagliato.
-NON verifica la trascrizione vera (serve GPU), ma cattura gli errori strutturali.
+Does NOT verify actual transcription (needs GPU), but catches structural errors.
 
 Usage: python test_colab_local.py [notebook.ipynb]
 """

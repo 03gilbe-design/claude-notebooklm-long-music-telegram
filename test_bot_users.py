@@ -126,8 +126,8 @@ async def main():
     ok &= await scenario("User sends topic", [("msg", "storia di roma")], c)
     # 3. click buttons: +episodes, cambia ricerca, prompt menu
     ok &= await scenario("Regola pannello", [("click","n+"),("click","mode"),("click","p_menu"),("click","p_std")], c)
-    # 4. titolo LETALE (Windows-illegal chars)
-    ok &= await scenario("Titolo con /:? ", [("msg", "USA/URSS: guerra? 🚀")], ctx_new())
+    # 4. LETHAL title (Windows-illegal chars)
+    ok &= await scenario("Title with /:? ", [("msg", "USA/URSS: guerra? 🚀")], ctx_new())
     # 5. click su bottone di sessione MORTA (user_data vuoto)
     ok &= await scenario("Bottone sessione scaduta", [("click","n+")], ctx_new())
     # 6. menu: vecchi podcast, prompt, stato, help, home
