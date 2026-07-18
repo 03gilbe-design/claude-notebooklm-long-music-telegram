@@ -1,7 +1,7 @@
-"""Recupera i prompt VERI di tutti gli Audio Overview (verbo artifact get-prompt, non chat).
+"""Recover the TRUE prompts of all Audio Overviews (verb artifact get-prompt, not chat).
 
-Output: C:\\podcastlab\\out\\prompts\\<titolo>.json  {notebook, title, prompt, links, artifact_id}
-Salta quelli gia' salvati -> rilanciabile quando vuoi.
+Output: C:\\podcastlab\\out\\prompts\\<title>.json  {notebook, title, prompt, links, artifact_id}
+Skips those already saved -> re-runnable whenever you want.
 """
 import json
 import subprocess
@@ -25,14 +25,14 @@ def safe(s):
 
 
 nbs = cli(["list"]).get("notebooks", [])
-print(f"{len(nbs)} notebook trovati")
+print(f"{len(nbs)} notebooks found")
 for nb in nbs:
     nb_id, nb_title = nb["id"], nb.get("title", "?")
     arts = cli(["artifact", "list", "-n", nb_id]).get("artifacts", [])
     audio = [a for a in arts if a.get("type_id") == "audio"]
     if not audio:
         continue
-    links = None  # lazy: fonti scaricate solo se serve almeno un artefatto nuovo
+    links = None  # lazy: sources downloaded only if at least one new artifact is needed
     for a in audio:
         out = OUT / f"{safe(a.get('title', a['id']))}.json"
         if out.exists():
@@ -47,5 +47,5 @@ for nb in nbs:
             "notebook": nb_title, "title": a.get("title"), "artifact_id": a["id"],
             "notebook_id": nb_id, "prompt": prompt, "links": links,
         }, ensure_ascii=False, indent=1), encoding="utf-8")
-        print(f"  {out.name}  prompt={'SI' if prompt else 'VUOTO'}")
-print("FINITO ->", OUT)
+        print(f"  {out.name}  prompt={'YES' if prompt else 'EMPTY'}")
+print("FINISHED ->", OUT)

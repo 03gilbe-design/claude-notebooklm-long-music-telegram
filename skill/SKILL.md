@@ -42,8 +42,8 @@ notebooklm source fulltext <source_id> -n <nb_id> --format markdown -o source.md
 
 ### Batch download / transcribe / dataset
 Use the repo scripts (each resumes, skipping what's already done):
-- `python scarica_audio.py` — download all audio overviews
-- `python recupera_prompt.py` — recover all prompts
+- `python download_audios.py` — download all audio overviews
+- `python recover_prompts.py` — recover all prompts
 - `PodcastLab_Colab.ipynb` on Colab GPU — transcribe + diarize (2 speakers) + build dataset
 
 ### Add music to a finished podcast

@@ -5,7 +5,7 @@ Mocka solo i confini esterni: cli() (notebooklm) e le API Telegram (send/edit/an
 Cattura errori runtime che il solo leggere il codice non trova: KeyError su user_data,
 callback rotti, crash negli handler, lock non liberato, ecc.
 
-Uso: python test_bot_utenti.py
+Uso: python test_bot_users.py
 """
 import asyncio
 import sys
@@ -121,10 +121,10 @@ async def main():
     ok = True
     # 1. utente base: /start poi menu
     ok &= await scenario("Utente base — /start", [("cmd_start", "/start")], ctx_new())
-    # 2. utente scrive argomento -> pannello
+    # 2. user sends topic -> panel
     c = ctx_new()
-    ok &= await scenario("Utente manda argomento", [("msg", "storia di roma")], c)
-    # 3. clicca bottoni: +puntate, cambia ricerca, prompt menu
+    ok &= await scenario("User sends topic", [("msg", "storia di roma")], c)
+    # 3. click buttons: +episodes, cambia ricerca, prompt menu
     ok &= await scenario("Regola pannello", [("click","n+"),("click","mode"),("click","p_menu"),("click","p_std")], c)
     # 4. titolo LETALE (Windows-illegal chars)
     ok &= await scenario("Titolo con /:? ", [("msg", "USA/URSS: guerra? 🚀")], ctx_new())
@@ -140,7 +140,7 @@ async def main():
         ("msg","tono ironico"),("msg","stile ironico")], c)
     # 8. flusso COMPLETO fino a VAI (esegui con cli mockato)
     c = ctx_new()
-    ok &= await scenario("Flusso completo -> VAI", [("msg","test argomento"),("click","go")], c)
+    ok &= await scenario("Flusso completo -> VAI", [("msg","test topic"),("click","go")], c)
 
     # ===== SCENARI AVVERSARIALI (cerco io i prossimi bug) =====
     # 9. cli create fallisce -> il bot deve dare errore pulito, non crashare
@@ -188,10 +188,10 @@ async def main():
     ok &= await scenario("doppio go", [("msg","doppio"),("click","go"),("click","go")], c)
     # 17. callback ignoto (bottone di versione vecchia)
     ok &= await scenario("callback sconosciuto", [("click","xyz_vecchio")], ctx_new())
-    # 18. argomento solo emoji
-    ok &= await scenario("argomento solo emoji", [("msg","🚀🎙️🔥")], ctx_new())
-    # 19. argomento solo numeri
-    ok &= await scenario("argomento numerico", [("msg","12345")], ctx_new())
+    # 18. topic only emoji
+    ok &= await scenario("topic only emoji", [("msg","🚀🎙️🔥")], ctx_new())
+    # 19. topic only numbers
+    ok &= await scenario("numeric topic", [("msg","12345")], ctx_new())
     # 20. prompt custom VUOTO (invio spazio come istruzione)
     c = ctx_new()
     ok &= await scenario("prompt custom vuoto", [

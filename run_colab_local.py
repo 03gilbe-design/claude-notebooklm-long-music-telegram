@@ -4,8 +4,8 @@ Non mocka trascrizione/diarizzazione: gira faster-whisper + pyannote per davvero
 solo con google.colab stubbato (drive.mount -> cartella locale, userdata -> None).
 Così testa il notebook end-to-end come su Colab, ma senza GPU/account.
 
-Uso: python run_colab_locale.py
-Richiede: papermill, faster-whisper, pyannote.audio, soundfile già installati.
+Uso: python run_colab_local.py
+Richiede: papermill, faster-whisper, pyannote.audio, soundfile already installed.
 """
 import json
 import os

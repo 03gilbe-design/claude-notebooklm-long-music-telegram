@@ -1,13 +1,13 @@
-"""PodcastLab post-produzione: marker vocali -> jingle -> merge.
+"""PodcastLab post-production: vocal markers -> jingle -> merge.
 
-Uso:
+Usage:
   python postprod.py part1.mp3 part1.json [part2.mp3 part2.json ...] -o finale.mp3
 
-Il JSON e' l'output word-level di PodcastLab_Colab.ipynb (whisperx).
-Marker riconosciuti (parole dette dagli host, istruite via prompt):
-  STACCO-MUSICALE  -> inserisce jingle da jingles/
-  CLIP-VIDEO       -> inserisce clip da clips/ (se presente)
-Le parti vengono concatenate con intro.mp3 (se esiste in jingles/) all'inizio.
+The JSON is the word-level output of PodcastLab_Colab.ipynb (whisperx).
+Recognized markers (words said by the hosts, instructed via prompt):
+  STACCO-MUSICALE  -> inserts jingle from jingles/
+  CLIP-VIDEO       -> inserts clip from clips/ (if present)
+The parts are concatenated with intro.mp3 (if it exists in jingles/) at the beginning.
 """
 import argparse
 import json
@@ -28,14 +28,14 @@ MARKERS = {
 
 
 def find_markers(words):
-    """words: lista {word, start, end}. Ritorna [(tipo, t_start, t_end)] dei marker (anche su 2 parole)."""
+    """words: list {word, start, end}. Returns [(type, t_start, t_end)] of markers (even on 2 words)."""
     out = []
     for i, w in enumerate(words):
         pair = w["word"] + (words[i + 1]["word"] if i + 1 < len(words) else "")
         for kind, rx in MARKERS.items():
             if rx.search(w["word"]) or rx.search(pair):
                 end = words[i + 1]["end"] if (i + 1 < len(words) and rx.search(pair) and not rx.search(w["word"])) else w["end"]
-                if not out or out[-1][1] < w["start"] - 2:  # dedup marker ravvicinati
+                if not out or out[-1][1] < w["start"] - 2:  # dedup close markers
                     out.append((kind, w["start"], end))
     return out
 
@@ -47,11 +47,11 @@ def flat_words(segments):
 def ffmpeg(args):
     r = subprocess.run(["ffmpeg", "-y", "-loglevel", "error"] + args, capture_output=True, text=True)
     if r.returncode != 0:
-        sys.exit(f"ffmpeg errore: {r.stderr[-1000:]}")
+        sys.exit(f"ffmpeg error: {r.stderr[-1000:]}")
 
 
 def pick(folder, kind):
-    """Primo file audio nella cartella per quel tipo (jingle*.mp3 / clip*.mp3), None se manca."""
+    """First audio file in the folder for that type (jingle*.mp3 / clip*.mp3), None if missing."""
     if not folder.exists():
         return None
     files = sorted(p for p in folder.iterdir() if p.suffix.lower() in {".mp3", ".wav", ".m4a"})
@@ -66,16 +66,16 @@ def cut(src, start, end, dst):
 
 
 def process_part(mp3, seg_json, tmp, idx):
-    """Taglia la parte ai marker e intercala jingle/clip. Ritorna lista file da concatenare."""
+    """Cuts the part at markers and interleaves jingle/clip. Returns list of files to concatenate."""
     data = json.loads(Path(seg_json).read_text(encoding="utf-8"))
     words = flat_words(data["segments"])
     markers = find_markers(words)
-    print(f"  {Path(mp3).name}: {len(markers)} marker trovati")
+    print(f"  {Path(mp3).name}: {len(markers)} markers found")
     pieces = []
     prev = 0.0
     for j, (kind, mstart, mend) in enumerate(markers):
         chunk = tmp / f"p{idx}_c{j}.mp3"
-        cut(mp3, prev, mstart, chunk)  # taglio PRIMA del marker: la parola detta sparisce
+        cut(mp3, prev, mstart, chunk)  # cut BEFORE the marker: the spoken word disappears
         pieces.append(chunk)
         insert = pick(JINGLES if kind == "stacco" else CLIPS, kind)
         if insert:
@@ -89,11 +89,11 @@ def process_part(mp3, seg_json, tmp, idx):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("files", nargs="+", help="coppie mp3 json in ordine parti")
+    ap.add_argument("files", nargs="+", help="mp3 json pairs in part order")
     ap.add_argument("-o", "--out", default="podcast_finale.mp3")
     a = ap.parse_args()
     if len(a.files) % 2:
-        sys.exit("servono coppie mp3 json")
+        sys.exit("mp3 json pairs are needed")
     pairs = list(zip(a.files[::2], a.files[1::2]))
 
     with tempfile.TemporaryDirectory() as td:
@@ -106,7 +106,7 @@ def main():
             playlist += process_part(mp3, js, tmp, i)
             stacco = pick(JINGLES, "stacco")
             if stacco and i < len(pairs) - 1:
-                playlist.append(stacco)  # jingle tra una parte e l'altra
+                playlist.append(stacco)  # jingle between one part and another
         lst = tmp / "list.txt"
         lst.write_text("\n".join(f"file '{p.resolve().as_posix()}'" for p in playlist), encoding="utf-8")
         ffmpeg(["-f", "concat", "-safe", "0", "-i", str(lst), "-acodec", "libmp3lame", "-q:a", "3", a.out])

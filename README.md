@@ -28,10 +28,10 @@ Nobody combines NotebookLM → podcast → music + diarized dataset. Verified ac
 |---|---|
 | `PodcastLab_Colab.ipynb` | The full pipeline on Colab GPU: **download → transcribe (faster-whisper) → diarize (pyannote, 2 speakers) → dataset** |
 | `bot.py` | Telegram bot: topic → deep-research → N-part podcast with music, delivered in chat |
-| `scarica_audio.py` / `recupera_prompt.py` | Batch download audios / recover real prompts from NotebookLM |
+| `download_audios.py` / `recover_prompts.py` | Batch download audios / recover real prompts from NotebookLM |
 | `pipeline.py` | One command to chain download + prompt recovery |
 | `postprod.py` | Insert jingles at spoken markers (`STACCO MUSICALE`) using word timestamps |
-| `test_*.py`, `run_colab_locale.py` | Real test harnesses: run bot handlers with fake users, execute the Colab notebook locally |
+| `test_*.py`, `run_colab_local.py` | Real test harnesses: run bot handlers with fake users, execute the Colab notebook locally |
 
 ## How the dataset looks
 
