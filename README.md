@@ -17,7 +17,7 @@ Not another "NotebookLM alternative". This *uses* the real NotebookLM: it automa
 
 ![3D pipeline](docs/pipeline_3d.gif)
 
-**The Telegram bot in action** (menu-driven, italian UI):
+**The Telegram bot in action** (menu-driven):
 
 ![bot flow](docs/bot_flow.gif)
 
