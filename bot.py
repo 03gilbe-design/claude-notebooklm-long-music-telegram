@@ -195,6 +195,7 @@ def salva_custom(lista):
 
 def setup_default():
     return {"n": 3, "deep": True, "extra": "", "extra_nome": "", "modo": "noi",
+            "nb_id": None, "nb_nome": "",
             "musica": {"intro": None, "stacco": None, "sottofondo": None}}
 
 MODI = {"noi": "🎼 Just us (intro/outro/transitions)",
@@ -250,6 +251,7 @@ def kb_pannello(s):
         [B("🌐 Search: DEEP (complete)" if s["deep"] else "⚡ Search: FAST", callback_data="mode")],
         [B(f"✏️ Prompt: {s['extra_nome'] or 'standard'}", callback_data="p_menu")],
         [B(f"🎵 Music ({n_musica} types)" if n_musica else "🎵 Music (none in jingles/)", callback_data="mus_menu")],
+        [B(f"📓 Notebook: {s.get('nb_nome') or 'new'}", callback_data="nb_menu")],
         [B("▶️ GO!", callback_data="go"), B("🏠 Menu", callback_data="m_home")],
     ])
 
@@ -434,6 +436,23 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         s["n"] = max(1, s["n"] - 1)
     elif d == "mode":
         s["deep"] = not s["deep"]
+    elif d == "nb_menu":
+        nbs = (cli(["list"]).get("notebooks") or [])[:8]
+        righe = [[B("🆕 New notebook", callback_data="nb_new")]]
+        for nb_ in nbs:
+            nid, nome = nb_.get("id"), (nb_.get("title") or nb_.get("id") or "?")[:35]
+            if nid:
+                righe.append([B(f"📓 {nome}", callback_data=f"nb_use:{nid}")])
+        righe.append([B("↩️ Back", callback_data="nb_back")])
+        await q.edit_message_text("📓 Notebook: create new or reuse existing sources?", reply_markup=KB(righe))
+        return
+    elif d in ("nb_new", "nb_back"):
+        if d == "nb_new":
+            s["nb_id"], s["nb_nome"] = None, ""
+    elif d.startswith("nb_use:"):
+        s["nb_id"] = d.split(":", 1)[1]
+        s["nb_nome"] = next((( n_.get("title") or "?")[:20] for n_ in (cli(["list"]).get("notebooks") or [])
+                             if n_.get("id") == s["nb_id"]), "existing")
     elif d == "go":
         if ud.get("lavoro_in_corso"):  # block double-start (spam GO / second topic)
             await q.answer("⚠️ A podcast is already being processed!", show_alert=True)
@@ -467,6 +486,10 @@ async def esegui(chat, ctx):
         asyncio.run_coroutine_threadsafe(chat.send_chat_action(ChatAction.RECORD_VOICE), loop)
 
     def lavoro():
+        if s.get("nb_id"):  # reuse existing notebook: sources already there, skip research
+            nb_id = s["nb_id"]
+            avvisa(0.25, f"Existing notebook 📓 🧩 Dividing into {n} macro-themes…")
+            return _genera(nb_id)
         nb = cli(["create", topic[:80]])
         nb_id = nb.get("id") or nb.get("notebook", {}).get("id")
         if not nb_id:
@@ -480,6 +503,9 @@ async def esegui(chat, ctx):
         if w.get("error"):
             return f"Web search failed or too slow 😞\n(detail: {w})"
         avvisa(0.25, f"Sources OK! 🧩 Dividing into {n} macro-themes…")
+        return _genera(nb_id)
+
+    def _genera(nb_id):
         temi = macro_temi(nb_id, topic, n)
         files = []
         for i, tema in enumerate(temi, 1):

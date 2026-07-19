@@ -13,6 +13,14 @@ Not another "NotebookLM alternative". This *uses* the real NotebookLM: it automa
 
 ![demo](docs/demo.gif)
 
+**The pipeline, visually** — NotebookLM forges the episodes, music drops in, Claude mixes, Telegram delivers:
+
+![3D pipeline](docs/pipeline_3d.gif)
+
+**The Telegram bot in action** (menu-driven, italian UI):
+
+![bot flow](docs/bot_flow.gif)
+
 ---
 
 ## Why this exists
