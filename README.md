@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](https://github.com/03gilbe-design/claude-notebooklm-long-music-telegram/pulls)
 
-**Turn any topic into long multi-part NotebookLM podcasts — with music — and build a searchable dataset of prompts + transcripts + speaker diarization + sources. Comes with a [Claude Code skill](https://github.com/03gilbe-design/notebooklm-podcast-skill).**
+**Turn any topic into long multi-part NotebookLM podcasts — with music — and build a searchable dataset of prompts + transcripts + speaker diarization + sources. Comes with a [Claude Code skill](https://github.com/03gilbe-design/claude-notebooklm-podcast-skill).**
 
 Not another "NotebookLM alternative". This *uses* the real NotebookLM: it automates it end to end, and captures everything it produces into a reusable dataset that doesn't exist anywhere else.
 
