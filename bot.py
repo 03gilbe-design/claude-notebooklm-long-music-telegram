@@ -437,7 +437,14 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     elif d == "mode":
         s["deep"] = not s["deep"]
     elif d == "nb_menu":
-        nbs = (cli(["list"]).get("notebooks") or [])[:8]
+        r = cli(["list"])  # cli() auto-renews expired cookies once
+        if r.get("error"):
+            await q.edit_message_text(
+                "🍪 NotebookLM cookies expired and auto-renewal failed 😞\n"
+                "Run `notebooklm login` on the PC, then press 📓 again.",
+                reply_markup=kb_pannello(s))
+            return
+        nbs = (r.get("notebooks") or [])[:8]
         righe = [[B("🆕 New notebook", callback_data="nb_new")]]
         for nb_ in nbs:
             nid, nome = nb_.get("id"), (nb_.get("title") or nb_.get("id") or "?")[:35]
