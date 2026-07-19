@@ -11,7 +11,6 @@ Not another "NotebookLM alternative". This *uses* the real NotebookLM: it automa
 
 > Built with [Claude Code](https://claude.com/claude-code) — and ships as a Claude Code skill (`skill/SKILL.md`).
 
-![demo](docs/demo.gif)
 
 **The Telegram bot in action** (menu-driven):
 
