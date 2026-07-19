@@ -267,7 +267,7 @@ def kb_prompt_menu():
     righe = [[B("📝 Create new prompt", callback_data="p_nuovo")],
              [B("🔙 Use standard", callback_data="p_std")]]
     for i, c in enumerate(carica_custom()[:6]):
-        righe.append([B(f"⭐ {c['nome'][:35]}", callback_data=f"p_use:{i}"),
+        righe.append([B(f"⭐ {c['nome'][:35]}", callback_data=f"p_prev:{i}"),
                       B("🗑", callback_data=f"p_del:{i}")])
     righe.append([B("↩️ Back", callback_data="p_back")])
     return KB(righe)
@@ -351,7 +351,27 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         else:
             await chat.send_message("⚠️ File not found on PC.")
         return
-    if d == "m_prompt" or d == "p_back":
+    if d == "m_prompt":
+        await q.edit_message_text("✏️ Prompt for podcast hosts:", reply_markup=kb_prompt_menu())
+        return
+    if d == "p_back":
+        if ud.get("topic"):
+            await q.edit_message_text(txt_pannello(ud), reply_markup=kb_pannello(s))
+        else:
+            await q.edit_message_text("🎙️ PodcastLab — what do we do?", reply_markup=kb_menu())
+        return
+    if d.startswith("p_prev:"):  # preview before choosing
+        try:
+            i = int(d.split(":")[1])
+            c = carica_custom()[i]
+            await q.edit_message_text(
+                f"⭐ {c['nome']}\n\n📜 {c['testo'][:800]}",
+                reply_markup=KB([[B("✅ Use this", callback_data=f"p_use:{i}"),
+                                  B("↩️ Back", callback_data="p_menu2")]]))
+        except (IndexError, ValueError):
+            await q.edit_message_text("✏️ Prompt:", reply_markup=kb_prompt_menu())
+        return
+    if d == "p_menu2":
         await q.edit_message_text("✏️ Prompt for podcast hosts:", reply_markup=kb_prompt_menu())
         return
     if d == "m_stato":
