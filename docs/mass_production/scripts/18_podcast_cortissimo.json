@@ -1,0 +1,118 @@
+[
+    {
+        "type": "user",
+        "text": "Give me a real quick podcast about the tomato crossing the road joke.",
+        "time": "15:00"
+    },
+    {
+        "type": "bot",
+        "text": "Right away!It will be the shortest podcast in history.",
+        "time": "15:00"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 10,
+        "text": "Searching for the joke..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 30,
+        "text": "Found: 'tomato puree'!"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 50,
+        "text": "Writing the flash introduction..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 70,
+        "text": "Inserting the joke into the script..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 90,
+        "text": "Adding fake laughter..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 100,
+        "text": "Script written in record time."
+    },
+    {
+        "type": "bot",
+        "text": "Here's the script, I'll pass it on to the voice immediately.",
+        "time": "15:01"
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 10,
+        "text": "Voice initialization..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 20,
+        "text": "Reading first line..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 30,
+        "text": "Reading second line..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 40,
+        "text": "Generating sound effect..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 50,
+        "text": "Processing in progress..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 60,
+        "text": "One more moment..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 70,
+        "text": "Almost done..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 80,
+        "text": "Audio optimization..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 90,
+        "text": "Compressing audio files..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 100,
+        "text": "Finished!"
+    },
+    {
+        "type": "audio",
+        "text": "18_battuta_pomodoro_flash.mp3",
+        "time": "15:01"
+    }
+]

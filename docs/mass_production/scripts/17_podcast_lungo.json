@@ -1,0 +1,117 @@
+[
+    {
+        "type": "user",
+        "text": "Can you podcast me about the new 1000-page treatise on quantum physics?",
+        "time": "14:00"
+    },
+    {
+        "type": "bot",
+        "text": "Certain!It's a complex topic and will take some time.I'm starting to study it...",
+        "time": "14:01"
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 10,
+        "text": "Analysis of the treaty index..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 25,
+        "text": "Elaboration of the chapters on wave mechanics..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 40,
+        "text": "Reading about string theories and the multiverse..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 55,
+        "text": "Summary of experiments on entanglement..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 70,
+        "text": "Integration of mathematical formulas into speech..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 85,
+        "text": "Creating the draft key topics..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 100,
+        "text": "Collected basic material."
+    },
+    {
+        "type": "bot",
+        "text": "Well, I've worked through all the material.Now I move on to writing the script.",
+        "time": "14:15"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 15,
+        "text": "Writing the introduction and contextualization..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 35,
+        "text": "Explanation of wave-particle dualism for the general public..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 55,
+        "text": "Adapting mathematical concepts into simple analogies..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 75,
+        "text": "Drafting the final lines and conclusions..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 90,
+        "text": "Review of rhythm and tone of voice..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 100,
+        "text": "Final script ready."
+    },
+    {
+        "type": "bot",
+        "text": "Script completed!Now I generate the audio of the podcast, it will be a large file.",
+        "time": "14:25"
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 50,
+        "text": "Voice generation and sound design..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 100,
+        "text": "Audio mixing and finalization completed."
+    },
+    {
+        "type": "audio",
+        "text": "17_quantistic_physics_treaty.mp3",
+        "time": "14:35"
+    }
+]

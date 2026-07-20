@@ -1,0 +1,110 @@
+[
+    {
+        "type": "user",
+        "text": "✏️ Prompts",
+        "time": "15:00"
+    },
+    {
+        "type": "bot",
+        "text": "Prompt Management.Choose an option:\n\n[📝 Create new prompt] [📚 Choose Existing] [⬅️ Main Menu]",
+        "time": "15:00"
+    },
+    {
+        "type": "user",
+        "text": "📝 Create new prompt",
+        "time": "15:01"
+    },
+    {
+        "type": "bot",
+        "text": "Let's create a new prompt.What tone or style do you prefer for your podcast?\n\n[🎙️ Ironic] [🎓 Prof] [😂 Comedian]",
+        "time": "15:01"
+    },
+    {
+        "type": "user",
+        "text": "🎓 Prof",
+        "time": "15:02"
+    },
+    {
+        "type": "bot",
+        "text": "\"Prof\" style (Academic and Formal) set.What length do you prefer for the podcast?\n\n[⚡ FAST (2-3 min)] [⏱️ MEDIUM (5-7 min)] [🕰️ LONG (10+ min)]",
+        "time": "15:02"
+    },
+    {
+        "type": "user",
+        "text": "⚡ FAST",
+        "time": "15:03"
+    },
+    {
+        "type": "bot",
+        "text": "You have chosen FAST.Do you want to provide specific topics or do we proceed with the generation right away?\n\n[🚀 Generate Now] [➕ Add Topic]",
+        "time": "15:03"
+    },
+    {
+        "type": "user",
+        "text": "🚀 Generate Now",
+        "time": "15:04"
+    },
+    {
+        "type": "bot",
+        "text": "Received!I begin podcast creation using the new \"Prof\" prompt.",
+        "time": "15:04"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 15,
+        "text": "Analysis of the academic and formal tone required..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 45,
+        "text": "Drafting of the formal and informative dialogue between the presenters..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 75,
+        "text": "Advanced vocabulary review and script formatting..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 100,
+        "text": "Academic script successfully generated."
+    },
+    {
+        "type": "bot",
+        "text": "Great, the formal text is ready.Now let's proceed with the audio via NotebookLM.",
+        "time": "15:05"
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 10,
+        "text": "Preparing the text-to-speech environment..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 40,
+        "text": "Generation of the voice of the Prof. Host (main speaker)..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 70,
+        "text": "Co-Host voice generation and synchronization..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 100,
+        "text": "Final audio mastering completed!"
+    },
+    {
+        "type": "audio",
+        "text": "podcast_prof_fast.mp3",
+        "time": "15:06"
+    }
+]

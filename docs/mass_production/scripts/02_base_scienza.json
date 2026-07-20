@@ -1,0 +1,114 @@
+[
+    {
+        "type": "user",
+        "text": "Black holes and quantum physics",
+        "time": "15:00"
+    },
+    {
+        "type": "bot",
+        "text": "Choose the level of detail:",
+        "time": "15:00"
+    },
+    {
+        "type": "user",
+        "text": "[Click: DEEP research]",
+        "time": "15:01"
+    },
+    {
+        "type": "bot",
+        "text": "Deep search selected.Press GO to start processing.",
+        "time": "15:01"
+    },
+    {
+        "type": "user",
+        "text": "[Click: GO]",
+        "time": "15:02"
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 10,
+        "text": "Start researching scientific sources on black holes..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 20,
+        "text": "Collection of papers on relativity and quantum physics..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 30,
+        "text": "Integration of theoretical models..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 40,
+        "text": "Analysis of correlations and paradoxes..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 50,
+        "text": "Creating the setlist for the episode..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 60,
+        "text": "Generating dialogues for the scientific podcast..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 70,
+        "text": "Adjusting tone of voice and rhythms..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 80,
+        "text": "Processing audio tracks..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 90,
+        "text": "Voice mixing and sound balancing..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 100,
+        "text": "NotebookLM processing completed."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 50,
+        "text": "Claude verifies the scientific correctness of the terms..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 100,
+        "text": "Quality control and verification completed successfully."
+    },
+    {
+        "type": "audio",
+        "text": "science_intro_theory.mp3",
+        "time": "15:10"
+    },
+    {
+        "type": "audio",
+        "text": "science_analysis_buchi_neri.mp3",
+        "time": "15:11"
+    },
+    {
+        "type": "audio",
+        "text": "quantum_science_conclusions.mp3",
+        "time": "15:12"
+    }
+]

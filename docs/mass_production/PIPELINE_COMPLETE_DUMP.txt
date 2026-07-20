@@ -1,0 +1,1178 @@
+=== PROGETTO PODCAST AUTOMATION 3D - DUMP PIPELINE COMPLETO ===
+Questo file contiene tutti i codici sorgenti della pipeline.
+Il sistema usa 'html2image' per renderizzare CSS 3D in Chromium e 'imageio' per comporre i frame.
+
+
+=======================================================
+FILE: embed_logos.py
+=======================================================
+
+import base64
+import urllib.request
+import os
+
+def url_to_base64(url):
+    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+    with urllib.request.urlopen(req) as response:
+        content = response.read()
+    mime = "image/svg+xml" if ".svg" in url else "image/png"
+    if "favicons" in url: mime = "image/png"
+    b64 = base64.b64encode(content).decode('utf-8')
+    return f"data:{mime};base64,{b64}"
+
+def file_to_base64(path):
+    with open(path, "rb") as f:
+        content = f.read()
+    mime = "image/svg+xml" if path.endswith(".svg") else "image/png"
+    b64 = base64.b64encode(content).decode('utf-8')
+    return f"data:{mime};base64,{b64}"
+
+try:
+    nb_b64 = file_to_base64("C:/Users/Gilberto Bizzo/Downloads/notebooklm-color.svg")
+    apple_music_b64 = url_to_base64("https://upload.wikimedia.org/wikipedia/commons/2/2a/Apple_Music_logo.svg")
+    
+    wave_svg = '<svg viewBox="0 0 24 24" fill="none" stroke="#3390ec" stroke-width="2" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg"><path d="M12 3v18M8 8v8M16 6v12M4 11v2M20 10v4"/></svg>'
+    wave_b64_str = base64.b64encode(wave_svg.encode('utf-8')).decode('utf-8')
+    wave_b64 = f"data:image/svg+xml;base64,{wave_b64_str}"
+
+    claude_b64 = url_to_base64("https://www.google.com/s2/favicons?domain=claude.ai&sz=128")
+    tg_b64 = url_to_base64("https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg")
+
+    files = [
+        "C:/podcastlab/docs/mass_production/generate_json_gifs.py",
+        "C:/podcastlab/docs/mass_production/3d_forge_version.py",
+        "C:/podcastlab/docs/mass_production/3d_highway_version.py",
+        "C:/podcastlab/docs/mass_production/3d_alive_version.py"
+    ]
+
+    for fpath in files:
+        if not os.path.exists(fpath): continue
+        with open(fpath, "r", encoding="utf-8") as f:
+            content = f.read()
+        
+        content = content.replace("file:///C:/Users/Gilberto%20Bizzo/Downloads/notebooklm-color.svg", nb_b64)
+        content = content.replace("https://raw.githubusercontent.com/tabler/tabler-icons/master/icons/waveform.svg", wave_b64)
+        content = content.replace("https://upload.wikimedia.org/wikipedia/commons/2/2a/Apple_Music_logo.svg", apple_music_b64)
+        content = content.replace("https://upload.wikimedia.org/wikipedia/commons/e/e7/Podcasts_%28iOS%29.svg", apple_music_b64)
+        content = content.replace("https://www.google.com/s2/favicons?domain=claude.ai&sz=128", claude_b64)
+        content = content.replace("https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg", tg_b64)
+
+        with open(fpath, "w", encoding="utf-8") as f:
+            f.write(content)
+
+    print("SUCCESS: Base64 Injection Complete!")
+except Exception as e:
+    print(f"ERROR: {str(e)}")
+
+
+
+=======================================================
+FILE: universal_telegram_engine.py
+=======================================================
+
+import os
+import imageio.v3 as iio
+from html2image import Html2Image
+from collections import deque
+import json
+
+class TelegramEngine:
+    def __init__(self, output_dir="C:/podcastlab/docs/mass_production", size=(420, 850)):
+        self.output_dir = output_dir
+        os.makedirs(self.output_dir, exist_ok=True)
+        self.hti = Html2Image(size=size)
+        self.hti.output_path = os.path.join(self.output_dir, "temp_frames")
+        os.makedirs(self.hti.output_path, exist_ok=True)
+        
+        self.html_template = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+        <style>
+          body {
+            margin: 0; padding: 0; background-color: #0e1621;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: #fff; width: 420px; height: 850px; display: flex; flex-direction: column; overflow: hidden;
+          }
+          .header {
+            background-color: #17212b; padding: 12px 18px; font-weight: bold; font-size: 16px;
+            display: flex; align-items: center; border-bottom: 1px solid #000; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            z-index: 10;
+          }
+          .chat-container {
+            flex: 1; padding: 15px; display: flex; flex-direction: column; gap: 12px;
+            background-image: radial-gradient(circle at top right, #111a25, #0e1621);
+            justify-content: flex-end; /* AUTO SCROLL TRICK */
+          }
+          .chat-messages {
+            display: flex; flex-direction: column; gap: 12px; width: 100%;
+          }
+          .msg-row { display: flex; width: 100%; animation: slideIn 0.3s ease-out forwards; }
+          @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+          
+          .msg-row.in { justify-content: flex-start; }
+          .msg-row.out { justify-content: flex-end; }
+          .msg {
+            max-width: 82%; padding: 10px 14px; border-radius: 14px; font-size: 15px;
+            line-height: 1.45; position: relative; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+          }
+          .msg.in { background-color: #182533; border-bottom-left-radius: 4px; }
+          .msg.out { background-color: #2b5278; border-bottom-right-radius: 4px; }
+          .msg-time { font-size: 11px; color: rgba(255,255,255,0.5); float: right; margin-top: 6px; margin-left: 10px; }
+          
+          .input-area {
+            background-color: #17212b; padding: 12px 15px; color: #7f8991; font-size: 15px;
+            display: flex; align-items: center; box-shadow: 0 -1px 3px rgba(0,0,0,0.2); z-index: 10;
+          }
+          .input-area span { background-color: #242f3d; border-radius: 20px; padding: 12px 15px; flex: 1; }
+          
+          .inline-keyboard { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; width: 100%; }
+          .inline-btn { background-color: #202b36; color: #3390ec; text-align: center; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: bold; }
+          
+          .status-box { background-color: #0e1621; border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 10px; margin-top: 8px; }
+          .status-header { display: flex; align-items: center; margin-bottom: 8px; font-weight: 600; font-size: 14px; }
+          .status-icon { width: 24px; height: 24px; border-radius: 4px; margin-right: 10px; background: #fff;}
+          .progress-bar-bg { background-color: #17212b; border-radius: 4px; height: 6px; width: 100%; overflow: hidden; margin-top: 6px; }
+          .progress-bar-fill { height: 100%; }
+        </style>
+        </head>
+        <body>
+          <div class="header">
+            <div style="width: 38px; height: 38px; background: linear-gradient(135deg, #4285F4, #8B5CF6); border-radius: 50%; margin-right: 12px; display:flex; align-items:center; justify-content:center; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+              <span style="font-size: 18px;">🎶</span>
+            </div>
+            <div style="line-height: 1.2;">Audio Architect Bot<br><span style="font-size: 12.5px; color: #3390ec; font-weight: normal;">bot</span></div>
+          </div>
+          <div class="chat-container">
+            <div class="chat-messages">
+                {content}
+            </div>
+          </div>
+          <div class="input-area"><span>Message...</span></div>
+        </body>
+        </html>
+        """
+
+    def render_story(self, story_name, sequence_of_messages):
+        """
+        sequence_of_messages: list of HTML strings representing messages.
+        It renders the story progressively with auto-scroll (max 7 visible messages).
+        """
+        print(f"\\n--- RENDER: {story_name} ---")
+        frames = []
+        visible_messages = deque(maxlen=7) # Mantieni max 7 messaggi in coda per l'autoscroll
+        frame_idx = 0
+        
+        for idx, msg_html in enumerate(sequence_of_messages):
+            visible_messages.append(msg_html)
+            
+            # Uniamo i messaggi visibili
+            joined_content = "\\n".join(visible_messages)
+            html_str = self.html_template.replace("{content}", joined_content)
+            
+            # Screenshot di questo "stato"
+            filename = f"{story_name}_{frame_idx}.png"
+            filepath = os.path.join(self.hti.output_path, filename)
+            self.hti.screenshot(html_str=html_str, save_as=filename)
+            
+            # Leggi e accoda (ripeti 10 volte per dare 1 secondo di pausa alla lettura di ogni step)
+            img = iio.imread(filepath)
+            for _ in range(12):  # circa 1.2 secondi a 100ms
+                frames.append(img)
+            
+            frame_idx += 1
+            
+        out_path = os.path.join(self.output_dir, f"{story_name}.gif")
+        iio.imwrite(out_path, frames, duration=100, loop=0)
+        print(f"[OK] Completata: {out_path} ({len(frames)} frames totali)")
+
+    def cleanup(self):
+        import shutil
+        try:
+            shutil.rmtree(self.hti.output_path)
+        except:
+            pass
+
+
+
+=======================================================
+FILE: generate_json_gifs.py
+=======================================================
+
+import os
+import json
+import glob
+from universal_telegram_engine import TelegramEngine
+
+def parse_json_to_html(json_data):
+    html_messages = []
+    
+    for step in json_data:
+        mtype = step.get("type", "bot")
+        text = step.get("text", "")
+        time = step.get("time", "14:00")
+        
+        if mtype == "user":
+            html_messages.append(f'<div class="msg-row out"><div class="msg out">{text}<span class="msg-time">{time}</span></div></div>')
+        elif mtype == "bot":
+            html_messages.append(f'<div class="msg-row in"><div class="msg in">{text}<span class="msg-time">{time}</span></div></div>')
+        elif mtype == "status":
+            service = step.get("service", "notebooklm").lower()
+            progress = int(step.get("progress", 0))
+            
+            if "notebook" in service or "docs" in service:
+                icon_url = "data:image/svg+xml;base64,NDA0OiBOb3QgRm91bmQ="
+                title = "NotebookLM"
+                color = "#4285F4"
+            elif "claude" in service:
+                icon_url = "data:image/png;base64,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"
+                title = "Claude 3.5"
+                color = "#d4c5b9"
+            else:
+                icon_url = "data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzMzOTBlYyIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTEyIDN2MThNOCA4djhNMTYgNnYxMk00IDExdjJNMjAgMTB2NCIvPjwvc3ZnPg=="
+                title = "Audio Mix"
+                color = "#8B5CF6"
+                
+            html = f"""
+            <div class="msg-row in">
+              <div class="msg in" style="width: 100%;">
+                <div class="status-box" style="border-color: rgba(255,255,255,0.1);">
+                  <div class="status-header">
+                    <img src="{icon_url}" class="status-icon" style="background: #1e1e1e; border-radius: 6px;">
+                    <span style="color: {color};">{title}</span>
+                  </div>
+                  <span style="font-size: 13px; color: #a4b3bf;">{text}</span>
+                  <div class="progress-bar-bg"><div class="progress-bar-fill" style="background-color: {color}; width: {progress}%;"></div></div>
+                </div>
+              </div>
+            </div>
+            """
+            html_messages.append(html)
+        elif mtype == "audio":
+            html = f"""
+            <div class="msg-row in">
+              <div class="msg in" style="width: 100%;">
+                🎧 <b>Track Received!</b><br>
+                <div style="font-size: 12px; margin-bottom: 5px;">{text}</div>
+                <div style="display: flex; align-items: center; background-color: #242f3d; padding: 12px; border-radius: 10px;">
+                  <div style="width: 35px; height: 35px; background-color: #3390ec; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-right: 12px;">▶</div>
+                  <div style="flex: 1; height: 4px; background: #17212b; border-radius: 2px;"><div style="width: 100%; height: 100%; background: #3390ec;"></div></div>
+                </div>
+                <span class="msg-time">{time}</span>
+              </div>
+            </div>
+            """
+            html_messages.append(html)
+            
+    return html_messages
+
+def main():
+    engine = TelegramEngine(output_dir="C:/podcastlab/docs/mass_production")
+    scripts_dir = "C:/podcastlab/docs/mass_production/scripts"
+    
+    json_files = glob.glob(os.path.join(scripts_dir, "*.json"))
+    print(f"Trovati {len(json_files)} script JSON generati dai subagents.")
+    
+    for file_path in json_files:
+        filename = os.path.basename(file_path).replace(".json", "")
+        with open(file_path, "r", encoding="utf-8") as f:
+            try:
+                data = json.load(f)
+                if len(data) >= 5: # renderizziamo se c'è ciccia
+                    html_sequence = parse_json_to_html(data)
+                    engine.render_story(filename, html_sequence)
+            except Exception as e:
+                print(f"Errore su {filename}: {e}")
+                
+    engine.cleanup()
+    print("[OK] Tutte le GIF Reali renderizzate.")
+
+if __name__ == "__main__":
+    main()
+
+
+
+=======================================================
+FILE: 3d_forge_version.py
+=======================================================
+
+import os
+import math
+import shutil
+import imageio.v3 as iio
+from html2image import Html2Image
+
+def ease_in_out(t):
+    return t * t * (3.0 - 2.0 * t)
+
+def create_3d_forge():
+    print("Inizio rendering The 3D Mixing Forge (Logos Only)...")
+    hti = Html2Image(size=(800, 600))
+    out_dir = "C:/podcastlab/docs/mass_production/3D_Masterpieces"
+    os.makedirs(out_dir, exist_ok=True)
+    temp_dir = os.path.join(out_dir, "temp_forge")
+    hti.output_path = temp_dir
+    os.makedirs(temp_dir, exist_ok=True)
+
+    html_template = """
+    <html>
+    <body style="margin: 0; background: radial-gradient(circle, #1a1a24 0%, #050508 100%); width: 800px; height: 600px; display: flex; justify-content: center; align-items: center; overflow: hidden; font-family: sans-serif;">
+        <!-- Il Mondo 3D -->
+        <div style="width: 100%; height: 100%; transform-style: preserve-3d; perspective: 1000px;">
+            <div style="position: absolute; width: 100%; height: 100%; transform-style: preserve-3d; transform: rotateX({rotX}deg) rotateY({rotY}deg) scale({scale}); transition: none;">
+                
+                <!-- Pista / Grid -->
+                <div style="position: absolute; left: -400px; top: 100px; width: 1600px; height: 1600px; background-image: linear-gradient(rgba(51,144,236,0.1) 2px, transparent 2px), linear-gradient(90deg, rgba(51,144,236,0.1) 2px, transparent 2px); background-size: 50px 50px; transform: rotateX(90deg) translateZ(-150px); opacity: {grid_op};"></div>
+
+                <!-- NOTEBOOKLM SERVER (Sinistra) -->
+                <div style="position: absolute; left: 150px; top: 200px; width: 120px; height: 120px; background: rgba(255,255,255,1); border-radius: 20px; box-shadow: 0 0 50px rgba(66, 133, 244, 0.6); display: flex; justify-content: center; align-items: center; transform: translateZ(-200px) rotateY(15deg);">
+                    <img src="data:image/svg+xml;base64,NDA0OiBOb3QgRm91bmQ=" width="80">
+                </div>
+
+                <!-- TELEGRAM (Destra) -->
+                <div style="position: absolute; left: 600px; top: 220px; width: 120px; height: 120px; background: transparent; display: flex; justify-content: center; align-items: center; transform: translateZ(100px) rotateY(-20deg) scale({tg_scale}); opacity: {tg_op};">
+                    <img src="data:image/svg+xml;base64,PHN2ZyBpZD0iTGl2ZWxsb18xIiBkYXRhLW5hbWU9IkxpdmVsbG8gMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmlld0JveD0iMCAwIDI0MCAyNDAiPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0ibGluZWFyLWdyYWRpZW50IiB4MT0iMTIwIiB5MT0iMjQwIiB4Mj0iMTIwIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMWQ5M2QyIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMzhiMGUzIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHRpdGxlPlRlbGVncmFtX2xvZ288L3RpdGxlPjxjaXJjbGUgY3g9IjEyMCIgY3k9IjEyMCIgcj0iMTIwIiBmaWxsPSJ1cmwoI2xpbmVhci1ncmFkaWVudCkiLz48cGF0aCBkPSJNODEuMjI5LDEyOC43NzJsMTQuMjM3LDM5LjQwNnMxLjc4LDMuNjg3LDMuNjg2LDMuNjg3LDMwLjI1NS0yOS40OTIsMzAuMjU1LTI5LjQ5MmwzMS41MjUtNjAuODlMODEuNzM3LDExOC42WiIgZmlsbD0iI2M4ZGFlYSIvPjxwYXRoIGQ9Ik0xMDAuMTA2LDEzOC44NzhsLTIuNzMzLDI5LjA0NnMtMS4xNDQsOC45LDcuNzU0LDAsMTcuNDE1LTE1Ljc2MywxNy40MTUtMTUuNzYzIiBmaWxsPSIjYTljNmQ4Ii8+PHBhdGggZD0iTTgxLjQ4NiwxMzAuMTc4LDUyLjIsMTIwLjYzNnMtMy41LTEuNDItMi4zNzMtNC42NGMuMjMyLS42NjQuNy0xLjIyOSwyLjEtMi4yLDYuNDg5LTQuNTIzLDEyMC4xMDYtNDUuMzYsMTIwLjEwNi00NS4zNnMzLjIwOC0xLjA4MSw1LjEtLjM2MmEyLjc2NiwyLjc2NiwwLDAsMSwxLjg4NSwyLjA1NSw5LjM1Nyw5LjM1NywwLDAsMSwuMjU0LDIuNTg1Yy0uMDA5Ljc1Mi0uMSwxLjQ0OS0uMTY5LDIuNTQyLS42OTIsMTEuMTY1LTIxLjQsOTQuNDkzLTIxLjQsOTQuNDkzcy0xLjIzOSw0Ljg3Ni01LjY3OCw1LjA0M0E4LjEzLDguMTMsMCwwLDEsMTQ2LjEsMTcyLjVjLTguNzExLTcuNDkzLTM4LjgxOS0yNy43MjctNDUuNDcyLTMyLjE3N2ExLjI3LDEuMjcsMCwwLDEtLjU0Ni0uOWMtLjA5My0uNDY5LjQxNy0xLjA1LjQxNy0xLjA1czUyLjQyNi00Ni42LDUzLjgyMS01MS40OTJjLjEwOC0uMzc5LS4zLS41NjYtLjg0OC0uNC0zLjQ4MiwxLjI4MS02My44NDQsMzkuNC03MC41MDYsNDMuNjA3QTMuMjEsMy4yMSwwLDAsMSw4MS40ODYsMTMwLjE3OFoiIGZpbGw9IiNmZmYiLz48L3N2Zz4=" width="120" style="filter: drop-shadow(0 0 40px #3390ec);">
+                </div>
+
+                <!-- FILE AUDIO EPISODI -->
+                <div style="position: absolute; left: {ep1_x}px; top: {ep1_y}px; width: 60px; height: 60px; background: #fff; border-radius: 12px; display: flex; justify-content: center; align-items: center; transform: translateZ({ep1_z}px) rotateY({ep1_ry}deg) rotateX({ep_rx}deg); opacity: {ep_op}; box-shadow: 0 5px 15px rgba(255,255,255,0.2);">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzMzOTBlYyIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTEyIDN2MThNOCA4djhNMTYgNnYxMk00IDExdjJNMjAgMTB2NCIvPjwvc3ZnPg==" width="40">
+                </div>
+                
+                <div style="position: absolute; left: {ep2_x}px; top: {ep2_y}px; width: 60px; height: 60px; background: #fff; border-radius: 12px; display: flex; justify-content: center; align-items: center; transform: translateZ({ep2_z}px) rotateY({ep2_ry}deg) rotateX({ep_rx}deg); opacity: {ep_op}; box-shadow: 0 5px 15px rgba(255,255,255,0.2);">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAgMzAwIj4KICA8cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgcng9IjYwIiBmaWxsPSIjOEI1Q0Y2IiAvPgogIDxwYXRoIGQ9Ik0xNTAgNzAgTDE1MCAyMzAgTTEwMCAxMjAgTDEwMCAxODAgTTIwMCAxMDAgTDIwMCAyMDAgTTUwIDE0MCBMNTAgMTYwIE0yNTAgMTMwIEwyNTAgMTcwIiBzdHJva2U9IiNGRkYiIHN0cm9rZS13aWR0aD0iMjAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgLz4KPC9zdmc+" width="40">
+                </div>
+                
+                <div style="position: absolute; left: {ep3_x}px; top: {ep3_y}px; width: 60px; height: 60px; background: #fff; border-radius: 12px; display: flex; justify-content: center; align-items: center; transform: translateZ({ep3_z}px) rotateY({ep3_ry}deg) rotateX({ep_rx}deg); opacity: {ep_op}; box-shadow: 0 5px 15px rgba(255,255,255,0.2);">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAgMzAwIj4KICA8cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgcng9IjYwIiBmaWxsPSIjOEI1Q0Y2IiAvPgogIDxwYXRoIGQ9Ik0xNTAgNzAgTDE1MCAyMzAgTTEwMCAxMjAgTDEwMCAxODAgTTIwMCAxMDAgTDIwMCAyMDAgTTUwIDE0MCBMNTAgMTYwIE0yNTAgMTMwIEwyNTAgMTcwIiBzdHJva2U9IiNGRkYiIHN0cm9rZS13aWR0aD0iMjAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgLz4KPC9zdmc+" width="40">
+                </div>
+
+                <!-- JINGLES (Stacchi) -->
+                <div style="position: absolute; left: {j1_x}px; top: {j1_y}px; width: 50px; height: 50px; background: transparent; transform: translateZ({j1_z}px) rotateX({ep_rx}deg); opacity: {j_op}; display: flex; justify-content: center; align-items: center; filter: drop-shadow(0 0 10px #8B5CF6);"><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDIzLjAuMSwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxpdmVsbG9fMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiCgkgd2lkdGg9IjMwMHB4IiBoZWlnaHQ9IjMwMHB4IiB2aWV3Qm94PSIwIDAgMzAwIDMwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMzAwIDMwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJYTUxJRF82MzJfIj4KCTxsaW5lYXJHcmFkaWVudCBpZD0iWE1MSURfMl8iIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTUwIiB5MT0iMCIgeDI9IjE1MCIgeTI9IjMwMCI+CgkJPHN0b3AgIG9mZnNldD0iMCIgc3R5bGU9InN0b3AtY29sb3I6I0Y0NTJGRiIvPgoJCTxzdG9wICBvZmZzZXQ9IjEiIHN0eWxlPSJzdG9wLWNvbG9yOiM4MzJCQzEiLz4KCTwvbGluZWFyR3JhZGllbnQ+Cgk8cGF0aCBpZD0iWE1MSURfNjYyXyIgZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGw9InVybCgjWE1MSURfMl8pIiBkPSJNMjk0LjEsMjYwYy0yLjksNy40LTkuNiwxNy44LTE5LjIsMjUuMgoJCWMtNS41LDQuMi0xMi4xLDguMy0yMS4xLDExYy05LjYsMi45LTIxLjUsMy44LTM2LjMsMy44aC0xMzVjLTE0LjgsMC0yNi42LTEtMzYuMy0zLjhjLTktMi43LTE1LjYtNi43LTIxLjEtMTEKCQljLTkuNS03LjMtMTYuMy0xNy44LTE5LjItMjUuMkMwLjEsMjQ1LjEsMCwyMjguMiwwLDIxNy41bDAsMHYtMTM1bDAsMEMwLDcxLjgsMC4xLDU0LjksNS45LDQwYzIuOS03LjQsOS42LTE3LjgsMTkuMi0yNS4yCgkJYzUuNS00LjIsMTIuMS04LjMsMjEuMS0xMUM1NS45LDEsNjcuNywwLDgyLjUsMGwwLDBoMTM1bDAsMGMxNC44LDAsMjYuNiwxLDM2LjMsMy44YzksMi43LDE1LjYsNi43LDIxLjEsMTEKCQljOS41LDcuMywxNi4zLDE3LjgsMTkuMiwyNS4yYzUuOSwxNC45LDUuOSwzMS45LDUuOSw0Mi41djEzNUMzMDAsMjI4LjIsMjk5LjksMjQ1LjEsMjk0LjEsMjYweiIvPgoJPGc+CgkJPHBhdGggaWQ9IlhNTElEXzY1N18iIGZpbGw9IiNGRkZGRkYiIGQ9Ik0xNzUuNywxODEuMWMtMC40LTMuNi0xLjYtNi4yLTQtOC42Yy00LjUtNC43LTEyLjQtNy44LTIxLjctNy44Yy05LjMsMC0xNy4yLDMtMjEuNyw3LjgKCQkJYy0yLjMsMi41LTMuNiw1LTQsOC42Yy0wLjgsNy0wLjMsMTMsMC41LDIyLjdjMC44LDkuMiwyLjMsMjEuNSw0LjIsMzMuOWMxLjQsODkuOSwyLjUsMTMuNywzLjUsMTcuMWMxLjcsNS42LDcuOCwxMC40LDE3LjUsMTAuNAoJCQljOS43LDAsMTUuOS00LjksMTcuNS0xMC40YzEtMy40LDIuMS04LjIsMy41LTE3LjFjMS45LTEyLjUsMy40LTI0LjcsNC4yLTMzLjkUMzQuOUMxNzYuMSwxOTQuMSwxNzYuNSwxODguMSwxNzUuNywxODEuMXoiLz4KCQk8cGF0aCBpZD0iWE1MSURfNjU1XyIgZmlsbD0iI0ZGRkZGRiIgZD0iTTE3NC42LDEzMC4xYzAsMTMuNi0xMSwyNC42LTI0LjYsMjQuNnMtMjQuNi0xMS0yNC42LTI0LjZjMC0xMy42LDExLTI0LjYsMjQuNi0yNC42CgkJCVMxNzQuNiwxMTYuNiwxNzQuNiwxMzAuMXoiLz4KCQk8cGF0aCBpZD0iWE1MSURfNjUzXyIgZmlsbD0iI0ZGRkZGRiIgZD0iTTE0OS43LDMzLjJDOTIuMywzMy40LDQ1LjMsODAsNDQuNSwxMzcuNGMtMC42LDQ2LjUsMjkuMSw4Ni4zLDcwLjYsMTAwLjkKCQkJYzEsMC40LDItMC41LDEuOS0xLjVjLTAuNS0zLjYtMS4xLTcuMi0xLjUtMTAuOGMtMC4yLTEuMy0xLTIuMy0yLjEtMi45Yy0zMi44LTE0LjMtNTUuNy00Ny4yLTU1LjMtODUuMwoJCQljMC41LTUwLDQxLjMtOTAuNyw5MS4yLTkxLjFjNTEuMS0wLjQsOTIuOCw0MSw5Mi44LDkyYzAsMzcuNy0yMi44LDcwLjEtNTUuMyw4NC40Yy0xLjIsMC41LTIsMS42LTIuMSwyLjkKCQkJYy0wLjUsMy42LTEsNy4yLTEuNSwxMC44Yy0wLjIsMS4xLDAuOSwxLjksMS45LDEuNWM0MS4xLTE0LjQsNzAuNi01My42LDcwLjYtOTkuNkMyNTUuNSw4MC41LDIwOCwzMy4xLDE0OS43LDMzLjJ6Ii8+CgkJPHBhdGggaWQ9IlhNTElEXzY1MV8iIGZpbGw9IiNGRkZGRkYiIGQ9Ik0xNDcuMyw2OC4yYy0zNy40LDEuNC02Ny40LDMyLjMtNjcuOSw2OS43Yy0wLjMsMjQuNiwxMiw0Ni40LDMwLjksNTkuMwoJCQljMC45LDAuNiwyLjItMC4xLDIuMi0xLjJjLTAuMy00LjMtMC4zLTguMS0wLjEtMTIuMWMwLjEtMS4zLTAuNC0yLjUtMS40LTMuNGMtMTEuNS0xMC44LTE4LjUtMjYuMi0xOC4xLTQzLjIKCQkJYzAuOC0zMCwyNC45LTU0LjQsNTQuOS01NS42YzMyLjYtMS4zLDU5LjQsMjQuOSw1OS40LDU3LjFjMCwxNi40LTcsMzEuMi0xOC4xLDQxLjdjLTAuOSwwLjktMS40LDIuMS0xLjQsMy40CgkJCWMwLjIsMy45LDAuMSw3LjctMC4xLDEyYy0wLjEsMS4xLDEuMiwxLjksMi4yLDEuMmMxOC42LTEyLjcsMzAuOS0zNC4yLDMwLjktNTguNEMyMjAuOCw5OC45LDE4Ny41LDY2LjYsMTQ3LjMsNjguMnoiLz4KCTwvZz4KPC9nPgo8L3N2Zz4K" width="50"></div>
+                <div style="position: absolute; left: {j2_x}px; top: {j2_y}px; width: 50px; height: 50px; background: transparent; transform: translateZ({j2_z}px) rotateX({ep_rx}deg); opacity: {j_op}; display: flex; justify-content: center; align-items: center; filter: drop-shadow(0 0 10px #FF2A54);"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAgMzAwIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ibXVzaWMtZ3JhZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNGRjJBNTQiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI0ZGNUUzQSIgLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIiByeD0iNjAiIGZpbGw9InVybCgjbXVzaWMtZ3JhZCkiIC8+CiAgPHBhdGggZD0iTTEyNSAyMDAgQSAzNSAzNSAwIDEgMSA5MCAxNjUgTCA5MCA4MCBMIDIxMCA1MCBMIDIxMCAxNzAgQSAzNSAzNSAwIDEgMSAxNzUgMTM1IEwgMTc1IDkwIEwgMTI1IDEwMiBaIiBmaWxsPSIjRkZGIiAvPgo8L3N2Zz4=" width="50"></div>
+
+                <!-- MUSIC SOTTOFONDO -->
+                <div style="position: absolute; left: {bg_x}px; top: {bg_y}px; width: {bg_w}px; height: 15px; background: rgba(51,144,236,0.6); border-radius: 10px; transform: translateZ({bg_z}px) rotateX({ep_rx}deg); opacity: {bg_op}; box-shadow: 0 0 30px rgba(51,144,236,1);"></div>
+                
+                <!-- UNIONE FINALE EFFETTO (Claude) -->
+                <div style="position: absolute; left: {final_x}px; top: {final_y}px; width: {final_w}px; height: {final_h}px; background: #d4c5b9; border-radius: 20px; transform: translateZ({final_z}px) rotateX({final_rx}deg); opacity: {final_op}; box-shadow: 0 0 50px #d4c5b9; display: flex; align-items: center; justify-content: center;">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAMAAAD04JH5AAAAGFBMVEXZdlbaaUTab03+9/X67Ojz1s/quKvhlX9bn3iyAAALz0lEQVR4nO1ai5LkJgxEsjH//8cxerYwnp1UpXKpyrJ3s2Mbo1arJTDe1n7bV238aQD8pwH8sfZPUP8bvv9j+436b/vn21ZV/6bU/guqIm5E9AcBXP3s/Xrjgl85+pm8r+il65TWt92Zr/EO4Svj/DhdzvA4rfWNHRo9oD1uzUN+vfJKQp4/ow1e71V0R/9eIG84XlF5AGa7aO1MXS4cF+N5zi94nuOY6zicDOLoetpMaPM+wWyE5+nb00CJCF4Ja+xIoSEDQgHDMHQdL/LAMRkdqkKRI4BTrSvJ4mT3RKj9qN8ADg3BDsLHU5V2rrgQC8TgGIy3MNu1w9TB6enDJu/4XU1CJLKhCDq7mvRfAKMkWqihKJ288RKdx5CumSzXaACAc1CR0jQ+YzBSQXLPdbfBm9HdcgiiJAGX795QhjPj3QmOJDjOAp1v0o4zUK0e+c0AIW3WPPFvSEHcLOQcSsBJBXe33KAkFalgtIUBXdMgTEEQptwijhNA8hLW3L71LdHBkgAcMF4u+aq3lmKUtmYZkB9JAr2Vye1HELgt9jHunGb3glXKHhRoCKwORRLMD7V/RHZydbhYfTpsn0TsgVKgYkmLjsZbb5ynj0PLg56N2qgMIMFpwwZfQw8Yxt04Y8egw8PcYqlDh6IKd8S+6vKAFQTb6Ix21kCn+DXv+qAUaZBtKjDYXTXQ0X4ycMDU4STU9HLdNMAHlUeiraBvaZ3m7aEqkPAoAJsJ2O88XAJStTDnoxyDAlEILZNOdN8T9Rw72HVcTQSgupyDDLOtEUigyDIIoa0A/PcZWdeHkyjZZT9JrRxZErAUIA/AcWpgQGDx7VEbqh5l9gkIg1RuSoxjMGaG2j8tAC5Jg5EKCx9lKOa06F2gDnCd/u74gg4Pc1k5vwvhPDh0ivTrCH1JsyxDNfxLLrJOPj7V9/u5RGTYwr7mHYvJu8mSlEbwIzB0hQAhhlLEaa85wcqN/UYKxBdurVIgxf8+cXhWODwvApkpai5JcEhajTjx6XXJ5jsIuAy6vdExLOtmk8e1rkeTbP0eqdopfK+F1x1t6b2LIiJ0/5SVqIZhJsIQ26GC26gcJxmo0vDPqEWP47CBaYjHtFXCcGgYpkVjYE50pN9PEvsnQBjUYrSIdUYgzXKAhJQ0Rnpa1xnAZG8QbgoMQL9Xf0lNVqCwz8yAJT13RkB9URCnxgcQMMN6u+VR18jT4VBON689KSWW8nIPmZPpvBJ4s9ct7O7FVz27EYwj2k2Jf+l+ThH45BxuqtvuoUMLJElAY7wiWjycAK04IjYzxs0S4grb8n8QxjXyD7Qe8YGzATQJkTD0RKBhiBAcwyLfE5NXhXTSHaqV2MPfgJIWXIRk7t/EV2pbxJ8UXBCPFGePYUoJACORoB6aFiRATsaMPUnI+lMMXo8zsyhQcYPR0WSkOB3ShFIFF4yEDYQNqClNtDLv1wYJnuUP0/CRNBGUWZpfDS6IejqjprmNcfXeR7AN6B5zNEQmRclzj+7aBuHZhi2n9dl0XFf3UtYHRD5VUTMiKAGk+s1J+KF1cuPTbcmcaBc1dBOysX4p+kkcRA/JbULA6ne3SaJMJ/FAk8NCrsLkzdV0tLni+ImAdl3udzV/ymNaBdBQhAgIljFZHGZV+oYE8VySJp9PdEanUpywFKCTcxfcE0eFxPFo9xUJsCpI9u9qeekzQrCbesB46xPR3S7Z4ZhwEo0g5J9JsHVBzmG38bs6RX0o8zO6L09kvgjQNcAJgBzO+NF8Vu65xT2aloOnx2vBnMmOTwQOJMcWMN9RoKxPwGyV4RnwoD5CYhQ8IHxVglbbq9trhV/OKQdtWY/7Q+a5n422zRyPNcHDKJx75DrNPJaWa7G/0czz1bMl2R8hwIumd8m8Ie3S1gPXu321XrKYQoCwFlopKMGhzBYpA8/BPmaByvTqBntI6ngOPxkpMQCiFgY9lA1m5q+jorlzET3GfQnMPlgRoeujKM78XeaCQzYadq59QkJ5VpOZPldikwdsktS5iEqsd1SDPTj0AJAsDj+0nhPxFkIrQvhIt62Hsd16/Mz+IY9oshowDGvr67K0AgCC/FtCmObR0ksmzK0Mkfxkok6Ip73VqV6mLAiMUsElZzz4+jnoLRb3k5PXAQsHAqDqGUFdoHIljRtP8mTgVfHiV/vKgY9zo5CFoZkfj9HBemJocZUUwhzlsB3h+XE/E5v9vuKQCbiR8WZcsKyMxXwLww6lORlRH60XRR/R3umri+l+rMv4XM3bIzR4SRJAajCiOqsFOoJNWRQIOtrzQExLdzXhWJDYoym6HwicAffJzddqq1fsQqsCMB59evY9EmLdi5BNEGXi8uAc3R/gho0av6K1OLZnBOiggCnjInUXqmnXhx7bKOsWitP3Cm9Iw9iy58PQOqJBvQcDBLy3YKysTuZO3QRtVqfWVIsncezOtZGbhPyEEFayzDVUZGGLWtkmm+klMIfRPVnuwYTtjHTy3WpBYI63JIBiVrEYiK9tZUgJ0e36mEgscKdvgjCx79L6Nvo0G+81OhWui4dmaZIcNSB7S6CVfsdg7jPHdrhoPKCMeAxqlK/TKfz12uosuOLJ9daUBtCuLtANwiC/0u1pQUr+sB1BwCV8+OZeh8IrU7t7j88o6q7lJHGCkPW5mL8a+YRw2TQ78kgBNJ99lZDUTVS2LICUlTINZ1AIGejyxiSEEwNLP9s616qTr+qkVMUfGxhykGCNeKZ8zQLyfdqruWrvJHT7Kh+Lx1A08bK0ixn7w5Jcg8DvrIvivFtQ90My8wHhXtO6+2LDAGgA9EWi1AOpGbECugDBmWU5BOhMwLaVzN5Zr9zjWEwriivtS6D0JdqpDuAb/uaXA0HSLF3Jy4CvHYClsEmpGAUW2tYB7UWmJKRqKV+0KZfDHjKHF1tHgoUvBW78E1RoiqkqBaAlQYBq1HvcmVvrUqXus/bmCdZBbkGef5ooKUSa/pPqgQhYibo0yNOlh7v68wjCXMfNXG4RcUhzS7bmN0edbqGXFsiIY+fiMirvD1XERQ4YXnB0MlFP3jrUX1+f+CBgjgyEaS+SQq/6a7wru49Kt/y54XkCTjVyaRn3/9aVY9/Co05esbxoeLhcgFIWu6PjAsAd8HLU9RnEI9kixui7pWE+9AodOX7+m2uQeJNt8aJIuwGrPtWFUdAstll4OQKa5dE14H2ReE+LOWxPNZkLHEmWWMmWMF2rUYuI+z0ehYwyPv1nL9aQGv6bbLMf5DHFamlg5WD4wwMbxYyCO5wcWHhUigDDC4cxcYkAerJlEhBYiqp5f59FIw+khlCMH3YsNA3YAJ70NvdXlwYoF88LgQXEWS720GZUHo8dZ6JrCLz4i9ZaSKDQJn9SO8irhVqywtCTKi+IE0FPz/w+ED/lWI3xGsQBe9PcQDaetZg0q4NdExMqluT5CPMRR/ZhGcwYA2hpyQf8KBqhZuulK2MdEYUYu+Igus64fvEakbAgAz29WlwAotV/eQlS1RNjOa0tBgJXHK3PGmow8wyilhnC8B0YQEoZbESBQAI9Z/y2tlyOtCGK8CwD22/NzXMUxSbk+J5BRS34ooTtj9aL/oyAXKUuXumAQ8tj0YqTF9OIE/gIsrllpbiS9vB1leO8S16sn/1qUJtL7xRXiUXpaP0yiFEA5QAUDYgArWUbZx+uh0/XlhbRXk5myBYDIEI4X6Ln0n9arGFwrGVju3R5xc+PM1HqK7pV3stdcS9lBEjXYSXzCpiYpmLhiMQsRY1wXL+pTL9eDCCsleXnYOv1RQFFw/K9vjtgXm8uK6L1enpVHGxwIVsjIGXBXQtKGRsmrW0rUd25vu247fFSFB/y+YgCjrd38PbqDqt/tBVxHG3KQBy/wuVP13aMbOoAPXT2bvadis35NbGiYu5wPSomIODshrdsjZaz2z6QBdvs2+F4M7RQ9PB4C6zBwRtn1QjMkftuH/X86IFSqzlrSbMQvitMtPf81W6R2FaES/di6LO/e+18QrUD8DOHn274KilK8f9ww7O0/zz2zxfLmb8AQKJoi2jlj9sAAAAASUVORK5CYII=" width="50" style="opacity: {claude_op};">
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+
+    frames = []
+    num_frames = 120
+    
+    for i in range(num_frames):
+        p = i / float(num_frames - 1)
+        
+        # CAMERA ANIMATION
+        rotX = 10 + ease_in_out(min(1.0, p * 1.5)) * 25
+        rotY = 30 - ease_in_out(p) * 60
+        scale = 1.0 + ease_in_out(min(1.0, p * 2)) * 0.2
+        grid_op = 1.0 - ease_in_out(max(0, (p - 0.8)*5))
+
+        # FASE 1: SPUTATI DA NOTEBOOK LM (p: 0.0 - 0.3)
+        p1 = min(1.0, max(0, p / 0.25))
+        e1 = ease_in_out(p1)
+        ep_op = 1.0 if p1 > 0 and p < 0.7 else 0.0
+        ep_rx = 0 if p < 0.7 else 90
+        
+        ep1_x = 220 + e1 * 50
+        ep1_y = 250 - math.sin(e1 * math.pi) * 50
+        ep1_z = -150 + e1 * 150
+        ep1_ry = e1 * 360
+        
+        ep2_x = 220 + e1 * 150
+        ep2_y = 250 - math.sin(e1 * math.pi) * 80
+        ep2_z = -150 + e1 * 150
+        ep2_ry = e1 * 360
+        
+        ep3_x = 220 + e1 * 250
+        ep3_y = 250 - math.sin(e1 * math.pi) * 110
+        ep3_z = -150 + e1 * 150
+        ep3_ry = e1 * 360
+
+        # FASE 2: JINGLES SI BUTTANO IN MEZZO (p: 0.25 - 0.45)
+        p2 = min(1.0, max(0, (p - 0.25) / 0.2))
+        e2 = math.pow(p2, 2)
+        j_op = 1.0 if p2 > 0 and p < 0.7 else 0.0
+        
+        j1_x = 330
+        j1_y = -100 + e2 * 350
+        j1_z = 0
+        
+        j2_x = 430
+        j2_y = -100 + e2 * 350
+        j2_z = 0
+
+        # FASE 3: SOTTOFONDO MUSICALE SI STENDE SOTTO (p: 0.45 - 0.6)
+        p3 = min(1.0, max(0, (p - 0.45) / 0.15))
+        bg_op = p3 if p < 0.7 else 0.0
+        bg_x = 260
+        bg_y = 310
+        bg_z = 0
+        bg_w = p3 * 250
+
+        # FASE 4: COMPRESSIONE (CLAUDE) E FUSIONE (p: 0.6 - 0.8)
+        p4 = min(1.0, max(0, (p - 0.6) / 0.2))
+        e4 = ease_in_out(p4)
+        
+        ep1_x = 270 + e4 * 60
+        ep3_x = 470 - e4 * 60
+        
+        final_op = 1.0 if p > 0.75 else 0.0
+        claude_op = 1.0 if p > 0.75 else 0.0
+        final_w = 250 - e4 * 150
+        final_h = 50 + e4 * 50
+        final_x = 320 + e4 * 80
+        final_y = 250
+        final_z = 0
+        final_rx = e4 * 360
+
+        if p > 0.7:
+            ep_op = 0
+            j_op = 0
+            bg_op = 0
+
+        # FASE 5: LANCIO VERSO TELEGRAM (p: 0.8 - 1.0)
+        p5 = min(1.0, max(0, (p - 0.8) / 0.2))
+        e5 = ease_in_out(p5)
+        
+        tg_op = min(1.0, max(0, (p - 0.6) * 3))
+        tg_scale = 0.5 + tg_op * 0.5
+        
+        final_x = final_x + e5 * 200
+        final_y = final_y - e5 * 30
+        final_z = final_z + e5 * 100
+        
+        if p5 > 0.9:
+            final_op = 1.0 - ((p5 - 0.9) * 10)
+            tg_scale = 1.0 + math.sin((p5 - 0.9) * 10 * math.pi) * 0.2
+
+        html = html_template.format(
+            rotX=rotX, rotY=rotY, scale=scale, grid_op=grid_op,
+            ep1_x=ep1_x, ep1_y=ep1_y, ep1_z=ep1_z, ep1_ry=ep1_ry, ep_rx=ep_rx, ep_op=ep_op,
+            ep2_x=ep2_x, ep2_y=ep2_y, ep2_z=ep2_z, ep2_ry=ep2_ry,
+            ep3_x=ep3_x, ep3_y=ep3_y, ep3_z=ep3_z, ep3_ry=ep3_ry,
+            j1_x=j1_x, j1_y=j1_y, j1_z=j1_z, j_op=j_op,
+            j2_x=j2_x, j2_y=j2_y, j2_z=j2_z,
+            bg_x=bg_x, bg_y=bg_y, bg_z=bg_z, bg_w=bg_w, bg_op=bg_op,
+            final_x=final_x, final_y=final_y, final_z=final_z, final_rx=final_rx, final_w=final_w, final_h=final_h, final_op=final_op, claude_op=claude_op,
+            tg_op=tg_op, tg_scale=tg_scale
+        )
+        
+        filename = f"forge_{i:03d}.png"
+        filepath = os.path.join(temp_dir, filename)
+        hti.screenshot(html_str=html, save_as=filename)
+        frames.append(iio.imread(filepath))
+        
+    out_path = os.path.join(out_dir, "3d_mixing_forge_icons.gif")
+    iio.imwrite(out_path, frames, duration=40, loop=0)
+    print(f"[OK] Completata The 3D Mixing Forge: {out_path}")
+
+if __name__ == "__main__":
+    create_3d_forge()
+    try:
+        shutil.rmtree("C:/podcastlab/docs/mass_production/3D_Masterpieces/temp_forge")
+    except:
+        pass
+
+
+
+=======================================================
+FILE: 3d_highway_version.py
+=======================================================
+
+import os
+import math
+import shutil
+import imageio.v3 as iio
+from html2image import Html2Image
+
+def ease_in_out(t):
+    return t * t * (3.0 - 2.0 * t)
+
+def create_3d_highway():
+    print("Inizio rendering The 3D Data Highway (Logos Only)...")
+    hti = Html2Image(size=(800, 600))
+    out_dir = "C:/podcastlab/docs/mass_production/3D_Masterpieces"
+    os.makedirs(out_dir, exist_ok=True)
+    temp_dir = os.path.join(out_dir, "temp_highway")
+    hti.output_path = temp_dir
+    os.makedirs(temp_dir, exist_ok=True)
+
+    html_template = """
+    <html>
+    <body style="margin: 0; background: #0b101e; width: 800px; height: 600px; display: flex; justify-content: center; align-items: center; overflow: hidden; font-family: sans-serif;">
+        <div style="width: 100%; height: 100%; transform-style: preserve-3d; perspective: 2000px;">
+            <div style="position: absolute; width: 100%; height: 100%; transform-style: preserve-3d; transform: rotateX(60deg) rotateZ(45deg) scale(1.2) translateZ(-100px); transition: none;">
+                
+                <!-- Highway / Nastro Trasportatore -->
+                <div style="position: absolute; left: 100px; top: -500px; width: 200px; height: 2000px; background-image: repeating-linear-gradient(0deg, rgba(66, 133, 244, 0.2) 0px, rgba(66, 133, 244, 0.2) 20px, transparent 20px, transparent 40px); background-size: 100% 40px; transform: translateY({belt_y}px); border-left: 5px solid #4285F4; border-right: 5px solid #4285F4; box-shadow: 0 0 40px rgba(66, 133, 244, 0.5);"></div>
+
+                <!-- NOTEBOOKLM (Inizio nastro) -->
+                <div style="position: absolute; left: 100px; top: -100px; width: 200px; height: 100px; background: #fff; box-shadow: 0 0 50px #4285F4; border-radius: 10px; display: flex; justify-content: center; align-items: center; transform: translateZ(50px);">
+                    <img src="data:image/svg+xml;base64,NDA0OiBOb3QgRm91bmQ=" width="60">
+                </div>
+
+                <!-- FILE AUDIO (Scorrono sul nastro) -->
+                <div style="position: absolute; left: 160px; top: {ep1_y}px; width: 80px; height: 80px; background: #fff; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; transform: translateZ({ep1_z}px); opacity: {ep_op};">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzMzOTBlYyIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTEyIDN2MThNOCA4djhNMTYgNnYxMk00IDExdjJNMjAgMTB2NCIvPjwvc3ZnPg==" width="50">
+                </div>
+                
+                <div style="position: absolute; left: 160px; top: {ep2_y}px; width: 80px; height: 80px; background: #fff; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; transform: translateZ({ep2_z}px); opacity: {ep_op};">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzMzOTBlYyIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTEyIDN2MThNOCA4djhNMTYgNnYxMk00IDExdjJNMjAgMTB2NCIvPjwvc3ZnPg==" width="50">
+                </div>
+                
+                <div style="position: absolute; left: 160px; top: {ep3_y}px; width: 80px; height: 80px; background: #fff; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; transform: translateZ({ep3_z}px); opacity: {ep_op};">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Square_purple_audio_icon.svg/120px-Square_purple_audio_icon.svg.png" width="50">
+                </div>
+
+                <!-- JINGLE ROCKETS (Arrivano dai lati come Emoji) -->
+                <div style="position: absolute; left: {j1_x}px; top: {j1_y}px; width: 60px; height: 60px; transform: translateZ(20px); opacity: {j_op}; display: flex; justify-content: center; align-items: center; filter: drop-shadow(0 0 20px #8B5CF6);"><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDIzLjAuMSwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxpdmVsbG9fMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiCgkgd2lkdGg9IjMwMHB4IiBoZWlnaHQ9IjMwMHB4IiB2aWV3Qm94PSIwIDAgMzAwIDMwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMzAwIDMwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJYTUxJRF82MzJfIj4KCTxsaW5lYXJHcmFkaWVudCBpZD0iWE1MSURfMl8iIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTUwIiB5MT0iMCIgeDI9IjE1MCIgeTI9IjMwMCI+CgkJPHN0b3AgIG9mZnNldD0iMCIgc3R5bGU9InN0b3AtY29sb3I6I0Y0NTJGRiIvPgoJCTxzdG9wICBvZmZzZXQ9IjEiIHN0eWxlPSJzdG9wLWNvbG9yOiM4MzJCQzEiLz4KCTwvbGluZWFyR3JhZGllbnQ+Cgk8cGF0aCBpZD0iWE1MSURfNjYyXyIgZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGw9InVybCgjWE1MSURfMl8pIiBkPSJNMjk0LjEsMjYwYy0yLjksNy40LTkuNiwxNy44LTE5LjIsMjUuMgoJCWMtNS41LDQuMi0xMi4xLDguMy0yMS4xLDExYy05LjYsMi45LTIxLjUsMy44LTM2LjMsMy44aC0xMzVjLTE0LjgsMC0yNi42LTEtMzYuMy0zLjhjLTktMi43LTE1LjYtNi43LTIxLjEtMTEKCQljLTkuNS03LjMtMTYuMy0xNy44LTE5LjItMjUuMkMwLjEsMjQ1LjEsMCwyMjguMiwwLDIxNy41bDAsMHYtMTM1bDAsMEMwLDcxLjgsMC4xLDU0LjksNS45LDQwYzIuOS03LjQsOS42LTE3LjgsMTkuMi0yNS4yCgkJYzUuNS00LjIsMTIuMS04LjMsMjEuMS0xMUM1NS45LDEsNjcuNywwLDgyLjUsMGwwLDBoMTM1bDAsMGMxNC44LDAsMjYuNiwxLDM2LjMsMy44YzksMi43LDE1LjYsNi43LDIxLjEsMTEKCQljOS41LDcuMywxNi4zLDE3LjgsMTkuMiwyNS4yYzUuOSwxNC45LDUuOSwzMS45LDUuOSw0Mi41djEzNUMzMDAsMjI4LjIsMjk5LjksMjQ1LjEsMjk0LjEsMjYweiIvPgoJPGc+CgkJPHBhdGggaWQ9IlhNTElEXzY1N18iIGZpbGw9IiNGRkZGRkYiIGQ9Ik0xNzUuNywxODEuMWMtMC40LTMuNi0xLjYtNi4yLTQtOC42Yy00LjUtNC43LTEyLjQtNy44LTIxLjctNy44Yy05LjMsMC0xNy4yLDMtMjEuNyw3LjgKCQkJYy0yLjMsMi41LTMuNiw1LTQsOC42Yy0wLjgsNy0wLjMsMTMsMC41LDIyLjdjMC44LDkuMiwyLjMsMjEuNSw0LjIsMzMuOWMxLjQsOC45LDIuNSwxMy43LDMuNSwxNy4xYzEuNyw1LjYsNy44LDEwLjQsMTcuNSwxMC40CgkJCWM5LjcsMCwxNS45LTQuOSwxNy41LTEwLjRjMS0zLjQsMi4xLTguMiwzLjUtMTcuMWMxLjktMTIuNSwzLjQtMjQuNyw0LjItMzMuOUMxNzYuMSwxOTQuMSwxNzYuNSwxODguMSwxNzUuNywxODEuMXoiLz4KCQk8cGF0aCBpZD0iWE1MSURfNjU1XyIgZmlsbD0iI0ZGRkZGRiIgZD0iTTE3NC42LDEzMC4xYzAsMTMuNi0xMSwyNC42LTI0LjYsMjQuNnMtMjQuNi0xMS0yNC42LTI0LjZjMC0xMy42LDExLTI0LjYsMjQuNi0yNC42CgkJCVMxNzQuNiwxMTYuNiwxNzQuNiwxMzAuMXoiLz4KCQk8cGF0aCBpZD0iWE1MSURfNjUzXyIgZmlsbD0iI0ZGRkZGRiIgZD0iTTE0OS43LDMzLjJDOTIuMywzMy40LDQ1LjMsODAsNDQuNSwxMzcuNGMtMC42LDQ2LjUsMjkuMSw4Ni4zLDcwLjYsMTAwLjkKCQkJYzEsMC40LDItMC41LDEuOS0xLjVjLTAuNS0zLjYtMS4xLTcuMi0xLjUtMTAuOGMtMC4yLTEuMy0xLTIuMy0yLjEtMi45Yy0zMi44LTE0LjMtNTUuNy00Ny4yLTU1LjMtODUuMwoJCQljMC41LTUwLDQxLjMtOTAuNyw5MS4yLTkxLjFjNTEuMS0wLjQsOTIuOCw0MSw5Mi44LDkyYzAsMzcuNy0yMi44LDcwLjEtNTUuMyw4NC40Yy0xLjIsMC41LTIsMS42LTIuMSwyLjkKCQkJYy0wLjUsMy42LTEsNy4yLTEuNSwxMC44Yy0wLjIsMS4xLDAuOSwxLjksMS45LDEuNWM0MS4xLTE0LjQsNzAuNi01My42LDcwLjYtOTkuNkMyNTUuNSw4MC41LDIwOCwzMy4xLDE0OS43LDMzLjJ6Ii8+CgkJPHBhdGggaWQ9IlhNTElEXzY1MV8iIGZpbGw9IiNGRkZGRkYiIGQ9Ik0xNDcuMyw2OC4yYy0zNy40LDEuNC02Ny40LDMyLjMtNjcuOSw2OS43Yy0wLjMsMjQuNiwxMiw0Ni40LDMwLjksNTkuMwoJCQljMC45LDAuNiwyLjItMC4xLDIuMi0xLjJjLTAuMy00LjMtMC4zLTguMS0wLjEtMTIuMWMwLjEtMS4zLTAuNC0yLjUtMS40LTMuNGMtMTEuNS0xMC44LTE4LjUtMjYuMi0xOC4xLTQzLjIKCQkJYzAuOC0zMCwyNC45LTU0LjQsNTQuOS01NS42YzMyLjYtMS4zLDU5LjQsMjQuOSw1OS40LDU3LjFjMCwxNi40LTcsMzEuMi0xOC4xLDQxLjdjLTAuOSwwLjktMS40LDIuMS0xLjQsMy40CgkJCWMwLjIsMy45LDAuMSw3LjctMC4xLDEyYy0wLjEsMS4xLDEuMiwxLjksMi4yLDEuMmMxOC42LTEyLjcsMzAuOS0zNC4yLDMwLjktNTguNEMyMjAuOCw5OC45LDE4Ny41LDY2LjYsMTQ3LjMsNjguMnoiLz4KCTwvZz4KPC9nPgo8L3N2Zz4K" width="60"></div>
+                <div style="position: absolute; left: {j2_x}px; top: {j2_y}px; width: 60px; height: 60px; transform: translateZ(20px); opacity: {j_op}; display: flex; justify-content: center; align-items: center; filter: drop-shadow(0 0 20px #8B5CF6);"><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDIzLjAuMSwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxpdmVsbG9fMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiCgkgd2lkdGg9IjMwMHB4IiBoZWlnaHQ9IjMwMHB4IiB2aWV3Qm94PSIwIDAgMzAwIDMwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMzAwIDMwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIGlkPSJYTUxJRF82MzJfIj4KCTxsaW5lYXJHcmFkaWVudCBpZD0iWE1MSURfMl8iIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTUwIiB5MT0iMCIgeDI9IjE1MCIgeTI9IjMwMCI+CgkJPHN0b3AgIG9mZnNldD0iMCIgc3R5bGU9InN0b3AtY29sb3I6I0Y0NTJGRiIvPgoJCTxzdG9wICBvZmZzZXQ9IjEiIHN0eWxlPSJzdG9wLWNvbG9yOiM4MzJCQzEiLz4KCTwvbGluZWFyR3JhZGllbnQ+Cgk8cGF0aCBpZD0iWE1MSURfNjYyXyIgZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGw9InVybCgjWE1MSURfMl8pIiBkPSJNMjk0LjEsMjYwYy0yLjksNy40LTkuNiwxNy44LTE5LjIsMjUuMgoJCWMtNS41LDQuMi0xMi4xLDguMy0yMS4xLDExYy05LjYsMi45LTIxLjUsMy44LTM2LjMsMy44aC0xMzVjLTE0LjgsMC0yNi42LTEtMzYuMy0zLjhjLTktMi43LTE1LjYtNi43LTIxLjEtMTEKCQljLTkuNS03LjMtMTYuMy0xNy44LTE5LjItMjUuMkMwLjEsMjQ1LjEsMCwyMjguMiwwLDIxNy41bDAsMHYtMTM1bDAsMEMwLDcxLjgsMC4xLDU0LjksNS45LDQwYzIuOS03LjQsOS42LTE3LjgsMTkuMi0yNS4yCgkJYzUuNS00LjIsMTIuMS04LjMsMjEuMS0xMUM1NS45LDEsNjcuNywwLDgyLjUsMGwwLDBoMTM1bDAsMGMxNC44LDAsMjYuNiwxLDM2LjMsMy44YzksMi43LDE1LjYsNi43LDIxLjEsMTEKCQljOS41LDcuMywxNi4zLDE3LjgsMTkuMiwyNS4yYzUuOSwxNC45LDUuOSwzMS45LDUuOSw0Mi41djEzNUMzMDAsMjI4LjIsMjk5LjksMjQ1LjEsMjk0LjEsMjYweiIvPgoJPGc+CgkJPHBhdGggaWQ9IlhNTElEXzY1N18iIGZpbGw9IiNGRkZGRkYiIGQ9Ik0xNzUuNywxODEuMWMtMC40LTMuNi0xLjYtNi4yLTQtOC42Yy00LjUtNC43LTEyLjQtNy44LTIxLjctNy44Yy05LjMsMC0xNy4yLDMtMjEuNyw3LjgKCQkJYy0yLjMsMi41LTMuNiw1LTQsOC42Yy0wLjgsNy0wLjMsMTMsMC41LDIyLjdjMC44LDkuMiwyLjMsMjEuNSw0LjIsMzMuOWMxLjQsOC45LDIuNSwxMy43LDMuNSwxNy4xYzEuNyw1LjYsNy44LDEwLjQsMTcuNSwxMC40CgkJCWM5LjcsMCwxNS45LTQuOSwxNy41LTEwLjRjMS0zLjQsMi4xLTguMiwzLjUtMTcuMWMxLjktMTIuNSwzLjQtMjQuNyw0LjItMzMuOUMxNzYuMSwxOTQuMSwxNzYuNSwxODguMSwxNzUuNywxODEuMXoiLz4KCQk8cGF0aCBpZD0iWE1MSURfNjU1XyIgZmlsbD0iI0ZGRkZGRiIgZD0iTTE3NC42LDEzMC4xYzAsMTMuNi0xMSwyNC42LTI0LjYsMjQuNnMtMjQuNi0xMS0yNC42LTI0LjZjMC0xMy42LDExLTI0LjYsMjQuNi0yNC42CgkJCVMxNzQuNiwxMTYuNiwxNzQuNiwxMzAuMXoiLz4KCQk8cGF0aCBpZD0iWE1MSURfNjUzXyIgZmlsbD0iI0ZGRkZGRiIgZD0iTTE0OS43LDMzLjJDOTIuMywzMy40LDQ1LjMsODAsNDQuNSwxMzcuNGMtMC42LDQ2LjUsMjkuMSw4Ni4zLDcwLjYsMTAwLjkKCQkJYzEsMC40LDItMC41LDEuOS0xLjVjLTAuNS0zLjYtMS4xLTcuMi0xLjUtMTAuOGMtMC4yLTEuMy0xLTIuMy0yLjEtMi45Yy0zMi44LTE0LjMtNTUuNy00Ny4yLTU1LjMtODUuMwoJCQljMC41LTUwLDQxLjMtOTAuNyw5MS4yLTkxLjFjNTEuMS0wLjQsOTIuOCw0MSw5Mi44LDkyYzAsMzcuNy0yMi44LDcwLjEtNTUuMyw4NC40Yy0xLjIsMC41LTIsMS42LTIuMSwyLjkKCQkJYy0wLjUsMy42LTEsNy4yLTEuNSwxMC44Yy0wLjIsMS4xLDAuOSwxLjksMS45LDEuNWM0MS4xLTE0LjQsNzAuNi01My42LDcwLjYtOTkuNkMyNTUuNSw4MC41LDIwOCwzMy4xLDE0OS43LDMzLjJ6Ii8+CgkJPHBhdGggaWQ9IlhNTElEXzY1MV8iIGZpbGw9IiNGRkZGRkYiIGQ9Ik0xNDcuMyw2OC4yYy0zNy40LDEuNC02Ny40LDMyLjMtNjcuOSw2OS43Yy0wLjMsMjQuNiwxMiw0Ni40LDMwLjksNTkuMwoJCQljMC45LDAuNiwyLjItMC4xLDIuMi0xLjJjLTAuMy00LjMtMC4zLTguMS0wLjEtMTIuMWMwLjEtMS4zLTAuNC0yLjUtMS40LTMuNGMtMTEuNS0xMC44LTE4LjUtMjYuMi0xOC4xLTQzLjIKCQkJYzAuOC0zMCwyNC45LTU0LjQsNTQuOS01NS42YzMyLjYtMS4zLDU5LjQsMjQuOSw1OS40LDU3LjFjMCwxNi40LTcsMzEuMi0xOC4xLDQxLjdjLTAuOSwwLjktMS40LDIuMS0xLjQsMy40CgkJCWMwLjIsMy45LDAuMSw3LjctMC4xLDEyYy0wLjEsMS4xLDEuMiwxLjksMi4yLDEuMmMxOC42LTEyLjcsMzAuOS0zNC4yLDMwLjktNTguNEMyMjAuOCw5OC45LDE4Ny41LDY2LjYsMTQ3LjMsNjguMnoiLz4KCTwvZz4KPC9nPgo8L3N2Zz4K" width="60"></div>
+
+                <!-- LASER MIXER (Metà Nastro) -->
+                <div style="position: absolute; left: 80px; top: 400px; width: 240px; height: 20px; background: #ff0055; box-shadow: 0 0 50px #ff0055; transform: translateZ(60px); opacity: {laser_op};"></div>
+                <div style="position: absolute; left: 200px; top: 400px; width: 500px; height: 500px; background: radial-gradient(circle, rgba(255,0,85,0.5) 0%, transparent 70%); transform: translateZ({flash_z}px); opacity: {flash_op}; pointer-events: none;"></div>
+
+                <!-- MEGAMIX FINALE (Claude Box) -->
+                <div style="position: absolute; left: 130px; top: {final_y}px; width: 140px; height: 180px; background: #d4c5b9; border-radius: 20px; box-shadow: 0 0 40px #d4c5b9; display: flex; justify-content: center; align-items: center; transform: translateZ({final_z}px); opacity: {final_op};">
+                    <img src="data:image/png;base64,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" width="80">
+                </div>
+
+                <!-- TELEGRAM RECEPTOR (Fine nastro) -->
+                <div style="position: absolute; left: 100px; top: 800px; width: 200px; height: 200px; background: transparent; transform: translateZ({tg_z}px) scale({tg_scale}); display: flex; justify-content: center; align-items: center;">
+                    <img src="data:image/svg+xml;base64,PHN2ZyBpZD0iTGl2ZWxsb18xIiBkYXRhLW5hbWU9IkxpdmVsbG8gMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmlld0JveD0iMCAwIDI0MCAyNDAiPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0ibGluZWFyLWdyYWRpZW50IiB4MT0iMTIwIiB5MT0iMjQwIiB4Mj0iMTIwIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMWQ5M2QyIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMzhiMGUzIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHRpdGxlPlRlbGVncmFtX2xvZ288L3RpdGxlPjxjaXJjbGUgY3g9IjEyMCIgY3k9IjEyMCIgcj0iMTIwIiBmaWxsPSJ1cmwoI2xpbmVhci1ncmFkaWVudCkiLz48cGF0aCBkPSJNODEuMjI5LDEyOC43NzJsMTQuMjM3LDM5LjQwNnMxLjc4LDMuNjg3LDMuNjg2LDMuNjg3LDMwLjI1NS0yOS40OTIsMzAuMjU1LTI5LjQ5MmwzMS41MjUtNjAuODlMODEuNzM3LDExOC42WiIgZmlsbD0iI2M4ZGFlYSIvPjxwYXRoIGQ9Ik0xMDAuMTA2LDEzOC44NzhsLTIuNzMzLDI5LjA0NnMtMS4xNDQsOC45LDcuNzU0LDAsMTcuNDE1LTE1Ljc2MywxNy40MTUtMTUuNzYzIiBmaWxsPSIjYTljNmQ4Ii8+PHBhdGggZD0iTTgxLjQ4NiwxMzAuMTc4LDUyLjIsMTIwLjYzNnMtMy41LTEuNDItMi4zNzMtNC42NGMuMjMyLS42NjQuNy0xLjIyOSwyLjEtMi4yLDYuNDg5LTQuNTIzLDEyMC4xMDYtNDUuMzYsMTIwLjEwNi00NS4zNnMzLjIwOC0xLjA4MSw1LjEtLjM2MmEyLjc2NiwyLjc2NiwwLDAsMSwxLjg4NSwyLjA1NSw5LjM1Nyw5LjM1NywwLDAsMSwuMjU0LDIuNTg1Yy0uMDA5Ljc1Mi0uMSwxLjQ0OS0uMTY5LDIuNTQyLS42OTIsMTEuMTY1LTIxLjQsOTQuNDkzLTIxLjQsOTQuNDkzcy0xLjIzOSw0Ljg3Ni01LjY3OCw1LjA0M0E4LjEzLDguMTMsMCwwLDEsMTQ2LjEsMTcyLjVjLTguNzExLTcuNDkzLTM4LjgxOS0yNy43MjctNDUuNDcyLTMyLjE3N2ExLjI3LDEuMjcsMCwwLDEtLjU0Ni0uOWMtLjA5My0uNDY5LjQxNy0xLjA1LjQxNy0xLjA1czUyLjQyNi00Ni42LDUzLjgyMS01MS40OTJjLjEwOC0uMzc5LS4zLS41NjYtLjg0OC0uNC0zLjQ4MiwxLjI4MS02My44NDQsMzkuNC03MC41MDYsNDMuNjA3QTMuMjEsMy4yMSwwLDAsMSw4MS40ODYsMTMwLjE3OFoiIGZpbGw9IiNmZmYiLz48L3N2Zz4=" width="200" style="filter: drop-shadow(0 0 50px #3390ec);">
+                </div>
+
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+
+    frames = []
+    num_frames = 120
+    
+    for i in range(num_frames):
+        p = i / float(num_frames - 1)
+        belt_y = (i * 10) % 40
+        
+        ep1_y, ep2_y, ep3_y = 0, 0, 0
+        ep1_z, ep2_z, ep3_z = 20, 20, 20
+        ep_op = 1.0
+        
+        j1_x, j1_y = 300, 0
+        j2_x, j2_y = 300, 0
+        j_op = 1.0
+        
+        laser_op = 0.5 + math.sin(i * 0.5) * 0.5
+        flash_op = 0
+        flash_z = 0
+        
+        final_y = 400
+        final_z = 20
+        final_op = 0
+        
+        tg_z = 10
+        tg_scale = 1.0
+
+        if p < 0.6:
+            p1 = p / 0.6
+            base_y = p1 * 500
+            ep1_y = base_y + 120
+            ep2_y = base_y
+            ep3_y = base_y - 120
+            
+            j_p = min(1.0, max(0, p1 * 1.5))
+            j1_x = 400 - ease_in_out(j_p) * 200
+            j2_x = -200 + ease_in_out(j_p) * 330
+            j1_y = base_y + 60
+            j2_y = base_y - 60
+
+        if p >= 0.5 and p < 0.7:
+            p2 = (p - 0.5) / 0.2
+            flash_op = math.sin(p2 * math.pi) * 0.8
+            flash_z = 60
+            laser_op = 1.0
+
+        if p >= 0.6:
+            ep_op = 0
+            j_op = 0
+            p3 = (p - 0.6) / 0.4
+            
+            final_op = 1.0
+            final_y = 400 + ease_in_out(p3) * 400
+            final_z = 20 + math.sin(p3 * math.pi) * 50
+            
+            if p3 > 0.8:
+                tg_scale = 1.0 + math.sin((p3 - 0.8) * 5 * math.pi) * 0.3
+                tg_z = 10 + math.sin((p3 - 0.8) * 5 * math.pi) * 50
+                final_op = 1.0 - ((p3 - 0.8) * 5)
+
+        html = html_template.format(
+            belt_y=belt_y,
+            ep1_y=ep1_y, ep1_z=ep1_z, ep2_y=ep2_y, ep2_z=ep2_z, ep3_y=ep3_y, ep3_z=ep3_z, ep_op=ep_op,
+            j1_x=j1_x, j1_y=j1_y, j2_x=j2_x, j2_y=j2_y, j_op=j_op,
+            laser_op=laser_op, flash_op=flash_op, flash_z=flash_z,
+            final_y=final_y, final_z=final_z, final_op=max(0, final_op),
+            tg_z=tg_z, tg_scale=tg_scale
+        )
+        
+        filename = f"highway_{i:03d}.png"
+        filepath = os.path.join(temp_dir, filename)
+        hti.screenshot(html_str=html, save_as=filename)
+        frames.append(iio.imread(filepath))
+        
+    out_path = os.path.join(out_dir, "3d_data_highway_icons.gif")
+    iio.imwrite(out_path, frames, duration=40, loop=0)
+    print(f"[OK] Completata The 3D Data Highway: {out_path}")
+
+if __name__ == "__main__":
+    create_3d_highway()
+    try:
+        shutil.rmtree("C:/podcastlab/docs/mass_production/3D_Masterpieces/temp_highway")
+    except:
+        pass
+
+
+
+=======================================================
+FILE: 3d_alive_version.py
+=======================================================
+
+import os
+import math
+import shutil
+import imageio.v3 as iio
+from html2image import Html2Image
+
+def ease_in_back(t):
+    s = 1.70158
+    return t * t * ((s + 1) * t - s)
+
+def ease_out_back(t):
+    s = 1.70158
+    t -= 1
+    return (t * t * ((s + 1) * t + s) + 1)
+
+def ease_out_bounce(t):
+    n1 = 7.5625
+    d1 = 2.75
+    if t < 1 / d1:
+        return n1 * t * t
+    elif t < 2 / d1:
+        t -= 1.5 / d1
+        return n1 * t * t + 0.75
+    elif t < 2.5 / d1:
+        t -= 2.25 / d1
+        return n1 * t * t + 0.9375
+    else:
+        t -= 2.625 / d1
+        return n1 * t * t + 0.984375
+
+def ease_elastic(t):
+    if t == 0 or t == 1: return t
+    p = 0.3
+    return math.pow(2, -10 * t) * math.sin((t - p / 4) * (2 * math.pi) / p) + 1
+
+# Smorzatore per far tornare sempre alla forma base (1.0 per scale, 0 per rotate)
+def spring_decay(t, start_val, target_val, freq=3, decay=5):
+    if t < 0: return start_val
+    if t > 1: return target_val
+    return target_val + (start_val - target_val) * math.exp(-decay * t) * math.cos(freq * math.pi * 2 * t)
+
+def create_3d_alive():
+    print("Inizio rendering The 'Alive' 3D Version (Icons & Springs)...")
+    hti = Html2Image(size=(800, 600))
+    out_dir = "C:/podcastlab/docs/mass_production/3D_Masterpieces"
+    os.makedirs(out_dir, exist_ok=True)
+    temp_dir = os.path.join(out_dir, "temp_alive")
+    hti.output_path = temp_dir
+    os.makedirs(temp_dir, exist_ok=True)
+
+    html_template = """
+    <html>
+    <body style="margin: 0; background: radial-gradient(circle, #1a1f2e 0%, #080a0f 100%); width: 800px; height: 600px; display: flex; justify-content: center; align-items: center; overflow: hidden; font-family: sans-serif;">
+        <div style="width: 100%; height: 100%; transform-style: preserve-3d; perspective: 1200px;">
+            <div style="position: absolute; width: 100%; height: 100%; transform-style: preserve-3d; transform: rotateX({rotX}deg) rotateY({rotY}deg) translateZ(-50px); transition: none;">
+                
+                <!-- NOTEBOOKLM (Che Spara) -->
+                <div style="position: absolute; left: 100px; top: 250px; width: 100px; height: 100px; background: #fff; border-radius: {nb_radius}%; display: flex; justify-content: center; align-items: center; transform: translateZ({nb_z}px) scaleX({nb_sx}) scaleY({nb_sy}); box-shadow: 0 0 40px #4285F4;">
+                    <img src="data:image/svg+xml;base64,NDA0OiBOb3QgRm91bmQ=" width="60" style="opacity: {nb_op};">
+                </div>
+
+                <!-- EPISODI MP3 (Proiettili vivi) -->
+                <div style="position: absolute; left: {ep1_x}px; top: {ep1_y}px; width: 60px; height: 60px; background: #fff; border-radius: 15px; transform: translateZ({ep1_z}px) rotateZ({ep1_rz}deg) scaleX({ep1_sx}) scaleY({ep1_sy}); opacity: {ep_op}; box-shadow: 0 10px 20px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzMzOTBlYyIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTEyIDN2MThNOCA4djhNMTYgNnYxMk00IDExdjJNMjAgMTB2NCIvPjwvc3ZnPg==" width="40">
+                </div>
+                
+                <div style="position: absolute; left: {ep2_x}px; top: {ep2_y}px; width: 60px; height: 60px; background: #fff; border-radius: 15px; transform: translateZ({ep2_z}px) rotateZ({ep2_rz}deg) scaleX({ep2_sx}) scaleY({ep2_sy}); opacity: {ep_op}; box-shadow: 0 10px 20px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzMzOTBlYyIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTEyIDN2MThNOCA4djhNMTYgNnYxMk00IDExdjJNMjAgMTB2NCIvPjwvc3ZnPg==" width="40">
+                </div>
+                
+                <div style="position: absolute; left: {ep3_x}px; top: {ep3_y}px; width: 60px; height: 60px; background: #fff; border-radius: 15px; transform: translateZ({ep3_z}px) rotateZ({ep3_rz}deg) scaleX({ep3_sx}) scaleY({ep3_sy}); opacity: {ep_op}; box-shadow: 0 10px 20px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Square_purple_audio_icon.svg/120px-Square_purple_audio_icon.svg.png" width="40">
+                </div>
+
+                <!-- JINGLES (Intromissione Musicale - Apple Music) -->
+                <div style="position: absolute; left: {j1_x}px; top: {j1_y}px; width: 50px; height: 50px; background: #fa243c; border-radius: 50%; transform: translateZ({j1_z}px) rotateZ({j1_rz}deg) scaleX({j_sx}) scaleY({j_sy}); opacity: {j_op}; box-shadow: 0 0 30px #fa243c; display: flex; align-items: center; justify-content: center;">
+                    <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDIzLjAuNiwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCA4NC4zIDIwLjciIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDg0LjMgMjAuNzsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8cGF0aCBkPSJNMzUuNCwyMC4xVjYuNmgtMC4xbC01LjQsMTMuNWgtMi4xTDIyLjQsNi42aC0wLjF2MTMuNWgtMi41VjEuOEgyM2w1LjgsMTQuNmgwLjFsNS44LTE0LjZIMzh2MTguM0wzNS40LDIwLjFMMzUuNCwyMC4xegoJIE01Mi4xLDIwLjFoLTIuNnYtMi4zaC0wLjFjLTAuNywxLjYtMi4xLDIuNS00LjEsMi41Yy0yLjksMC00LjYtMS45LTQuNi01VjYuN2gyLjd2OC4xYzAsMiwxLDMuMSwyLjgsMy4xYzIsMCwzLjEtMS40LDMuMS0zLjVWNi43CgloMi43TDUyLjEsMjAuMUw1Mi4xLDIwLjF6IE01OS41LDYuNWMzLjEsMCw1LDEuNyw1LjEsNC4yaC0yLjVjLTAuMi0xLjMtMS4xLTIuMS0yLjYtMi4xQzU4LDguNiw1Nyw5LjMsNTcsMTAuNGMwLDAuOCwwLjYsMS40LDIsMS43CglsMi4xLDAuNWMyLjcsMC42LDMuNywxLjcsMy43LDMuNmMwLDIuNC0yLjIsNC4xLTUuMyw0LjFjLTMuMywwLTUuMy0xLjYtNS41LTQuMmgyLjdjMC4yLDEuNCwxLjIsMi4xLDIuOCwyLjFjMS42LDAsMi42LTAuNywyLjYtMS44CgljMC0wLjktMC41LTEuNC0xLjktMS43bC0yLjEtMC41Yy0yLjUtMC42LTMuNy0xLjgtMy43LTMuOEM1NC40LDguMSw1Ni40LDYuNSw1OS41LDYuNXogTTY2LjgsMy4yYzAtMC45LDAuNy0xLjYsMS42LTEuNgoJYzAuOSwwLDEuNiwwLjcsMS42LDEuNmMwLDAuOS0wLjcsMS42LTEuNiwxLjZDNjcuNSw0LjgsNjYuOCw0LjEsNjYuOCwzLjJMNjYuOCwzLjJ6IE02Nyw2LjdoMi43djEzLjRINjdWNi43eiBNODEuMSwxMS4zCgljLTAuMy0xLjQtMS4zLTIuNi0zLjEtMi42Yy0yLjEsMC0zLjUsMS44LTMuNSw0LjZjMCwyLjksMS40LDQuNiwzLjUsNC42YzEuNywwLDIuNy0wLjksMy4xLTIuNWgyLjZjLTAuMywyLjgtMi41LDQuOC01LjcsNC44CgljLTMuOCwwLTYuMi0yLjYtNi4yLTYuOWMwLTQuMiwyLjQtNi45LDYuMi02LjljMy40LDAsNS40LDIuMiw1LjcsNC44TDgxLjEsMTEuM0w4MS4xLDExLjN6IE0xMS41LDMuNkMxMC44LDQuNCw5LjcsNS4xLDguNiw1CglDOC40LDMuOCw5LDIuNiw5LjYsMS45YzAuNy0wLjksMS45LTEuNSwyLjktMS41QzEyLjYsMS41LDEyLjIsMi43LDExLjUsMy42TDExLjUsMy42eiBNMTIuNSw1LjJjMC42LDAsMi40LDAuMiwzLjYsMgoJYy0wLjEsMC4xLTIuMSwxLjMtMi4xLDMuOGMwLDMsMi42LDQsMi42LDRjMCwwLjEtMC40LDEuNC0xLjMsMi44Yy0wLjgsMS4yLTEuNywyLjQtMywyLjRjLTEuMywwLTEuNy0wLjgtMy4yLTAuOAoJYy0xLjUsMC0yLDAuOC0zLjIsMC44Yy0xLjMsMC0yLjMtMS4zLTMuMS0yLjVjLTEuNy0yLjUtMy03LTEuMi0xMGMwLjgtMS41LDIuNC0yLjUsNC0yLjVjMS4zLDAsMi41LDAuOSwzLjIsMC45CglDOS41LDYuMSwxMC45LDUuMSwxMi41LDUuMkwxMi41LDUuMnoiLz4KPC9zdmc+Cg==" width="35">
+                </div>
+                
+                <div style="position: absolute; left: {j2_x}px; top: {j2_y}px; width: 50px; height: 50px; background: #fa243c; border-radius: 50%; transform: translateZ({j2_z}px) rotateZ({j2_rz}deg) scaleX({j_sx}) scaleY({j_sy}); opacity: {j_op}; box-shadow: 0 0 30px #fa243c; display: flex; align-items: center; justify-content: center;">
+                    <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDIzLjAuNiwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCA4NC4zIDIwLjciIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDg0LjMgMjAuNzsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8cGF0aCBkPSJNMzUuNCwyMC4xVjYuNmgtMC4xbC01LjQsMTMuNWgtMi4xTDIyLjQsNi42aC0wLjF2MTMuNWgtMi41VjEuOEgyM2w1LjgsMTQuNmgwLjFsNS44LTE0LjZIMzh2MTguM0wzNS40LDIwLjFMMzUuNCwyMC4xegoJIE01Mi4xLDIwLjFoLTIuNnYtMi4zaC0wLjFjLTAuNywxLjYtMi4xLDIuNS00LjEsMi41Yy0yLjksMC00LjYtMS45LTQuNi01VjYuN2gyLjd2OC4xYzAsMiwxLDMuMSwyLjgsMy4xYzIsMCwzLjEtMS40LDMuMS0zLjVWNi43CgloMi43TDUyLjEsMjAuMUw1Mi4xLDIwLjF6IE01OS41LDYuNWMzLjEsMCw1LDEuNyw1LjEsNC4yaC0yLjVjLTAuMi0xLjMtMS4xLTIuMS0yLjYtMi4xQzU4LDguNiw1Nyw5LjMsNTcsMTAuNGMwLDAuOCwwLjYsMS40LDIsMS43CglsMi4xLDAuNWMyLjcsMC42LDMuNywxLjcsMy43LDMuNmMwLDIuNC0yLjIsNC4xLTUuMyw0LjFjLTMuMywwLTUuMy0xLjYtNS41LTQuMmgyLjdjMC4yLDEuNCwxLjIsMi4xLDIuOCwyLjFjMS42LDAsMi42LTAuNywyLjYtMS44CgljMC0wLjktMC41LTEuNC0xLjktMS43bC0yLjEtMC41Yy0yLjUtMC42LTMuNy0xLjgtMy43LTMuOEM1NC40LDguMSw1Ni40LDYuNSw1OS41LDYuNXogTTY2LjgsMy4yYzAtMC45LDAuNy0xLjYsMS42LTEuNgoJYzAuOSwwLDEuNiwwLjcsMS42LDEuNmMwLDAuOS0wLjcsMS42LTEuNiwxLjZDNjcuNSw0LjgsNjYuOCw0LjEsNjYuOCwzLjJMNjYuOCwzLjJ6IE02Nyw2LjdoMi43djEzLjRINjdWNi43eiBNODEuMSwxMS4zCgljLTAuMy0xLjQtMS4zLTIuNi0zLjEtMi42Yy0yLjEsMC0zLjUsMS44LTMuNSw0LjZjMCwyLjksMS40LDQuNiwzLjUsNC42YzEuNywwLDIuNy0wLjksMy4xLTIuNWgyLjZjLTAuMywyLjgtMi41LDQuOC01LjcsNC44CgljLTMuOCwwLTYuMi0yLjYtNi4yLTYuOWMwLTQuMiwyLjQtNi45LDYuMi02LjljMy40LDAsNS40LDIuMiw1LjcsNC44TDgxLjEsMTEuM0w4MS4xLDExLjN6IE0xMS41LDMuNkMxMC44LDQuNCw5LjcsNS4xLDguNiw1CglDOC40LDMuOCw5LDIuNiw5LjYsMS45YzAuNy0wLjksMS45LTEuNSwyLjktMS41QzEyLjYsMS41LDEyLjIsMi43LDExLjUsMy42TDExLjUsMy42eiBNMTIuNSw1LjJjMC42LDAsMi40LDAuMiwzLjYsMgoJYy0wLjEsMC4xLTIuMSwxLjMtMi4xLDMuOGMwLDMsMi42LDQsMi42LDRjMCwwLjEtMC40LDEuNC0xLjMsMi44Yy0wLjgsMS4yLTEuNywyLjQtMywyLjRjLTEuMywwLTEuNy0wLjgtMy4yLTAuOAoJYy0xLjUsMC0yLDAuOC0zLjIsMC44Yy0xLjMsMC0yLjMtMS4zLTMuMS0yLjVjLTEuNy0yLjUtMy03LTEuMi0xMGMwLjgtMS41LDIuNC0yLjUsNC0yLjVjMS4zLDAsMi41LDAuOSwzLjIsMC45CglDOS41LDYuMSwxMC45LDUuMSwxMi41LDUuMkwxMi41LDUuMnoiLz4KPC9zdmc+Cg==" width="35">
+                </div>
+
+                <!-- CLAUDE MIXER (Macchina di fusione che cattura tutto) -->
+                <div style="position: absolute; left: {mix_x}px; top: {mix_y}px; width: 80px; height: 80px; background: #d4c5b9; border-radius: 20px; transform: translateZ({mix_z}px) scaleX({mix_sx}) scaleY({mix_sy}) rotateZ({mix_rz}deg); opacity: {mix_op}; box-shadow: 0 0 50px #d4c5b9; display: flex; justify-content: center; align-items: center;">
+                    <img src="data:image/png;base64,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" width="50">
+                </div>
+
+                <!-- TELEGRAM (Ricevitore) -->
+                <div style="position: absolute; left: 600px; top: {tg_y}px; width: 120px; height: 120px; background: transparent; transform: translateZ({tg_z}px) scaleX({tg_sx}) scaleY({tg_sy}); display: flex; justify-content: center; align-items: center; opacity: 1;">
+                    <img src="data:image/svg+xml;base64,PHN2ZyBpZD0iTGl2ZWxsb18xIiBkYXRhLW5hbWU9IkxpdmVsbG8gMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmlld0JveD0iMCAwIDI0MCAyNDAiPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0ibGluZWFyLWdyYWRpZW50IiB4MT0iMTIwIiB5MT0iMjQwIiB4Mj0iMTIwIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMWQ5M2QyIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMzhiMGUzIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHRpdGxlPlRlbGVncmFtX2xvZ288L3RpdGxlPjxjaXJjbGUgY3g9IjEyMCIgY3k9IjEyMCIgcj0iMTIwIiBmaWxsPSJ1cmwoI2xpbmVhci1ncmFkaWVudCkiLz48cGF0aCBkPSJNODEuMjI5LDEyOC43NzJsMTQuMjM3LDM5LjQwNnMxLjc4LDMuNjg3LDMuNjg2LDMuNjg3LDMwLjI1NS0yOS40OTIsMzAuMjU1LTI5LjQ5MmwzMS41MjUtNjAuODlMODEuNzM3LDExOC42WiIgZmlsbD0iI2M4ZGFlYSIvPjxwYXRoIGQ9Ik0xMDAuMTA2LDEzOC44NzhsLTIuNzMzLDI5LjA0NnMtMS4xNDQsOC45LDcuNzU0LDAsMTcuNDE1LTE1Ljc2MywxNy40MTUtMTUuNzYzIiBmaWxsPSIjYTljNmQ4Ii8+PHBhdGggZD0iTTgxLjQ4NiwxMzAuMTc4LDUyLjIsMTIwLjYzNnMtMy41LTEuNDItMi4zNzMtNC42NGMuMjMyLS42NjQuNy0xLjIyOSwyLjEtMi4yLDYuNDg5LTQuNTIzLDEyMC4xMDYtNDUuMzYsMTIwLjEwNi00NS4zNnMzLjIwOC0xLjA4MSw1LjEtLjM2MmEyLjc2NiwyLjc2NiwwLDAsMSwxLjg4NSwyLjA1NSw5LjM1Nyw5LjM1NywwLDAsMSwuMjU0LDIuNTg1Yy0uMDA5Ljc1Mi0uMSwxLjQ0OS0uMTY5LDIuNTQyLS42OTIsMTEuMTY1LTIxLjQsOTQuNDkzLTIxLjQsOTQuNDkzcy0xLjIzOSw0Ljg3Ni01LjY3OCw1LjA0M0E4LjEzLDguMTMsMCwwLDEsMTQ2LjEsMTcyLjVjLTguNzExLTcuNDkzLTM4LjgxOS0yNy43MjctNDUuNDcyLTMyLjE3N2ExLjI3LDEuMjcsMCwwLDEtLjU0Ni0uOWMtLjA5My0uNDY5LjQxNy0xLjA1LjQxNy0xLjA1czUyLjQyNi00Ni42LDUzLjgyMS01MS40OTJjLjEwOC0uMzc5LS4zLS41NjYtLjg0OC0uNC0zLjQ4MiwxLjI4MS02My44NDQsMzkuNC03MC41MDYsNDMuNjA3QTMuMjEsMy4yMSwwLDAsMSw4MS40ODYsMTMwLjE3OFoiIGZpbGw9IiNmZmYiLz48L3N2Zz4=" width="120" style="filter: drop-shadow(0px 0px 20px rgba(51,144,236,0.8));">
+                </div>
+
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+
+    frames = []
+    num_frames = 150
+    
+    for i in range(num_frames):
+        p = i / float(num_frames - 1)
+        
+        rotX = 20
+        rotY = 0
+
+        # DEFAULT IDLE STATE (Forme non deformate)
+        nb_sx, nb_sy, nb_z, nb_radius, nb_op = 1.0, 1.0, 0, 20, 1.0
+        
+        ep1_x, ep1_y, ep1_z, ep1_rz, ep1_sx, ep1_sy = 300, 270, 0, 0, 1.0, 1.0
+        ep2_x, ep2_y, ep2_z, ep2_rz, ep2_sx, ep2_sy = 400, 270, 0, 0, 1.0, 1.0
+        ep3_x, ep3_y, ep3_z, ep3_rz, ep3_sx, ep3_sy = 500, 270, 0, 0, 1.0, 1.0
+        ep_op = 0
+
+        j1_x, j1_y, j1_z, j1_rz = 355, 100, 0, 0
+        j2_x, j2_y, j2_z, j2_rz = 455, 100, 0, 0
+        j_sx, j_sy = 1.0, 1.0
+        j_op = 0
+
+        mix_x, mix_y, mix_z, mix_sx, mix_sy, mix_rz = 400, 260, 0, 0, 0, 0
+        mix_op = 0
+
+        tg_sx, tg_sy, tg_z, tg_y = 0.0, 0.0, 0, 240
+
+        # FASE 1: SPUTO DA NOTEBOOKLM (0.0 - 0.25)
+        if p < 0.25:
+            p1 = p / 0.25
+            
+            # Anticipation & Sparo - Decadimento della pancia (torna a 1.0)
+            if p1 < 0.3:
+                a_p = p1 / 0.3
+                nb_sx = 1.0 - a_p * 0.2
+                nb_sy = 1.0 + a_p * 0.2
+            else:
+                s_p = (p1 - 0.3) / 0.7
+                # Usa lo smorzatore per far tornare le dimensioni e la rotazione in posizione 1.0/0
+                nb_sx = spring_decay(s_p, 1.4, 1.0, freq=2, decay=6)
+                nb_sy = spring_decay(s_p, 0.7, 1.0, freq=2, decay=6)
+                nb_radius = 50 - s_p * 30 # Torna quasi quadrato
+                
+                ep_op = 1
+                sp_ease = ease_out_bounce(s_p)
+                
+                ep1_x = 100 + sp_ease * 170
+                ep2_x = 100 + sp_ease * 270
+                ep3_x = 100 + sp_ease * 370
+                
+                # I file volano stirati e poi TORNANO quadrati 1.0 (smorzamento)
+                ep_stretch = spring_decay(s_p, 1.8, 1.0, freq=1.5, decay=5)
+                ep1_sx, ep2_sx, ep3_sx = ep_stretch, ep_stretch, ep_stretch
+                ep1_sy, ep2_sy, ep3_sy = 1/ep_stretch, 1/ep_stretch, 1/ep_stretch
+                
+        # FASE 2: INTROMISSIONE JINGLES E SPALLATA (0.25 - 0.5)
+        elif p < 0.5:
+            ep_op = 1
+            ep1_x, ep2_x, ep3_x = 270, 370, 470
+            
+            p2 = (p - 0.25) / 0.25
+            j_op = 1
+            j_ease = ease_out_bounce(p2)
+            
+            j1_y = 50 + j_ease * 220
+            j2_y = 50 + j_ease * 220
+            j1_x = 320
+            j2_x = 420
+            
+            # Stretch verticale e ritorno a 1.0
+            j_stretch = spring_decay(p2, 2.0, 1.0, freq=2, decay=6)
+            j_sy = j_stretch
+            j_sx = 1/j_stretch
+                
+            # SPALLATA (Tilt and Return) sincronizzata col vero impatto al suolo
+            if p2 > 0.6: # Climax Telegram inizia a nascere in sottofondo
+                tg_sy = spring_decay((p2-0.6)/0.4, 1.2, 1.0, freq=2, decay=5)
+                tg_sx = spring_decay((p2-0.6)/0.4, 0.8, 1.0, freq=2, decay=5)
+            
+            if j_ease > 0.8: # Solo quando il jingle tocca gli MP3 (sp_ease > 0.8) avviene l'impatto!
+                imp_p = (j_ease - 0.8) / 0.2
+                tlt = spring_decay(imp_p, 60, 0, freq=2, decay=7)
+                shx = spring_decay(imp_p, 50, 0, freq=2, decay=7)
+                ep1_x -= shx
+                ep3_x += shx
+                ep1_rz = -tlt
+                ep3_rz = tlt
+
+        # FASE 3: COMPRESSIONE CLAUDE (0.5 - 0.75)
+        elif p < 0.75:
+            p3 = (p - 0.5) / 0.25
+            tg_sx, tg_sy = 1.0, 1.0
+            
+            if p3 < 0.3:
+                # Apparizione Climax Claude
+                ep_op = 1
+                j_op = 1
+                mix_op = p3 / 0.3
+                mix_sx = ease_out_bounce(p3 / 0.3)
+                mix_sy = mix_sx
+            else:
+                mix_op = 1
+                mp3_p = (p3 - 0.3) / 0.7
+                
+                # Attrazione gravitazionale nel buco nero di Claude
+                pull = mp3_p * mp3_p
+                ep1_x = 270 + pull * 130
+                ep3_x = 470 - pull * 130
+                ep2_x = 370
+                j1_x = 320 + pull * 80
+                j2_x = 420 - pull * 80
+                
+                j1_y = 270
+                j2_y = 270
+                
+                if mp3_p > 0.5: # Cominciano a sparire rimpicciolendosi (shrink fuso)
+                    shrink = 1.0 - ((mp3_p - 0.5) / 0.5)
+                    ep1_sx, ep2_sx, ep3_sx = shrink, shrink, shrink
+                    ep1_sy, ep2_sy, ep3_sy = shrink, shrink, shrink
+                    j_sx, j_sy = shrink, shrink
+                    ep_op = shrink
+                    j_op = shrink
+                    
+                    # Claude ingrassa mangiandoli
+                    mix_sx = spring_decay((mp3_p - 0.5)/0.5, 1.4, 1.0, freq=3, decay=5)
+                    mix_sy = spring_decay((mp3_p - 0.5)/0.5, 0.7, 1.0, freq=3, decay=5)
+                else:
+                    ep_op = 1
+                    j_op = 1
+                    mix_sx = 1.0
+                    mix_sy = 1.0
+
+                mix_rz = spring_decay(mp3_p, 180, 0, freq=1, decay=4)
+                
+                # Claude si tira indietro prima di lanciare
+                if mp3_p > 0.8:
+                    ant = (mp3_p - 0.8) / 0.2
+                    mix_x -= ant * 40
+                    mix_rz = -ant * 20
+
+        # FASE 4: TELEGRAM RICEVE (0.75 - 1.0)
+        else:
+            p4 = (p - 0.75) / 0.25
+            mix_op = 1
+            mix_x = 360
+            
+            fl = min(1.0, p4 * 1.5)
+            # Claude lancia
+            mix_x = 360 + ease_in_back(fl) * 250
+            mix_rz = -20 + fl * 20
+            mix_sx = spring_decay(fl, 1.8, 1.0, freq=1, decay=3)
+            
+            if p4 < 0.4:
+                # Telegram aspetta (vibra o apre)
+                tg_sy = spring_decay(p4, 1.2, 1.0, freq=3, decay=6)
+                tg_sx = spring_decay(p4, 0.8, 1.0, freq=3, decay=6)
+            else:
+                mix_op = 0
+                tg_p = (p4 - 0.4) / 0.6
+                # Telegram riceve il colpo e s'ingrassa, poi torna normale
+                tg_sx = spring_decay(tg_p, 1.4, 1.0, freq=2, decay=5)
+                tg_sy = spring_decay(tg_p, 0.7, 1.0, freq=2, decay=5)
+                # Il colpo sposta leggermente telegram a destra per l'inerzia e poi ritorna a 600
+                tg_x_pos = 600 + spring_decay(tg_p, 50, 0, freq=1.5, decay=6)
+                
+                html_template = html_template.replace("left: 600px;", f"left: {tg_x_pos}px;")
+
+        html = html_template.format(
+            rotX=rotX, rotY=rotY,
+            nb_sx=nb_sx, nb_sy=nb_sy, nb_z=nb_z, nb_radius=nb_radius, nb_op=nb_op,
+            ep1_x=ep1_x, ep1_y=ep1_y, ep1_z=ep1_z, ep1_rz=ep1_rz, ep1_sx=ep1_sx, ep1_sy=ep1_sy,
+            ep2_x=ep2_x, ep2_y=ep2_y, ep2_z=ep2_z, ep2_rz=ep2_rz, ep2_sx=ep2_sx, ep2_sy=ep2_sy,
+            ep3_x=ep3_x, ep3_y=ep3_y, ep3_z=ep3_z, ep3_rz=ep3_rz, ep3_sx=ep3_sx, ep3_sy=ep3_sy,
+            ep_op=ep_op,
+            j1_x=j1_x, j1_y=j1_y, j1_z=j1_z, j1_rz=j1_rz, j2_x=j2_x, j2_y=j2_y, j2_z=j2_z, j2_rz=j2_rz, j_sx=j_sx, j_sy=j_sy, j_op=j_op,
+            mix_x=mix_x, mix_y=mix_y, mix_z=mix_z, mix_sx=mix_sx, mix_sy=mix_sy, mix_rz=mix_rz, mix_op=mix_op,
+            tg_y=tg_y, tg_z=tg_z, tg_sx=tg_sx, tg_sy=tg_sy
+        )
+        
+        filename = f"alive_{i:03d}.png"
+        filepath = os.path.join(temp_dir, filename)
+        hti.screenshot(html_str=html, save_as=filename)
+        frames.append(iio.imread(filepath))
+        
+    out_path = os.path.join(out_dir, "3d_alive_character.gif")
+    iio.imwrite(out_path, frames, duration=40, loop=0)
+    print(f"[OK] Completata The 3D Alive Character Version: {out_path}")
+
+if __name__ == "__main__":
+    create_3d_alive()
+    try:
+        shutil.rmtree("C:/podcastlab/docs/mass_production/3D_Masterpieces/temp_alive")
+    except:
+        pass
+
+
+
+=======================================================
+FILE: 3d_circular_version.py
+=======================================================
+
+import os
+import math
+import shutil
+import imageio.v3 as iio
+from html2image import Html2Image
+
+def ease_in_back(t):
+    s = 1.70158
+    return t * t * ((s + 1) * t - s)
+
+def ease_out_back(t):
+    s = 1.70158
+    t -= 1
+    return (t * t * ((s + 1) * t + s) + 1)
+
+def ease_out_bounce(t):
+    n1 = 7.5625
+    d1 = 2.75
+    if t < 1 / d1:
+        return n1 * t * t
+    elif t < 2 / d1:
+        t -= 1.5 / d1
+        return n1 * t * t + 0.75
+    elif t < 2.5 / d1:
+        t -= 2.25 / d1
+        return n1 * t * t + 0.9375
+    else:
+        t -= 2.625 / d1
+        return n1 * t * t + 0.984375
+
+def spring_decay(t, start_val, target_val, freq=3, decay=5):
+    if t < 0: return start_val
+    if t > 1: return target_val
+    return target_val + (start_val - target_val) * math.exp(-decay * t) * math.cos(freq * math.pi * 2 * t)
+
+def create_circular_3d():
+    print("Inizio rendering The 3D Circular Version (Roaming Camera)...")
+    hti = Html2Image(size=(800, 600))
+    out_dir = "C:/podcastlab/docs/mass_production/3D_Masterpieces"
+    os.makedirs(out_dir, exist_ok=True)
+    temp_dir = os.path.join(out_dir, "temp_circular")
+    hti.output_path = temp_dir
+    os.makedirs(temp_dir, exist_ok=True)
+
+    html_template = """
+    <html>
+    <body style="margin: 0; background: radial-gradient(circle at center, #111a26 0%, #06090f 100%); width: 800px; height: 600px; display: flex; justify-content: center; align-items: center; overflow: hidden; font-family: sans-serif;">
+        <!-- ROAMING CAMERA -->
+        <div style="width: 100%; height: 100%; transform-style: preserve-3d; perspective: 1000px;">
+            <div style="position: absolute; width: 100%; height: 100%; transform-style: preserve-3d; transform: rotateX({rotX}deg) rotateY({rotY}deg) translateZ({camZ}px); transition: none;">
+                
+                <!-- TELEGRAM (Il punto di partenza e arrivo in Basso) -->
+                <div style="position: absolute; left: 340px; top: {tg_y}px; width: 120px; height: 120px; background: transparent; transform: translateZ({tg_z}px) scaleX({tg_sx}) scaleY({tg_sy}); display: flex; justify-content: center; align-items: center; opacity: 1;">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" width="120" style="filter: drop-shadow(0px 0px 20px rgba(51,144,236,0.8));">
+                </div>
+
+                <!-- NOTEBOOKLM (La Sorgente API in Alto) -->
+                <div style="position: absolute; left: 350px; top: 50px; width: 100px; height: 100px; background: #fff; border-radius: {nb_radius}%; display: flex; justify-content: center; align-items: center; transform: translateZ({nb_z}px) scaleX({nb_sx}) scaleY({nb_sy}); box-shadow: 0 0 40px #4285F4; opacity: {nb_op};">
+                    <img src="file:///C:/Users/Gilberto%20Bizzo/Downloads/notebooklm-color.svg" width="60">
+                </div>
+
+                <!-- 3 TRACCE VOCALI PODCAST -->
+                <div style="position: absolute; left: {ep1_x}px; top: {ep1_y}px; width: 60px; height: 60px; background: #fff; border-radius: 15px; transform: translateZ({ep1_z}px) rotateZ({ep1_rz}deg) scaleX({ep1_sx}) scaleY({ep1_sy}); opacity: {ep_op}; box-shadow: 0 10px 20px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;">
+                    <img src="https://raw.githubusercontent.com/tabler/tabler-icons/master/icons/waveform.svg" width="40">
+                </div>
+                <div style="position: absolute; left: {ep2_x}px; top: {ep2_y}px; width: 60px; height: 60px; background: #fff; border-radius: 15px; transform: translateZ({ep2_z}px) rotateZ({ep2_rz}deg) scaleX({ep2_sx}) scaleY({ep2_sy}); opacity: {ep_op}; box-shadow: 0 10px 20px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;">
+                    <img src="https://raw.githubusercontent.com/tabler/tabler-icons/master/icons/waveform.svg" width="40">
+                </div>
+                <div style="position: absolute; left: {ep3_x}px; top: {ep3_y}px; width: 60px; height: 60px; background: #fff; border-radius: 15px; transform: translateZ({ep3_z}px) rotateZ({ep3_rz}deg) scaleX({ep3_sx}) scaleY({ep3_sy}); opacity: {ep_op}; box-shadow: 0 10px 20px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;">
+                    <img src="https://raw.githubusercontent.com/tabler/tabler-icons/master/icons/waveform.svg" width="40">
+                </div>
+
+                <!-- CLAUDE MIXER (Al Centro) -->
+                <div style="position: absolute; left: {mix_x}px; top: {mix_y}px; width: 80px; height: 80px; background: #d4c5b9; border-radius: {mix_rad}px; transform: translateZ({mix_z}px) scaleX({mix_sx}) scaleY({mix_sy}) rotateZ({mix_rz}deg); opacity: {mix_op}; box-shadow: 0 0 50px #d4c5b9; display: flex; justify-content: center; align-items: center;">
+                    <img src="https://www.google.com/s2/favicons?domain=claude.ai&sz=128" width="50">
+                </div>
+
+                <!-- DYNAMIC LASER / DATA BEAM -->
+                <div style="position: absolute; left: {beam_x}px; top: {beam_y}px; width: 10px; height: {beam_h}px; background: #3390ec; opacity: {beam_op}; box-shadow: 0 0 20px #3390ec; border-radius: 10px; transform: translateZ({beam_z}px);"></div>
+
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+
+    frames = []
+    num_frames = 180
+    
+    for i in range(num_frames):
+        p = i / float(num_frames - 1)
+        
+        # CONTINUOUS ROAMING CAMERA 3D
+        rotX = 30 + math.sin(p * math.pi * 2) * 20
+        rotY = math.cos(p * math.pi * 2) * 20
+        camZ = -50 + math.sin(p * math.pi * 4) * 30
+
+        # DEFAULT IDLE
+        tg_sx, tg_sy, tg_z, tg_y = 1.0, 1.0, 0, 420
+        nb_sx, nb_sy, nb_z, nb_radius, nb_op = 1.0, 1.0, 0, 20, 1.0
+        mix_x, mix_y, mix_z, mix_sx, mix_sy, mix_rz, mix_op, mix_rad = 360, 230, 0, 1.0, 1.0, 0, 0, 20
+        ep_op = 0
+        ep1_x, ep1_y, ep1_z, ep1_rz, ep1_sx, ep1_sy = 370, 50, 0, 0, 1.0, 1.0
+        ep2_x, ep2_y, ep2_z, ep2_rz, ep2_sx, ep2_sy = 370, 50, 0, 0, 1.0, 1.0
+        ep3_x, ep3_y, ep3_z, ep3_rz, ep3_sx, ep3_sy = 370, 50, 0, 0, 1.0, 1.0
+        beam_x, beam_y, beam_h, beam_op, beam_z = 395, 230, 0, 0, 0
+
+        # FASE 1: TELEGRAM CHIEDE API AL NOTEBOOK (0 - 0.25)
+        if p < 0.25:
+            p1 = p / 0.25
+            mix_op = 0
+            
+            # Telegram spara un raggio in alto (Anticipazione giu, scatto su)
+            if p1 < 0.3:
+                tg_sy = 1.0 - p1
+                tg_sx = 1.0 + p1
+            else:
+                sp1 = (p1 - 0.3) / 0.7
+                tg_sy = spring_decay(sp1, 1.8, 1.0, 2, 5)
+                tg_sx = spring_decay(sp1, 0.5, 1.0, 2, 5)
+                
+                beam_op = 1
+                beam_h = 250 * sp1
+                beam_y = 420 - beam_h
+                
+                # Se il raggio tocca NotebookLM (circa al frame sp1=0.8)
+                if sp1 > 0.8:
+                    imp1 = (sp1 - 0.8) / 0.2
+                    nb_sy = spring_decay(imp1, 0.5, 1.0, 3, 6)
+                    nb_sx = spring_decay(imp1, 1.5, 1.0, 3, 6)
+                    nb_radius = 50
+
+        # FASE 2: NOTEBOOK LM SPUTA 3 FILE (0.25 - 0.5)
+        elif p < 0.5:
+            p2 = (p - 0.25) / 0.25
+            ep_op = 1
+            
+            if p2 < 0.3:
+                nb_sy = 1.0 + p2
+                nb_sx = 1.0 - p2
+            else:
+                sp2 = (p2 - 0.3) / 0.7
+                nb_sy = spring_decay(sp2, 0.5, 1.0, 2, 5)
+                nb_sx = spring_decay(sp2, 1.5, 1.0, 2, 5)
+                
+                sp_ease = ease_out_bounce(sp2)
+                ep1_y = 50 + sp_ease * 150
+                ep2_y = 50 + sp_ease * 150
+                ep3_y = 50 + sp_ease * 150
+                ep1_x = 370 - sp_ease * 100
+                ep3_x = 370 + sp_ease * 100
+
+        # FASE 3: CLAUDE NASCE DAL BASSO E RICEVE LE TRACCE (0.5 - 0.75)
+        elif p < 0.75:
+            p3 = (p - 0.5) / 0.25
+            ep_op = 1
+            
+            # CLIMAX DI CLAUDE (Appare dal nulla crescendo)
+            if p3 < 0.4:
+                mix_op = p3 / 0.4
+                mix_sx = ease_out_bounce(p3 / 0.4)
+                mix_sy = mix_sx
+            else:
+                mix_op = 1
+                sp3 = (p3 - 0.4) / 0.6
+                mix_sx = 1.0
+                mix_sy = 1.0
+                
+                # Le tracce si buttano dentro Claude e fondono (riducendo scala a 0)
+                pull = sp3 * sp3
+                ep1_x = 270 + pull * 90
+                ep2_x = 370
+                ep3_x = 470 - pull * 90
+                ep1_y = 200 + pull * 30
+                ep2_y = 200 + pull * 30
+                ep3_y = 200 + pull * 30
+                
+                # Le tracce shrinkano dentro Claude e spariscono
+                if sp3 > 0.6:
+                    shrink = 1.0 - ((sp3 - 0.6) / 0.4)
+                    ep1_sx, ep2_sx, ep3_sx = shrink, shrink, shrink
+                    ep1_sy, ep2_sy, ep3_sy = shrink, shrink, shrink
+                    mix_sx = spring_decay((sp3 - 0.6)/0.4, 1.3, 1.0, 2, 6)
+                    mix_sy = spring_decay((sp3 - 0.6)/0.4, 1.3, 1.0, 2, 6)
+
+        # FASE 4: CLAUDE SPARA A TELEGRAM (0.75 - 1.0)
+        else:
+            p4 = (p - 0.75) / 0.25
+            mix_op = 1
+            
+            # Claude si carica all'indietro
+            if p4 < 0.3:
+                mix_y = 230 - p4 * 100
+            else:
+                sp4 = (p4 - 0.3) / 0.7
+                mix_y = 230 - 30 + ease_in_back(sp4) * 220
+                
+                # Telegram riceve il file master
+                if sp4 > 0.8:
+                    imp4 = (sp4 - 0.8) / 0.2
+                    tg_sy = spring_decay(imp4, 0.4, 1.0, 3, 6)
+                    tg_sx = spring_decay(imp4, 1.6, 1.0, 3, 6)
+                    mix_op = 1.0 - imp4 # claude sparisce nel mix
+                    
+        html = html_template.format(
+            rotX=rotX, rotY=rotY, camZ=camZ,
+            nb_sx=nb_sx, nb_sy=nb_sy, nb_z=nb_z, nb_radius=nb_radius, nb_op=nb_op,
+            ep1_x=ep1_x, ep1_y=ep1_y, ep1_z=ep1_z, ep1_rz=ep1_rz, ep1_sx=ep1_sx, ep1_sy=ep1_sy,
+            ep2_x=ep2_x, ep2_y=ep2_y, ep2_z=ep2_z, ep2_rz=ep2_rz, ep2_sx=ep2_sx, ep2_sy=ep2_sy,
+            ep3_x=ep3_x, ep3_y=ep3_y, ep3_z=ep3_z, ep3_rz=ep3_rz, ep3_sx=ep3_sx, ep3_sy=ep3_sy,
+            ep_op=ep_op,
+            mix_x=mix_x, mix_y=mix_y, mix_z=mix_z, mix_sx=mix_sx, mix_sy=mix_sy, mix_rz=mix_rz, mix_op=mix_op, mix_rad=mix_rad,
+            beam_x=beam_x, beam_y=beam_y, beam_h=beam_h, beam_op=beam_op, beam_z=beam_z,
+            tg_y=tg_y, tg_z=tg_z, tg_sx=tg_sx, tg_sy=tg_sy
+        )
+        
+        filename = f"frame_{i:03d}.png"
+        frame_path = os.path.join(temp_dir, filename)
+        hti.screenshot(html_str=html, save_as=filename)
+        frames.append(iio.imread(frame_path))
+
+    out_path = os.path.join(out_dir, "3d_circular_pipeline.gif")
+    iio.imwrite(out_path, frames, duration=40, loop=0)
+    print(f"[OK] Completata The 3D Circular Pipeline: {out_path}")
+
+if __name__ == "__main__":
+    create_circular_3d()
+
+

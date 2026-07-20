@@ -1,0 +1,114 @@
+[
+    {
+        "type": "user",
+        "text": "Tell me about ancient Rome",
+        "time": "14:00"
+    },
+    {
+        "type": "bot",
+        "text": "Select your search options in the panel below:",
+        "time": "14:00"
+    },
+    {
+        "type": "user",
+        "text": "[Click: DEEP research]",
+        "time": "14:01"
+    },
+    {
+        "type": "bot",
+        "text": "DEEP research option set.Press GO to start generation.",
+        "time": "14:01"
+    },
+    {
+        "type": "user",
+        "text": "[Click: GO]",
+        "time": "14:01"
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 10,
+        "text": "Initialization of sources on ancient Rome..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 20,
+        "text": "Search for historical documents and archives..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 30,
+        "text": "Analysis of the imperial period..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 40,
+        "text": "Extraction of main events and historical figures..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 50,
+        "text": "Summary of the data collected..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 60,
+        "text": "Elaboration of narrative structure..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 70,
+        "text": "Generating draft for script..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 80,
+        "text": "Optimizing the podcast format..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 90,
+        "text": "Audio finalization in progress..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 100,
+        "text": "NotebookLM processing completed."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 50,
+        "text": "Claude is perfecting the script..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 100,
+        "text": "Final review completed."
+    },
+    {
+        "type": "audio",
+        "text": "rome_intro.mp3",
+        "time": "14:05"
+    },
+    {
+        "type": "audio",
+        "text": "roma_sviluppo.mp3",
+        "time": "14:06"
+    },
+    {
+        "type": "audio",
+        "text": "roma_conclusione.mp3",
+        "time": "14:07"
+    }
+]

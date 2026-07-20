@@ -1,0 +1,104 @@
+[
+    {
+        "type": "user",
+        "text": "/menu",
+        "time": "15:00"
+    },
+    {
+        "type": "bot",
+        "text": "Main Menu: [Change Language] [Settings] [Generate]",
+        "time": "15:00"
+    },
+    {
+        "type": "user",
+        "text": "Settings",
+        "time": "15:01"
+    },
+    {
+        "type": "bot",
+        "text": "Settings: [AI Engine] [Speed] [Back]",
+        "time": "15:01"
+    },
+    {
+        "type": "user",
+        "text": "AI Engine",
+        "time": "15:02"
+    },
+    {
+        "type": "bot",
+        "text": "Select: [NotebookLM] [Claude] [Back]",
+        "time": "15:02"
+    },
+    {
+        "type": "user",
+        "text": "Claude",
+        "time": "15:03"
+    },
+    {
+        "type": "bot",
+        "text": "Engine changed to Claude.[NotebookLM] [Claude] [Back]",
+        "time": "15:03"
+    },
+    {
+        "type": "user",
+        "text": "Backwards",
+        "time": "15:04"
+    },
+    {
+        "type": "bot",
+        "text": "Settings: [AI Engine] [Speed] [Back]",
+        "time": "15:04"
+    },
+    {
+        "type": "user",
+        "text": "Backwards",
+        "time": "15:05"
+    },
+    {
+        "type": "bot",
+        "text": "Main Menu: [Change Language] [Settings] [Generate]",
+        "time": "15:05"
+    },
+    {
+        "type": "user",
+        "text": "Change Language",
+        "time": "15:06"
+    },
+    {
+        "type": "bot",
+        "text": "Choose language: [IT] [EN] [ES]",
+        "time": "15:06"
+    },
+    {
+        "type": "user",
+        "text": "EN",
+        "time": "15:07"
+    },
+    {
+        "type": "bot",
+        "text": "Language set to EN.[Generate] [Back]",
+        "time": "15:07"
+    },
+    {
+        "type": "user",
+        "text": "Generate",
+        "time": "15:08"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 50,
+        "text": "Generating podcast scripts..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 100,
+        "text": "Complete scripts, audio rendering..."
+    },
+    {
+        "type": "audio",
+        "text": "english_podcast_test.mp3",
+        "time": "15:10"
+    }
+]

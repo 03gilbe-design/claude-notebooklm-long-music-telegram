@@ -1,0 +1,110 @@
+[
+    {
+        "type": "user",
+        "text": "✏️ Prompts",
+        "time": "14:00"
+    },
+    {
+        "type": "bot",
+        "text": "Prompt Management.Choose an option:\n\n[📝 Create new prompt] [📚 Choose Existing] [⬅️ Main Menu]",
+        "time": "14:00"
+    },
+    {
+        "type": "user",
+        "text": "📝 Create new prompt",
+        "time": "14:01"
+    },
+    {
+        "type": "bot",
+        "text": "Optimal!Let's get started creating your new custom prompt.What style do you want to give to the podcast?\n\n[🎙️ Ironic] [🎓 Prof] [😂 Comedian]",
+        "time": "14:01"
+    },
+    {
+        "type": "user",
+        "text": "🎙️ Ironic",
+        "time": "14:02"
+    },
+    {
+        "type": "bot",
+        "text": "Perfect, style set to \"Ironic\".Now, choose the length of the podcast:\n\n[⚡ FAST (2-3 min)] [⏱️ MEDIUM (5-7 min)] [🕰️ LONG (10+ min)]",
+        "time": "14:02"
+    },
+    {
+        "type": "user",
+        "text": "⚡ FAST",
+        "time": "14:03"
+    },
+    {
+        "type": "bot",
+        "text": "FAST mode selected.Do you want to add details or shall we proceed with the generation?\n\n[🚀 Generate Now] [➕ Add Details]",
+        "time": "14:03"
+    },
+    {
+        "type": "user",
+        "text": "🚀 Generate Now",
+        "time": "14:04"
+    },
+    {
+        "type": "bot",
+        "text": "Starting the podcast generation with your new Ironic style prompt!This will take a few moments.",
+        "time": "14:04"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 10,
+        "text": "Creation of the personalized prompt in Ironic style..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 30,
+        "text": "Writing the podcast script…"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 60,
+        "text": "Script completed!Adaptation for the two speakers..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 100,
+        "text": "Text ready.Passing the script to the speech engine..."
+    },
+    {
+        "type": "bot",
+        "text": "Text successfully generated.Now NotebookLM will give voice to the script...",
+        "time": "14:05"
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 20,
+        "text": "Initializing the hosts' voices..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 50,
+        "text": "Speech synthesis in progress (speaker 1 and speaker 2)..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 80,
+        "text": "Mixing audio and adding background music..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 100,
+        "text": "Audio file export complete!"
+    },
+    {
+        "type": "audio",
+        "text": "podcast_ironico_fast.mp3",
+        "time": "14:06"
+    }
+]

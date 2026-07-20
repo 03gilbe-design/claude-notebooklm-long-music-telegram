@@ -1,0 +1,113 @@
+[
+    {
+        "type": "user",
+        "text": "Start local dataset pipeline (Whisper V3)",
+        "time": "15:00"
+    },
+    {
+        "type": "bot",
+        "text": "Received.Starting pipeline.py script on local machine...",
+        "time": "15:00"
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 5,
+        "text": "Loading faster-whisper model (large-v3)..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 15,
+        "text": "VRAM allocation complete.Audio preparation..."
+    },
+    {
+        "type": "bot",
+        "text": "Start transcription process.The operation will take a few minutes.",
+        "time": "15:02"
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 25,
+        "text": "faster-whisper transcription... 25%"
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 40,
+        "text": "faster-whisper transcription... 40%"
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 55,
+        "text": "faster-whisper transcription... 55%"
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 70,
+        "text": "faster-whisper transcription... 80%"
+    },
+    {
+        "type": "bot",
+        "text": "Transcription almost finished.I prepare Pyannote templates.",
+        "time": "15:08"
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 75,
+        "text": "pyannote speaker extraction... initialization"
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 80,
+        "text": "pyannote speaker extraction... segment analysis"
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 85,
+        "text": "pyannote speaker extraction... voice grouping"
+    },
+    {
+        "type": "bot",
+        "text": "Items identified.Merging the results into a single JSON dataset.",
+        "time": "15:12"
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 95,
+        "text": "Saving results in dataset_whisper.json..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 100,
+        "text": "Local operation concluded successfully."
+    },
+    {
+        "type": "bot",
+        "text": "All done!I generated the debug audio with the segments split.",
+        "time": "15:13"
+    },
+    {
+        "type": "audio",
+        "text": "debug_segments_whisper.mp3",
+        "time": "15:13"
+    },
+    {
+        "type": "user",
+        "text": "Great work.",
+        "time": "15:15"
+    },
+    {
+        "type": "bot",
+        "text": "The JSON files are ready to be used in the next step.",
+        "time": "15:15"
+    }
+]

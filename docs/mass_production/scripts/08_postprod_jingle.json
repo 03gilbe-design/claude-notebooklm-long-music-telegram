@@ -1,0 +1,111 @@
+[
+    {
+        "type": "user",
+        "text": "Now I would like to add an introductory and an ending jingle.",
+        "time": "14:10"
+    },
+    {
+        "type": "bot",
+        "text": "Certainly.What jingle do you want to use for intro and outro?",
+        "time": "14:10"
+    },
+    {
+        "type": "user",
+        "text": "Use the standard jingle for the intro and the faded variant for the outro.",
+        "time": "14:11"
+    },
+    {
+        "type": "bot",
+        "text": "Received.I prepare the mix with the requested jingles.",
+        "time": "14:11"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 10,
+        "text": "Retrieving jingle from library..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 30,
+        "text": "Intro jingle alignment..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 50,
+        "text": "Calculating the total duration..."
+    },
+    {
+        "type": "bot",
+        "text": "I lined up the intro.I'm placing the outro at the end of the track.",
+        "time": "14:13"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 60,
+        "text": "Mixing intro and start of track..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 70,
+        "text": "Ducking application on the intro..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 80,
+        "text": "Gradient outro mixing..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 90,
+        "text": "Final audio normalization..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 100,
+        "text": "Mixing completed."
+    },
+    {
+        "type": "bot",
+        "text": "Your episode has been mixed and is ready!",
+        "time": "14:15"
+    },
+    {
+        "type": "bot",
+        "text": "Do you want to export the final version?",
+        "time": "14:15"
+    },
+    {
+        "type": "user",
+        "text": "Yes, export the final master.",
+        "time": "14:16"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 100,
+        "text": "Master export..."
+    },
+    {
+        "type": "bot",
+        "text": "Here is the final episode ready for publication.",
+        "time": "14:17"
+    },
+    {
+        "type": "audio",
+        "text": "ep1_final_master.mp3",
+        "time": "14:18"
+    },
+    {
+        "type": "user",
+        "text": "Perfect, great post-production work!",
+        "time": "14:19"
+    }
+]

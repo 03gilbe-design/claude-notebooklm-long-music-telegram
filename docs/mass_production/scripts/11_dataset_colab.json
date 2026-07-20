@@ -1,0 +1,113 @@
+[
+    {
+        "type": "user",
+        "text": "Start dataset creation on Colab for the latest episode",
+        "time": "10:00"
+    },
+    {
+        "type": "bot",
+        "text": "Received.I connect to Google Colab and start pipeline.py...",
+        "time": "10:01"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 10,
+        "text": "Colab environment initialization..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 20,
+        "text": "Downloading original audio file..."
+    },
+    {
+        "type": "bot",
+        "text": "Downloaded audio.I start transcription...",
+        "time": "10:02"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 30,
+        "text": "faster-whisper transcription... (chunk 1/3)"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 40,
+        "text": "faster-whisper transcription... (chunk 2/3)"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 50,
+        "text": "faster-whisper transcription... (chunk 3/3)"
+    },
+    {
+        "type": "bot",
+        "text": "Transcription completed!Now I move on to identifying the voices.",
+        "time": "10:05"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 60,
+        "text": "pyannote speaker extraction... (pass 1)"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 70,
+        "text": "pyannote speaker extraction... (pass 2)"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 80,
+        "text": "Speaker and text timestamp alignment..."
+    },
+    {
+        "type": "bot",
+        "text": "Extraction and alignment finished.I generate JSON files.",
+        "time": "10:08"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 90,
+        "text": "Writing JSON dataset..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 100,
+        "text": "Pipeline completed successfully."
+    },
+    {
+        "type": "bot",
+        "text": "Here is a short audio excerpt to check the alignment.",
+        "time": "10:09"
+    },
+    {
+        "type": "audio",
+        "text": "speaker_check_colab.mp3",
+        "time": "10:09"
+    },
+    {
+        "type": "user",
+        "text": "It seems perfect, go ahead and save it permanently.",
+        "time": "10:11"
+    },
+    {
+        "type": "bot",
+        "text": "Ok, dataset saved in the main branch.",
+        "time": "10:11"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 100,
+        "text": "GitHub sync complete."
+    }
+]

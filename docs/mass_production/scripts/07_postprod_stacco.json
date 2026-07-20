@@ -1,0 +1,110 @@
+[
+    {
+        "type": "user",
+        "text": "I want to post-produce the last episode and add the musical break.",
+        "time": "14:00"
+    },
+    {
+        "type": "bot",
+        "text": "Great, let's go to post-production.Which audio track should I use?",
+        "time": "14:01"
+    },
+    {
+        "type": "user",
+        "text": "Use the newly generated episode: ep1_draft.mp3",
+        "time": "14:02"
+    },
+    {
+        "type": "bot",
+        "text": "Received ep1_draft.mp3.I start analyzing the audio to look for the words 'MUSICAL CUT'.",
+        "time": "14:02"
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 10,
+        "text": "Loading audio..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 30,
+        "text": "Transcription and text analysis..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 50,
+        "text": "Searching for the 'MUSICAL BREAK' pattern..."
+    },
+    {
+        "type": "bot",
+        "text": "I found 1 possible insertion point for the musical cut at minute 03:12.",
+        "time": "14:04"
+    },
+    {
+        "type": "bot",
+        "text": "Do you want me to apply the default jingle there?",
+        "time": "14:04"
+    },
+    {
+        "type": "user",
+        "text": "Yes, proceed.",
+        "time": "14:05"
+    },
+    {
+        "type": "bot",
+        "text": "Perfect, I'll start the audio processing.",
+        "time": "14:05"
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 60,
+        "text": "Main track cut..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 75,
+        "text": "Inserting the detachment..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 85,
+        "text": "Volume mixing and crossfade..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 95,
+        "text": "Exporting temporary file..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 100,
+        "text": "Processing completed."
+    },
+    {
+        "type": "bot",
+        "text": "Here is the post-produced file with the cut inserted!",
+        "time": "14:07"
+    },
+    {
+        "type": "audio",
+        "text": "ep1_con_stacco.mp3",
+        "time": "14:08"
+    },
+    {
+        "type": "bot",
+        "text": "Want to hear a preview of the exact takeoff point?",
+        "time": "14:08"
+    },
+    {
+        "type": "user",
+        "text": "Yes, let me hear it.",
+        "time": "14:09"
+    }
+]

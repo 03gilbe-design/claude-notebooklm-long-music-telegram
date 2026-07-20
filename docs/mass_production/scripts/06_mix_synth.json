@@ -1,0 +1,115 @@
+[
+    {
+        "type": "user",
+        "text": "🎵 Music",
+        "time": "14:10"
+    },
+    {
+        "type": "bot",
+        "text": "Select the style for the podcast intro/background:",
+        "time": "14:10"
+    },
+    {
+        "type": "user",
+        "text": "🎹 Synthwave Retrowave",
+        "time": "14:11"
+    },
+    {
+        "type": "bot",
+        "text": "80's vibe coming soon!I'll take the synth base...",
+        "time": "14:11"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 10,
+        "text": "Initializing Synthwave parameters..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 30,
+        "text": "Backing track bpm alignment..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 50,
+        "text": "Rear equalization configuration..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 80,
+        "text": "Cutting and fading the musical coda..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 100,
+        "text": "Processed Synthwave base."
+    },
+    {
+        "type": "bot",
+        "text": "I combine your vocal track with the backing track...",
+        "time": "14:12"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 10,
+        "text": "ffmpeg mixing... loading vocals and backing track"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 30,
+        "text": "ffmpeg mixing... sidechain effects application"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 45,
+        "text": "ffmpeg mixing... multiband compression"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 60,
+        "text": "ffmpeg mixing... rendering master track"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 75,
+        "text": "ffmpeg mixing... writing id3 metadata"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 85,
+        "text": "ffmpeg mixing... bitrate optimization"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 95,
+        "text": "ffmpeg mixing... package finalization"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 100,
+        "text": "ffmpeg mixing... 100% complete."
+    },
+    {
+        "type": "bot",
+        "text": "All done, the Synth mix is ​​explosive.Listen to it here:",
+        "time": "14:13"
+    },
+    {
+        "type": "audio",
+        "text": "Episode_Synthwave_UNITO.mp3",
+        "time": "14:13"
+    }
+]

@@ -1,0 +1,110 @@
+[
+    {
+        "type": "user",
+        "text": "📼 My podcasts",
+        "time": "15:00"
+    },
+    {
+        "type": "bot",
+        "text": "I search the database for your saved podcasts...",
+        "time": "15:00"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 15,
+        "text": "Connecting to the user database..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 60,
+        "text": "History and metadata recovery..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 100,
+        "text": "Podcast list ready."
+    },
+    {
+        "type": "bot",
+        "text": "Here are the latest saved podcasts:\n1. Ancient History (10 min)\n2. Trip to Japan (5 min)\n3. Tech News (15 min)\n4. 🔍 Search the archive",
+        "time": "15:01"
+    },
+    {
+        "type": "user",
+        "text": "4. 🔍 Search the archive",
+        "time": "15:02"
+    },
+    {
+        "type": "bot",
+        "text": "Write the name or keyword of the podcast you are looking for.",
+        "time": "15:02"
+    },
+    {
+        "type": "user",
+        "text": "Japan",
+        "time": "15:03"
+    },
+    {
+        "type": "bot",
+        "text": "Searching for \"Japan\"...",
+        "time": "15:03"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 40,
+        "text": "Filtering results..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 100,
+        "text": "Search completed successfully."
+    },
+    {
+        "type": "bot",
+        "text": "I found 1 matching result:\n- 🇯🇵 Trip to Japan (5 min)\nWhat do you want to do?\n- ▶️ Listen\n- 🗑️ Delete\n- 🔙 Go back",
+        "time": "15:04"
+    },
+    {
+        "type": "user",
+        "text": "▶️ Listen",
+        "time": "15:05"
+    },
+    {
+        "type": "bot",
+        "text": "I retrieve the audio file from secure servers...",
+        "time": "15:05"
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 30,
+        "text": "Locating the mp3 file..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 70,
+        "text": "Stream decryption and preparation..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 100,
+        "text": "File ready to send."
+    },
+    {
+        "type": "bot",
+        "text": "Here's your \"Journey to Japan\" podcast!Happy listening 🎧",
+        "time": "15:06"
+    },
+    {
+        "type": "audio",
+        "text": "journey_in_japan.mp3",
+        "time": "15:06"
+    }
+]

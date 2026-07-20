@@ -1,0 +1,114 @@
+[
+    {
+        "type": "user",
+        "text": "Hi, can you create a podcast from this PDF of history notes?",
+        "time": "14:00"
+    },
+    {
+        "type": "bot",
+        "text": "Certainly!I prepare the podcast using NotebookLM.",
+        "time": "14:00"
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 0,
+        "text": "Starting upload to NotebookLM..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 10,
+        "text": "Loading files..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 30,
+        "text": "Format analysis in progress..."
+    },
+    {
+        "type": "bot",
+        "text": "⚠️ Error from NotebookLM: Unsupported or corrupt file.Do you want to try again?",
+        "time": "14:01"
+    },
+    {
+        "type": "user",
+        "text": "Try again",
+        "time": "14:02"
+    },
+    {
+        "type": "bot",
+        "text": "Okay, I'll try to reload the file and bypass the error.",
+        "time": "14:02"
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 0,
+        "text": "New connection attempt..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 20,
+        "text": "Loading file (attempt 2)..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 40,
+        "text": "Analysis completed successfully!"
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 55,
+        "text": "Extraction of key concepts..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 70,
+        "text": "Generation of the two-voice script..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 80,
+        "text": "Text to speech in progress..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 90,
+        "text": "Audio mixing..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 95,
+        "text": "Final file optimization..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 100,
+        "text": "Podcast successfully generated."
+    },
+    {
+        "type": "bot",
+        "text": "We did it!Here's your history podcast.",
+        "time": "14:05"
+    },
+    {
+        "type": "audio",
+        "text": "history_podcast.mp3",
+        "time": "14:05"
+    },
+    {
+        "type": "bot",
+        "text": "Let me know if you like it and if you want to create more episodes.",
+        "time": "14:06"
+    }
+]

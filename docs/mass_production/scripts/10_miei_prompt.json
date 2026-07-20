@@ -1,0 +1,110 @@
+[
+    {
+        "type": "user",
+        "text": "📝 My prompts",
+        "time": "16:00"
+    },
+    {
+        "type": "bot",
+        "text": "Opening your prompt vault...",
+        "time": "16:00"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 20,
+        "text": "Access to the secure archive..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 75,
+        "text": "Recovering saved texts..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 100,
+        "text": "Prompts loaded."
+    },
+    {
+        "type": "bot",
+        "text": "Here are your favorite prompts:\n1. 🍝 History of Carbonara\n2. 🌌 Trip to Mars\n3. 🔍 Search by topic",
+        "time": "16:01"
+    },
+    {
+        "type": "user",
+        "text": "3. 🔍 Search by topic",
+        "time": "16:02"
+    },
+    {
+        "type": "bot",
+        "text": "Enter a keyword to find the prompt you want.",
+        "time": "16:02"
+    },
+    {
+        "type": "user",
+        "text": "Mars",
+        "time": "16:03"
+    },
+    {
+        "type": "bot",
+        "text": "I'm looking for \"Mars\" among your notes...",
+        "time": "16:03"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 50,
+        "text": "Scanning the text database..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 100,
+        "text": "Positive feedback."
+    },
+    {
+        "type": "bot",
+        "text": "Found!🌌 Trip to Mars.\nText: 'Explain what an exploratory trip to Mars would be like...'\n\nWhat do you want to do?\n- 🎙️ Use for a Podcast\n- 🗑️ Delete",
+        "time": "16:04"
+    },
+    {
+        "type": "user",
+        "text": "🎙️ Use for a Podcast",
+        "time": "16:05"
+    },
+    {
+        "type": "bot",
+        "text": "Excellent choice!I'll start creating the podcast right away from your old prompt.",
+        "time": "16:05"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 50,
+        "text": "Writing the script for 2 hosts..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 40,
+        "text": "Text to speech in progress..."
+    },
+    {
+        "type": "status",
+        "service": "notebooklm",
+        "progress": 100,
+        "text": "Audio processing finished."
+    },
+    {
+        "type": "bot",
+        "text": "And here is the result!Your trip to Mars is ready to listen 🚀",
+        "time": "16:06"
+    },
+    {
+        "type": "audio",
+        "text": "journey_on_mars.mp3",
+        "time": "16:06"
+    }
+]

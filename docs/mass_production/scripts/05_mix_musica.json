@@ -1,0 +1,115 @@
+[
+    {
+        "type": "user",
+        "text": "🎵 Music",
+        "time": "14:00"
+    },
+    {
+        "type": "bot",
+        "text": "What kind of music do you want to add?",
+        "time": "14:00"
+    },
+    {
+        "type": "user",
+        "text": "🎸 Acoustic Intro/Background",
+        "time": "14:01"
+    },
+    {
+        "type": "bot",
+        "text": "Perfect.Track processing in progress...",
+        "time": "14:01"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 10,
+        "text": "Music script initialization..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 30,
+        "text": "Searching for the right track..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 50,
+        "text": "Analysis of bpm and pitch..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 80,
+        "text": "Adapting the duration of the music..."
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 100,
+        "text": "Music track ready."
+    },
+    {
+        "type": "bot",
+        "text": "I start the final audio mixing process...",
+        "time": "14:02"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 10,
+        "text": "ffmpeg mixing... preparing audio streams"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 25,
+        "text": "ffmpeg mixing... ducking level calculation"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 40,
+        "text": "ffmpeg mixing... union of voice and music tracks"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 55,
+        "text": "ffmpeg mixing... rendering in progress (40%)"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 70,
+        "text": "ffmpeg mixing... rendering in progress (70%)"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 85,
+        "text": "ffmpeg mixing... rendering in progress (90%)"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 95,
+        "text": "ffmpeg mixing... export mp3 files"
+    },
+    {
+        "type": "status",
+        "service": "claude",
+        "progress": 100,
+        "text": "ffmpeg mixing completed successfully."
+    },
+    {
+        "type": "bot",
+        "text": "Mixing complete!Here is your file ready for publishing:",
+        "time": "14:03"
+    },
+    {
+        "type": "audio",
+        "text": "Episodio_Acustico_UNITO.mp3",
+        "time": "14:03"
+    }
+]
