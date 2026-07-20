@@ -1,338 +1,317 @@
 # UX Report — Groq fake-user agents
 
 
-## doubts (35)
+## doubts (30)
 
-- **Nonna Pina** (step 0, su «🎙️ PodcastLab!
-Write a topic (e.g., history of rom»): No clear examples of successful topics
-- **Nonna Pina** (step 1, su «🎬 cucina italiana
-
-Adjust and press ▶️ GO!
-⏱ estim»): Non sono sicura di capire lo scopo di questo pulsante
-- **Nonna Pina** (step 2, su «🎬 cucina italiana
+- **Franco** (step 0, su «🎙️ PodcastLab!
+Write a topic (e.g., history of rom»): Non so se devo inserire solo parole chiave o una frase
+- **Franco** (step 1, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): Non sono sicura se devo cliccare su 'Prompt' per personalizzare il mio podcast
-- **Nonna Pina** (step 3, su «🎬 cucina italiana
+⏱ estima»): Is the estimated time based on the current settings?
+- **Franco** (step 2, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): Non sono sicura di cosa fare in questa pagina
-- **Nonna Pina** (step 4, su «🎬 cucina italiana
+⏱ estima»): Is the estimated time adjustable?
+- **Franco** (step 3, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): Non sono sicura di cosa sto facendo in questa sezione
-- **Nonna Pina** (step 5, su «✏️ Prompt for hosts:»): Non sono sicura di capire la differenza tra i vari prompt
-- **Nonna Pina** (step 6, su «🎬 cucina italiana
+⏱ estima»): Is the - button for subtracting episodes or minutes?
+- **Franco** (step 4, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): Non sono sicura di cosa significa 'prompt'
-- **Nonna Pina** (step 7, su «🎬 cucina italiana
+⏱ estima»): Is the estimated time range based on the number of episodes or the content?
+- **Franco** (step 5, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): Unclear what 'standard' prompt entails
-- **Nonna Pina** (step 8, su «🎬 cucina italiana
+⏱ estima»): Unclear what 'noop' means in the button callback
+- **Franco** (step 6, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): Non sono sicura di cosa significhi 'prompt'
-- **Nonna Pina** (step 9, su «🎬 cucina italiana
+⏱ estima»): Is the estimated time based on my adjustments?
+- **Franco** (step 7, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): Non sono sicura di cosa significhi 'standard'
-- **Marco** (step 0, su «🎙️ PodcastLab!
-Write a topic (e.g., history of rom»): Non è chiaro come procedere senza un menu o un elenco di notebook
-- **Marco** (step 1, su «🎬 rigenera episodi da un notebook esistente
-
-Adjus»): Il bottone 'new' potrebbe essere confondente, forse dovrebbe esserci un bottone 'seleziona' o 'esistente'?
-- **Marco** (step 2, su «📓 Notebook: create new or reuse existing sources?»): Will I be able to edit the notebook after selecting it?
-- **Marco** (step 3, su «📓 Storia di Roma antica
-
-📚 3 sources:
-• Wikipedia »): Non sono sicuro se le fonti siano sufficienti
-- **Marco** (step 4, su «🎬 rigenera episodi da un notebook esistente
-
-Adjus»): Non sono sicuro se il notebook selezionato sia quello che voglio utilizzare
-- **Marco** (step 5, su «📓 Notebook: create new or reuse existing sources?»): Non so se posso modificare il notebook dopo averlo selezionato
-- **Marco** (step 6, su «📓 Storia di Roma antica
-
-📚 3 sources:
-• Wikipedia »): Non è chiaro se le fonti saranno lette integralmente o riassunte
-- **Marco** (step 7, su «🎬 rigenera episodi da un notebook esistente
-
-Adjus»): Non sono sicuro se il notebook 'Storia di Roma antic' sia quello che voglio utilizzare
-- **Marco** (step 8, su «📓 Notebook: create new or reuse existing sources?»): Non so se posso modificare il notebook dopo averlo selezionato
-- **Marco** (step 9, su «📓 Storia di Roma antica
-
-📚 3 sources:
-• Wikipedia »): Non è chiaro se le fonti saranno citate nel podcast
-- **Giulia** (step 0, su «🎙️ PodcastLab!
-Write a topic (e.g., history of rom»): Lack of button to confirm input
-- **Giulia** (step 0, su «🎙️ PodcastLab!
-Write a topic (e.g., history of rom»): No preview of the topic
-- **Giulia** (step 1, su «🎬 history of rome
+⏱ estima»): Is the '-' button for decreasing episode time or skipping episodes?
+- **Franco** (step 8, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): Is the prompt adjustable?
-- **Giulia** (step 1, su «🎬 history of rome
+⏱ estima»): Is this a preview of the podcast content?
+- **Franco** (step 9, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): How will the prompt affect the podcast content?
-- **Giulia** (step 2, su «🎬 history of rome
+⏱ estima»): Is the estimated time adjustable?
+- **Ada** (step 0, su «🎙️ PodcastLab!
+Write a topic (e.g., history of rom»): Non ci sono indicazioni su cosa accade dopo aver inserito il titolo
+- **Ada** (step 1, su «🎬 history of artificial intelligence
+
+Adjust and p»): The estimated time is quite broad (~34-49 min), can I get a more precise estimate?
+- **Ada** (step 2, su «🗂 16 mp3 on PC.
+No work in progress.»): Non mi è chiaro il significato di '16 mp3 on PC'
+- **Ada** (step 3, su «🎬 history of artificial intelligence
+
+Adjust and p»): Non sono sicura di cosa significhi 'Step 4/10'
+- **Ada** (step 4, su «🗂 16 mp3 on PC.
+No work in progress.»): Unclear what 'No work in progress' means in this context
+- **Ada** (step 5, su «🎬 history of artificial intelligence
+
+Adjust and p»): Unclear what 'Status' will show
+- **Ada** (step 6, su «🗂 16 mp3 on PC.
+No work in progress.»): Non so cosa significa 'No work in progress'
+- **Ada** (step 7, su «🎬 history of artificial intelligence
+
+Adjust and p»): The estimated time is a range, how accurate is it?
+- **Ada** (step 8, su «🗂 16 mp3 on PC.
+No work in progress.»): Non sono sicura se il mio podcast è stato generato
+- **Ada** (step 9, su «🎬 history of artificial intelligence
+
+Adjust and p»): Il tempo di generazione è variabile, non so se il mio podcast sarà pronto in tempo
+- **Beppe** (step 0, su «🎙️ PodcastLab!
+Write a topic (e.g., history of rom»): Is the 'Step 1/10' indicator updated in real-time?
+- **Beppe** (step 1, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estim»): Unclear what 'standard' prompt means
-- **Giulia** (step 3, su «✏️ Prompt for hosts:»): The labels of the star buttons are not clear
-- **Giulia** (step 3, su «✏️ Prompt for hosts:»): The distinction between the two delete buttons is not obvious
-- **Giulia** (step 4, su «📝 Write me extra instructions for the hosts, free »): Unclear how the tone will be used
-- **Giulia** (step 4, su «📝 Write me extra instructions for the hosts, free »): No examples of 'engaging storytelling' provided
-- **Giulia** (step 5, su «👍 Now give it a short name (e.g., 'ironic style'):»): Is the name changeable later?
-- **Giulia** (step 6, su «🎬 history of rome
+⏱ estim»): What happens if a process is already running?
+- **Beppe** (step 2, su «🚀 Here we go: history of rome»): Unclear how to proceed without buttons
+- **Beppe** (step 3, su «🎬 GO!
 
 Adjust and press ▶️ GO!
-⏱ estim»): Unclear what 'test podcast' entails
-- **Giulia** (step 7, su «✏️ Prompt for hosts:»): Unclear what 'standard' prompt refers to
-- **Giulia** (step 8, su «🎬 history of rome
+⏱ estimated: ~34-49»): Non è chiaro cosa succede se il lavoro è già in corso
+- **Beppe** (step 4, su «🚀 Here we go: GO!»): non ci sono bottoni, devo digitare il testo
+- **Beppe** (step 5, su «🎬 GO!
 
 Adjust and press ▶️ GO!
-⏱ estim»): Unclear what the prompt will do if clicked
-- **Giulia** (step 9, su «✏️ Prompt for hosts:»): Unclear labels for some buttons, e.g. empty star buttons
-- **Giulia** (step 9, su «✏️ Prompt for hosts:»): No preview for new prompt before creating
-
-## questions (43)
-
-- **Nonna Pina** (step 0, su «🎙️ PodcastLab!
-Write a topic (e.g., history of rom»): Will the bot understand my topic?
-- **Nonna Pina** (step 1, su «🎬 cucina italiana
+⏱ estimated: ~34-49»): Non è chiaro se il processo possa essere interrotto o modificato una volta avviato
+- **Beppe** (step 6, su «🚀 Here we go: GO!»): Is this the right way to proceed?
+- **Beppe** (step 7, su «🎬 GO!
 
 Adjust and press ▶️ GO!
-⏱ estim»): Cosa significa 'standard' in questo contesto?
-- **Nonna Pina** (step 1, su «🎬 cucina italiana
+⏱ estimated: ~34-49»): Unclear if pressing GO! twice will interrupt the current task or create a new one
+- **Beppe** (step 8, su «🚀 Here we go: GO!»): Lack of clear instructions on what to type
+- **Beppe** (step 9, su «🎬 GO!
 
 Adjust and press ▶️ GO!
-⏱ estim»): Come posso personalizzare il prompt?
-- **Nonna Pina** (step 2, su «🎬 cucina italiana
+⏱ estimated: ~34-49»): What if the job is already in progress?
+
+## questions (35)
+
+- **Franco** (step 0, su «🎙️ PodcastLab!
+Write a topic (e.g., history of rom»): Non so cosa succede dopo, c'è una preview?
+- **Franco** (step 1, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): Cosa significa 'standard' in questo contesto?
-- **Nonna Pina** (step 3, su «🎬 cucina italiana
+⏱ estima»): What does the - button do?
+- **Franco** (step 2, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): Cosa significa 'standard' in questo contesto?
-- **Nonna Pina** (step 4, su «🎬 cucina italiana
+⏱ estima»): What does the '-' button do?
+- **Franco** (step 3, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): Cosa significa 'Prompt: standard'?
-- **Nonna Pina** (step 5, su «✏️ Prompt for hosts:»): Come posso sapere quali campi compilare per il prompt?
-- **Nonna Pina** (step 5, su «✏️ Prompt for hosts:»): Posso vedere un esempio di prompt già compilato?
-- **Nonna Pina** (step 6, su «🎬 cucina italiana
+⏱ estima»): What does the - button do?
+- **Franco** (step 4, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): Cosa significa 'standard' in questo contesto?
-- **Nonna Pina** (step 6, su «🎬 cucina italiana
+⏱ estima»): What happens when I click ➕?
+- **Franco** (step 4, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): Come posso personalizzare il prompt?
-- **Nonna Pina** (step 7, su «🎬 cucina italiana
+⏱ estima»): How does it affect the estimated time?
+- **Franco** (step 5, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): What does 'standard' prompt mean?
-- **Nonna Pina** (step 7, su «🎬 cucina italiana
+⏱ estima»): What are the 3 episodes about?
+- **Franco** (step 5, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): How can I adjust the prompt?
-- **Nonna Pina** (step 8, su «🎬 cucina italiana
+⏱ estima»): Can I customize the episodes?
+- **Franco** (step 6, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): Cosa significa 'standard' in questo contesto?
-- **Nonna Pina** (step 8, su «🎬 cucina italiana
+⏱ estima»): What does the + button do?
+- **Franco** (step 7, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): Come posso personalizzare il prompt?
-- **Nonna Pina** (step 9, su «🎬 cucina italiana
+⏱ estima»): What does the '-' button do?
+- **Franco** (step 8, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): Come posso aggiungere le mie ricette?
-- **Nonna Pina** (step 9, su «🎬 cucina italiana
+⏱ estima»): What do the episodes represent?
+- **Franco** (step 9, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): Posso personalizzare il titolo del podcast?
-- **Marco** (step 0, su «🎙️ PodcastLab!
-Write a topic (e.g., history of rom»): Come posso selezionare il notebook esistente?
-- **Marco** (step 1, su «🎬 rigenera episodi da un notebook esistente
+⏱ estima»): What does the - button do?
+- **Ada** (step 0, su «🎙️ PodcastLab!
+Write a topic (e.g., history of rom»): Come posso sapere se il titolo è stato accettato?
+- **Ada** (step 1, su «🎬 history of artificial intelligence
 
-Adjus»): Come posso selezionare un notebook esistente?
-- **Marco** (step 2, su «📓 Notebook: create new or reuse existing sources?»): What does 'reuse existing sources' mean in this context?
-- **Marco** (step 3, su «📓 Storia di Roma antica
+Adjust and p»): What is the current status of my podcast?
+- **Ada** (step 2, su «🗂 16 mp3 on PC.
+No work in progress.»): Dove mi porterà il pulsante 'Back'?
+- **Ada** (step 3, su «🎬 history of artificial intelligence
 
-📚 3 sources:
-• Wikipedia »): Come verranno utilizzate le fonti?
-- **Marco** (step 3, su «📓 Storia di Roma antica
+Adjust and p»): Come posso essere sicura che il mio podcast sarà pronto entro il tempo stimato?
+- **Ada** (step 4, su «🗂 16 mp3 on PC.
+No work in progress.»): What happens if I click back now? Will I lose my progress?
+- **Ada** (step 5, su «🎬 history of artificial intelligence
 
-📚 3 sources:
-• Wikipedia »): Saranno citate nel podcast?
-- **Marco** (step 4, su «🎬 rigenera episodi da un notebook esistente
+Adjust and p»): What does the 'Status' button do?
+- **Ada** (step 5, su «🎬 history of artificial intelligence
 
-Adjus»): Come posso essere sicuro di aver selezionato il notebook giusto?
-- **Marco** (step 5, su «📓 Notebook: create new or reuse existing sources?»): Non è chiaro cosa significhi 'reuse existing sources'
-- **Marco** (step 6, su «📓 Storia di Roma antica
+Adjust and p»): How can I track the progress of my podcast?
+- **Ada** (step 6, su «🗂 16 mp3 on PC.
+No work in progress.»): Dov'è il mio podcast?
+- **Ada** (step 6, su «🗂 16 mp3 on PC.
+No work in progress.»): Come posso controllare lo stato del mio podcast?
+- **Ada** (step 7, su «🎬 history of artificial intelligence
 
-📚 3 sources:
-• Wikipedia »): Come verranno utilizzate le fonti per creare il podcast?
-- **Marco** (step 7, su «🎬 rigenera episodi da un notebook esistente
+Adjust and p»): What does the 'Status' button do?
+- **Ada** (step 7, su «🎬 history of artificial intelligence
 
-Adjus»): Come posso essere sicuro di aver selezionato il notebook giusto?
-- **Marco** (step 8, su «📓 Notebook: create new or reuse existing sources?»): Non è chiaro cosa significa 'reuse existing sources'
-- **Marco** (step 9, su «📓 Storia di Roma antica
+Adjust and p»): How much time is left to generate my podcast?
+- **Ada** (step 8, su «🗂 16 mp3 on PC.
+No work in progress.»): Perché non vedo lo stato del mio podcast?
+- **Ada** (step 9, su «🎬 history of artificial intelligence
 
-📚 3 sources:
-• Wikipedia »): Come verranno utilizzate le fonti per generare il podcast?
-- **Giulia** (step 0, su «🎙️ PodcastLab!
-Write a topic (e.g., history of rom»): What happens after I type the topic?
-- **Giulia** (step 0, su «🎙️ PodcastLab!
-Write a topic (e.g., history of rom»): Are there any character limits?
-- **Giulia** (step 1, su «🎬 history of rome
-
-Adjust and press ▶️ GO!
-⏱ estim»): What does 'standard' prompt mean?
-- **Giulia** (step 1, su «🎬 history of rome
+Adjust and p»): Come posso essere sicura che il mio podcast sarà pronto tra 34-49 min?
+- **Beppe** (step 0, su «🎙️ PodcastLab!
+Write a topic (e.g., history of rom»): What happens if I type something and then click on a non-existent button?
+- **Beppe** (step 1, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estim»): Can I see a preview of the prompt?
-- **Giulia** (step 2, su «🎬 history of rome
+⏱ estim»): Will the bot start a new podcast creation process?
+- **Beppe** (step 2, su «🚀 Here we go: history of rome»): What happens if I type GO! while the work is in progress?
+- **Beppe** (step 3, su «🎬 GO!
 
 Adjust and press ▶️ GO!
-⏱ estim»): What is the content of the standard prompt?
-- **Giulia** (step 3, su «✏️ Prompt for hosts:»): What is the purpose of the standard prompt?
-- **Giulia** (step 3, su «✏️ Prompt for hosts:»): How do I edit an existing prompt?
-- **Giulia** (step 4, su «📝 Write me extra instructions for the hosts, free »): Will I be able to review my input before proceeding?
-- **Giulia** (step 4, su «📝 Write me extra instructions for the hosts, free »): Are there any character limits for this field?
-- **Giulia** (step 5, su «👍 Now give it a short name (e.g., 'ironic style'):»): Do I need to follow a specific naming convention?
-- **Giulia** (step 6, su «🎬 history of rome
+⏱ estimated: ~34-49»): Cosa succede se premio GO! due volte di fretta?
+- **Beppe** (step 4, su «🚀 Here we go: GO!»): cosa succede se premo GO! due volte di fretta?
+- **Beppe** (step 5, su «🎬 GO!
 
 Adjust and press ▶️ GO!
-⏱ estim»): What is the purpose of the 'test podcast' prompt?
-- **Giulia** (step 7, su «✏️ Prompt for hosts:»): What format will the prompt be in?
-- **Giulia** (step 7, su «✏️ Prompt for hosts:»): Can I edit the prompt after creation?
-- **Giulia** (step 8, su «🎬 history of rome
+⏱ estimated: ~34-49»): Cosa succede se premio GO! mentre il lavoro è già in corso?
+- **Beppe** (step 6, su «🚀 Here we go: GO!»): Why no button for GO!?
+- **Beppe** (step 7, su «🎬 GO!
 
 Adjust and press ▶️ GO!
-⏱ estim»): What does the 'test podcast' prompt contain?
-- **Giulia** (step 9, su «✏️ Prompt for hosts:»): What is the purpose of the standard prompt option?
-- **Giulia** (step 9, su «✏️ Prompt for hosts:»): How do the test podcast buttons work?
+⏱ estimated: ~34-49»): Will the bot start a new task while one is already in progress?
+- **Beppe** (step 8, su «🚀 Here we go: GO!»): Will the bot understand the command?
+- **Beppe** (step 8, su «🚀 Here we go: GO!»): What happens if the work is already in progress?
 
-## improvements (44)
+## improvements (38)
 
-- **Nonna Pina** (step 0, su «🎙️ PodcastLab!
-Write a topic (e.g., history of rom»): Add a 'back' button
-- **Nonna Pina** (step 0, su «🎙️ PodcastLab!
-Write a topic (e.g., history of rom»): Provide topic examples with italic or bold formatting
-- **Nonna Pina** (step 1, su «🎬 cucina italiana
+- **Franco** (step 0, su «🎙️ PodcastLab!
+Write a topic (e.g., history of rom»): Aggiungere una guida o un esempio di come scrivere il topic
+- **Franco** (step 1, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): Aggiungere una breve spiegazione del significato di 'standard'
-- **Nonna Pina** (step 2, su «🎬 cucina italiana
+⏱ estima»): Add a preview of the podcast before starting
+- **Franco** (step 2, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): Aggiungere una descrizione breve per ogni opzione per aiutare gli utenti meno tecnologici come me
-- **Nonna Pina** (step 3, su «🎬 cucina italiana
+⏱ estima»): Add a preview of the podcast story
+- **Franco** (step 3, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): Aggiungere una descrizione breve per ogni opzione
-- **Nonna Pina** (step 4, su «🎬 cucina italiana
+⏱ estima»): Add a tooltip or label to the - button for clarity
+- **Franco** (step 4, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): Aggiungere una breve spiegazione per ogni opzione
-- **Nonna Pina** (step 5, su «✏️ Prompt for hosts:»): Aggiungere una descrizione per ogni pulsante
-- **Nonna Pina** (step 5, su «✏️ Prompt for hosts:»): Aggiungere un pulsante per tornare indietro alle impostazioni precedenti
-- **Nonna Pina** (step 6, su «🎬 cucina italiana
+⏱ estima»): Add a preview of the podcast content
+- **Franco** (step 4, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): Aggiungere una descrizione breve per ogni opzione
-- **Nonna Pina** (step 7, su «🎬 cucina italiana
+⏱ estima»): Provide a clear explanation of the buttons' functions
+- **Franco** (step 5, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): Add preview or description for prompt types
-- **Nonna Pina** (step 7, su «🎬 cucina italiana
+⏱ estima»): Add episode previews or descriptions
+- **Franco** (step 5, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): Consider a 'back' button to previous steps
-- **Nonna Pina** (step 8, su «🎬 cucina italiana
+⏱ estima»): Use more descriptive button labels
+- **Franco** (step 6, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): Aggiungere una breve descrizione per ogni opzione
-- **Nonna Pina** (step 8, su «🎬 cucina italiana
+⏱ estima»): Add a preview of the podcast before starting
+- **Franco** (step 7, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): Migliorare la formattazione dei pulsanti per renderli più leggibili
-- **Nonna Pina** (step 9, su «🎬 cucina italiana
+⏱ estima»): Add a tooltip or label to explain the '-' button's function
+- **Franco** (step 8, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): Aggiungere una descrizione per ogni opzione
-- **Nonna Pina** (step 9, su «🎬 cucina italiana
+⏱ estima»): Add a preview or description of the episodes
+- **Franco** (step 9, su «🎬 storia di roma
 
 Adjust and press ▶️ GO!
-⏱ estim»): Un tasto 'indietro' per tornare alle impostazioni precedenti
-- **Marco** (step 0, su «🎙️ PodcastLab!
-Write a topic (e.g., history of rom»): Aggiungere un pulsante per selezionare il notebook esistente
-- **Marco** (step 1, su «🎬 rigenera episodi da un notebook esistente
+⏱ estima»): Add a preview of the podcast content
+- **Ada** (step 0, su «🎙️ PodcastLab!
+Write a topic (e.g., history of rom»): Aggiungere una preview del titolo dopo l'inserimento
+- **Ada** (step 1, su «🎬 history of artificial intelligence
 
-Adjus»): Aggiungere un'anteprima del notebook selezionato per confermare la scelta
-- **Marco** (step 2, su «📓 Notebook: create new or reuse existing sources?»): Add a preview of the selected notebook's content before proceeding
-- **Marco** (step 3, su «📓 Storia di Roma antica
+Adjust and p»): Add a progress bar to visualize the steps
+- **Ada** (step 2, su «🗂 16 mp3 on PC.
+No work in progress.»): Aggiungere una breve descrizione dello stato attuale del podcast
+- **Ada** (step 3, su «🎬 history of artificial intelligence
 
-📚 3 sources:
-• Wikipedia »): Aggiungere un'anteprima del contenuto del podcast
-- **Marco** (step 4, su «🎬 rigenera episodi da un notebook esistente
+Adjust and p»): Aggiungere una barra di avanzamento visiva per mostrare lo stato di avanzamento del podcast
+- **Ada** (step 4, su «🗂 16 mp3 on PC.
+No work in progress.»): Add a preview of the current podcast state
+- **Ada** (step 5, su «🎬 history of artificial intelligence
 
-Adjus»): Aggiungere una preview del notebook selezionato per confermare la scelta
-- **Marco** (step 5, su «📓 Notebook: create new or reuse existing sources?»): Aggiungere una descrizione breve per ogni notebook
-- **Marco** (step 6, su «📓 Storia di Roma antica
+Adjust and p»): Add a progress bar or percentage to the main screen
+- **Ada** (step 6, su «🗂 16 mp3 on PC.
+No work in progress.»): Aggiungere un pulsante per visualizzare lo stato del podcast in tempo reale
+- **Ada** (step 6, su «🗂 16 mp3 on PC.
+No work in progress.»): Migliorare la descrizione dei pulsanti per una maggiore chiarezza
+- **Ada** (step 7, su «🎬 history of artificial intelligence
 
-📚 3 sources:
-• Wikipedia »): Aggiungere un'anteprima del contenuto del podcast
-- **Marco** (step 7, su «🎬 rigenera episodi da un notebook esistente
+Adjust and p»): Add a progress bar for the generation process
+- **Ada** (step 7, su «🎬 history of artificial intelligence
 
-Adjus»): Aggiungere una funzione di anteprima del notebook per confermare la scelta
-- **Marco** (step 8, su «📓 Notebook: create new or reuse existing sources?»): Aggiungere una descrizione breve per ogni notebook
-- **Marco** (step 8, su «📓 Notebook: create new or reuse existing sources?»): Migliorare la visibilità del pulsante 'Back'
-- **Marco** (step 9, su «📓 Storia di Roma antica
+Adjust and p»): Provide more detailed information about the generation process
+- **Ada** (step 8, su «🗂 16 mp3 on PC.
+No work in progress.»): Aggiungere un pulsante per visualizzare lo stato del podcast in tempo reale
+- **Ada** (step 9, su «🎬 history of artificial intelligence
 
-📚 3 sources:
-• Wikipedia »): Aggiungere un'anteprima del podcast generato prima di concludere
-- **Giulia** (step 0, su «🎙️ PodcastLab!
-Write a topic (e.g., history of rom»): Add a 'Confirm' button
-- **Giulia** (step 0, su «🎙️ PodcastLab!
-Write a topic (e.g., history of rom»): Provide a character limit for the input field
-- **Giulia** (step 1, su «🎬 history of rome
-
-Adjust and press ▶️ GO!
-⏱ estim»): Add a preview or description of the prompt
-- **Giulia** (step 1, su «🎬 history of rome
+Adjust and p»): aggiungere una funzione di aggiornamento in tempo reale dello stato di generazione del podcast
+- **Beppe** (step 0, su «🎙️ PodcastLab!
+Write a topic (e.g., history of rom»): Add a preview of the podcast topic
+- **Beppe** (step 1, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estim»): Provide options to adjust the prompt
-- **Giulia** (step 2, su «🎬 history of rome
+⏱ estim»): Add a 'Cancel' or 'Back' button to revert changes
+- **Beppe** (step 1, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estim»): Add preview or description of prompt content
-- **Giulia** (step 3, su «✏️ Prompt for hosts:»): Add a preview of the selected prompt
-- **Giulia** (step 3, su «✏️ Prompt for hosts:»): Use more descriptive labels for the star buttons
-- **Giulia** (step 3, su «✏️ Prompt for hosts:»): Consider adding a back button to the top of the screen for easier navigation
-- **Giulia** (step 4, su «📝 Write me extra instructions for the hosts, free »): Add a character counter
-- **Giulia** (step 4, su «📝 Write me extra instructions for the hosts, free »): Provide more examples of tone and storytelling
-- **Giulia** (step 5, su «👍 Now give it a short name (e.g., 'ironic style'):»): Add a character limit preview for the input
-- **Giulia** (step 6, su «🎬 history of rome
+⏱ estim»): Display the current status of the podcast creation process
+- **Beppe** (step 2, su «🚀 Here we go: history of rome»): Add a preview of the podcast creation process
+- **Beppe** (step 2, su «🚀 Here we go: history of rome»): Provide a clear call-to-action or button to proceed
+- **Beppe** (step 3, su «🎬 GO!
 
 Adjust and press ▶️ GO!
-⏱ estim»): Add preview or description for prompt
-- **Giulia** (step 7, su «✏️ Prompt for hosts:»): Add preview of standard prompt
-- **Giulia** (step 7, su «✏️ Prompt for hosts:»): Provide more information about the prompt creation process
-- **Giulia** (step 8, su «🎬 history of rome
+⏱ estimated: ~34-49»): Aggiungere una preview dello stato di avanzamento del lavoro
+- **Beppe** (step 3, su «🎬 GO!
 
 Adjust and press ▶️ GO!
-⏱ estim»): Add a preview of the prompt content
-- **Giulia** (step 8, su «🎬 history of rome
+⏱ estimated: ~34-49»): Aggiungere un messaggio di conferma prima di avviare il lavoro
+- **Beppe** (step 4, su «🚀 Here we go: GO!»): aggiungere un pulsante 'GO!' per evitare errori di digitazione
+- **Beppe** (step 5, su «🎬 GO!
 
 Adjust and press ▶️ GO!
-⏱ estim»): Consider adding a back button
-- **Giulia** (step 9, su «✏️ Prompt for hosts:»): Add a back button to return to previous steps, not just the main menu
-- **Giulia** (step 9, su «✏️ Prompt for hosts:»): Use more descriptive button labels and consider using lists or bold text for better formatting
+⏱ estimated: ~34-49»): Aggiungere un messaggio di conferma prima di avviare il processo
+- **Beppe** (step 5, su «🎬 GO!
+
+Adjust and press ▶️ GO!
+⏱ estimated: ~34-49»): Mostrare lo stato del processo in tempo reale
+- **Beppe** (step 6, su «🚀 Here we go: GO!»): Add a button for GO! instead of free text
+- **Beppe** (step 7, su «🎬 GO!
+
+Adjust and press ▶️ GO!
+⏱ estimated: ~34-49»): Add a 'Cancel current task' button or a warning before starting a new task
+- **Beppe** (step 8, su «🚀 Here we go: GO!»): Add a clear call-to-action or a button for GO!
+- **Beppe** (step 9, su «🎬 GO!
+
+Adjust and press ▶️ GO!
+⏱ estimated: ~34-49»): Add a loading indicator or a 'working' status to prevent multiple clicks

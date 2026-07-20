@@ -252,7 +252,8 @@ def kb_pannello(s):
         [B(f"✏️ Prompt: {s['extra_nome'] or 'default (no extra style)'}", callback_data="p_menu")],
         [B(f"🎵 Music ({n_musica} types)" if n_musica else "🎵 Music (none in jingles/)", callback_data="mus_menu")],
         [B(f"📓 Notebook: {s.get('nb_nome') or 'new'}", callback_data="nb_menu")],
-        [B("▶️ GO!", callback_data="go"), B("🏠 Menu", callback_data="m_home")],
+        [B("▶️ GO!", callback_data="go"), B("ℹ️ Status", callback_data="m_stato")],
+        [B("🏠 Menu", callback_data="m_home")],
     ])
 
 
@@ -373,9 +374,15 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     if d == "m_stato":
         mp3s = sorted(OUT.glob("*.mp3"))
         lav = ud.get("lavoro_in_corso")
-        testo = f"🗂 {len(mp3s)} mp3 on PC.\n"
+        testo = f"🗂 {len(mp3s)} audio files saved so far (episodes + merged podcasts).\n"
         testo += f"⏳ In progress: {lav}" if lav else "No work in progress."
-        await q.edit_message_text(testo, reply_markup=kb_menu())
+        if ud.get("topic"):
+            await q.edit_message_text(testo, reply_markup=KB([[B("↩️ Back", callback_data="p_menu2b")]]))
+        else:
+            await q.edit_message_text(testo, reply_markup=kb_menu())
+        return
+    if d == "p_menu2b":
+        await q.edit_message_text(txt_pannello(ud), reply_markup=kb_pannello(s))
         return
     if d == "m_help":
         await q.edit_message_text(

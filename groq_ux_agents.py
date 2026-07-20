@@ -133,11 +133,11 @@ async def main():
     bot.unisci_con_musica = lambda files, dest, scelta=None: (open(dest, "wb").write(b"x" * 3000), True)[1]
 
     personas = [
-        ("Nonna Pina, 70 anni, poco tecnologica", "capire come creare un podcast sulla cucina"),
-        ("Marco, studente frettoloso", "rigenerare episodi da un notebook esistente SENZA rifare la ricerca"),
-        ("Giulia, precisa e diffidente", "vedere ESATTAMENTE cosa contiene un prompt e un notebook prima di usarli"),
-        ("Luca, power user", "creare un prompt personalizzato, salvarlo e riusarlo"),
-        ("Sara, curiosa", "riascoltare un vecchio podcast e capire lo stato del lavoro"),
+        ("Franco, confuso e distratto", "clicca a caso, cambia idea spesso, prova a fare più cose insieme"),
+        ("Ada, ansiosa da controllo", "vuole sapere in ogni momento a che punto è il suo podcast mentre viene generato, controlla lo stato ripetutamente"),
+        ("Beppe, impaziente", "premere GO! due volte di fretta e vedere cosa succede se il lavoro è già in corso"),
+        ("Elena, multitasking", "inizia un podcast, poi prova a iniziarne subito un secondo prima che finisca il primo"),
+        ("Tommaso, esploratore", "prova ogni bottone del pannello senza un obiettivo preciso, testa i limiti del sistema"),
     ]
     all_fb = []
     for p, g in personas:
