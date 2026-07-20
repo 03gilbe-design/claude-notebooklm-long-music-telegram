@@ -102,6 +102,12 @@ async def scenario(nome, passi, ctx):
 
 
 async def main():
+    # NEVER touch the real prompt_personalizzati.json — tests use an in-memory fake
+    _fake_prompts = []
+    bot.carica_custom = lambda: list(_fake_prompts)
+    def _salva(lista):
+        _fake_prompts.clear(); _fake_prompts.extend(lista)
+    bot.salva_custom = _salva
     # mocka cli() = notebooklm: finge tutto ok, veloce
     def fake_cli(args, timeout=1800):
         a0 = args[0]

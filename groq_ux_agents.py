@@ -129,6 +129,12 @@ async def drive(persona, goal, max_steps=10):
 
 
 async def main():
+    # NEVER touch the real prompt_personalizzati.json — agents use an in-memory fake
+    _fake_prompts = []
+    bot.carica_custom = lambda: list(_fake_prompts)
+    def _salva(lista):
+        _fake_prompts.clear(); _fake_prompts.extend(lista)
+    bot.salva_custom = _salva
     bot.cli = fake_cli
     bot.unisci_con_musica = lambda files, dest, scelta=None: (open(dest, "wb").write(b"x" * 3000), True)[1]
 
