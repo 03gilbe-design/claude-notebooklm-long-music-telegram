@@ -9,8 +9,6 @@
 
 Not another "NotebookLM alternative". This *uses* the real NotebookLM: it automates it end to end, and captures everything it produces into a reusable dataset that doesn't exist anywhere else.
 
-> Built with [Claude Code](https://claude.com/claude-code) — and ships as a Claude Code skill (`skill/SKILL.md`).
-
 
 **The Telegram bot in action** (menu-driven):
 

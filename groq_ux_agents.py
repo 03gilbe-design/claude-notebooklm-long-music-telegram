@@ -47,7 +47,8 @@ def fake_cli(args, timeout=1800):
     if a0 == "list":
         return {"notebooks": [
             {"id": "nb1", "title": "Storia di Roma antica"},
-            {"id": "nb2", "title": "Intelligenza Artificiale Generativa"}]}
+            {"id": "nb2", "title": "Intelligenza Artificiale Generativa"},
+            {"id": "nb3", "title": "Ricette della nonna"}]}
     if a0 == "source" and args[1] == "list":
         return {"sources": [{"title": "Wikipedia - Roma"}, {"title": "Treccani - Impero"},
                             {"title": "PDF lezioni universitarie"}]}
@@ -129,26 +130,30 @@ async def drive(persona, goal, max_steps=10):
 
 
 async def main():
-    # NEVER touch the real prompt_personalizzati.json — agents use an in-memory fake
-    _fake_prompts = []
+    # NEVER touch the real prompt_personalizzati.json — agents use an in-memory fake,
+    # pre-seeded with 15 so the Vera persona can actually test pagination
+    _fake_prompts = [{"nome": f"stile {i}", "testo": f"istruzione di test numero {i}"} for i in range(15)]
     bot.carica_custom = lambda: list(_fake_prompts)
     def _salva(lista):
         _fake_prompts.clear(); _fake_prompts.extend(lista)
     bot.salva_custom = _salva
     bot.cli = fake_cli
     bot.unisci_con_musica = lambda files, dest, scelta=None: (open(dest, "wb").write(b"x" * 3000), True)[1]
+    # pre-seed 30 fake "old podcasts" in the isolated test out/ dir (Omar persona)
+    for i in range(30):
+        (bot.OUT / f"vecchio_podcast_{i:02d}_UNITO.mp3").write_bytes(b"x" * 3000)
 
     personas = [
-        ("Franco, confuso e distratto", "clicca a caso, cambia idea spesso, prova a fare più cose insieme"),
-        ("Ada, ansiosa da controllo", "vuole sapere in ogni momento a che punto è il suo podcast mentre viene generato, controlla lo stato ripetutamente"),
-        ("Beppe, impaziente", "premere GO! due volte di fretta e vedere cosa succede se il lavoro è già in corso"),
-        ("Elena, multitasking", "inizia un podcast, poi prova a iniziarne subito un secondo prima che finisca il primo"),
-        ("Tommaso, esploratore", "prova ogni bottone del pannello senza un obiettivo preciso, testa i limiti del sistema"),
+        ("Rita, product designer esigente", "valuta ogni schermata come farebbe un critico UX professionista: chiarezza, coerenza, gerarchia visiva"),
+        ("Omar, ha 30 vecchi podcast salvati", "scorre l'intera lista dei podcast vecchi con la paginazione, avanti e indietro più volte, verifica che sia coerente"),
+        ("Vera, ha 15 prompt personalizzati salvati", "scorre tutta la lista prompt con paginazione avanti/indietro, elimina qualcuno, verifica che i numeri restino giusti"),
+        ("Dario, cambia idea sempre", "seleziona un notebook esistente, poi torna indietro e ne sceglie un altro, poi decide di farne uno nuovo"),
+        ("Ines, testa i testi", "legge OGNI messaggio del bot come farebbe un editor: frasi ambigue, incongruenze, tono, refusi"),
     ]
     all_fb = []
     for p, g in personas:
         print(f"agent: {p[:30]}...", flush=True)
-        all_fb += await drive(p, g)
+        all_fb += await drive(p, g, max_steps=14)
 
     out = ["# UX Report — Groq fake-user agents\n"]
     for tipo in ("CRASH", "doubts", "questions", "improvements"):

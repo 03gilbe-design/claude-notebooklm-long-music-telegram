@@ -247,7 +247,7 @@ async def menu(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
 def kb_pannello(s):
     n_musica = sum(1 for c in ("intro", "stacco", "sottofondo") if _opzioni(c))
     return KB([
-        [B("➖", callback_data="n-"), B(f"🎙 {s['n']} episodes", callback_data="noop"), B("➕", callback_data="n+")],
+        [B("➖ fewer", callback_data="n-"), B(f"🎙 {s['n']} episodes", callback_data="noop"), B("➕ more", callback_data="n+")],
         [B("🌐 Search: DEEP (complete)" if s["deep"] else "⚡ Search: FAST", callback_data="mode")],
         [B(f"✏️ Prompt: {s['extra_nome'] or 'default (no extra style)'}", callback_data="p_menu")],
         [B(f"🎵 Music ({n_musica} types)" if n_musica else "🎵 Music (none in jingles/)", callback_data="mus_menu")],
@@ -649,6 +649,15 @@ async def test_btn(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
 
 
 async def on_error(update, ctx):
+    # re-clicking a button that leads to the SAME screen: Telegram rejects the
+    # no-op edit. Content on screen is already correct -> just ack, don't bounce to menu.
+    if "Message is not modified" in str(ctx.error):
+        try:
+            if update and update.callback_query:
+                await update.callback_query.answer()
+        except Exception:
+            pass
+        return
     log.error("Handler error: %s", ctx.error, exc_info=ctx.error)
     try:
         if update and update.effective_chat:

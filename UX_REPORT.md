@@ -1,317 +1,455 @@
 # UX Report — Groq fake-user agents
 
 
-## doubts (30)
+## doubts (33)
 
-- **Franco** (step 0, su «🎙️ PodcastLab!
-Write a topic (e.g., history of rom»): Non so se devo inserire solo parole chiave o una frase
-- **Franco** (step 1, su «🎬 storia di roma
-
-Adjust and press ▶️ GO!
-⏱ estima»): Is the estimated time based on the current settings?
-- **Franco** (step 2, su «🎬 storia di roma
+- **Rita** (step 0, su «🎙️ PodcastLab!
+Write a topic (e.g., history of rom»): Lack of clear formatting for the input field
+- **Rita** (step 1, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estima»): Is the estimated time adjustable?
-- **Franco** (step 3, su «🎬 storia di roma
+⏱ estim»): Is the estimated time range (~34-49 min) based on the current settings or is it a fixed value for the 'history of rome' podcast?
+- **Rita** (step 2, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estima»): Is the - button for subtracting episodes or minutes?
-- **Franco** (step 4, su «🎬 storia di roma
+⏱ estim»): Is the '▶️ GO!' button only enabled after adjusting something, and if so, what needs to be adjusted?
+- **Rita** (step 3, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estima»): Is the estimated time range based on the number of episodes or the content?
-- **Franco** (step 5, su «🎬 storia di roma
+⏱ estim»): Unclear label for '➖' button
+- **Rita** (step 4, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estima»): Unclear what 'noop' means in the button callback
-- **Franco** (step 6, su «🎬 storia di roma
+⏱ estim»): The purpose of the '➖' and '➕' buttons is unclear without additional context or tooltips.
+- **Rita** (step 5, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estima»): Is the estimated time based on my adjustments?
-- **Franco** (step 7, su «🎬 storia di roma
+⏱ estim»): The purpose of the 'Notebook: new' button is unclear
+- **Rita** (step 5, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estima»): Is the '-' button for decreasing episode time or skipping episodes?
-- **Franco** (step 8, su «🎬 storia di roma
+⏱ estim»): The 'Status' button seems out of context in this screen
+- **Rita** (step 6, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estima»): Is this a preview of the podcast content?
-- **Franco** (step 9, su «🎬 storia di roma
+⏱ estim»): The estimated time range (~34-49 min) seems vague, can it be more precise?
+- **Rita** (step 7, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estima»): Is the estimated time adjustable?
-- **Ada** (step 0, su «🎙️ PodcastLab!
-Write a topic (e.g., history of rom»): Non ci sono indicazioni su cosa accade dopo aver inserito il titolo
-- **Ada** (step 1, su «🎬 history of artificial intelligence
-
-Adjust and p»): The estimated time is quite broad (~34-49 min), can I get a more precise estimate?
-- **Ada** (step 2, su «🗂 16 mp3 on PC.
-No work in progress.»): Non mi è chiaro il significato di '16 mp3 on PC'
-- **Ada** (step 3, su «🎬 history of artificial intelligence
-
-Adjust and p»): Non sono sicura di cosa significhi 'Step 4/10'
-- **Ada** (step 4, su «🗂 16 mp3 on PC.
-No work in progress.»): Unclear what 'No work in progress' means in this context
-- **Ada** (step 5, su «🎬 history of artificial intelligence
-
-Adjust and p»): Unclear what 'Status' will show
-- **Ada** (step 6, su «🗂 16 mp3 on PC.
-No work in progress.»): Non so cosa significa 'No work in progress'
-- **Ada** (step 7, su «🎬 history of artificial intelligence
-
-Adjust and p»): The estimated time is a range, how accurate is it?
-- **Ada** (step 8, su «🗂 16 mp3 on PC.
-No work in progress.»): Non sono sicura se il mio podcast è stato generato
-- **Ada** (step 9, su «🎬 history of artificial intelligence
-
-Adjust and p»): Il tempo di generazione è variabile, non so se il mio podcast sarà pronto in tempo
-- **Beppe** (step 0, su «🎙️ PodcastLab!
-Write a topic (e.g., history of rom»): Is the 'Step 1/10' indicator updated in real-time?
-- **Beppe** (step 1, su «🎬 history of rome
+⏱ estim»): Is the estimated time range (~34-49 min) based on the current settings or is it a default value?
+- **Rita** (step 8, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estim»): What happens if a process is already running?
-- **Beppe** (step 2, su «🚀 Here we go: history of rome»): Unclear how to proceed without buttons
-- **Beppe** (step 3, su «🎬 GO!
+⏱ estim»): The '🎙 3 episodes' button seems inactive, what is its purpose?
+- **Rita** (step 9, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estimated: ~34-49»): Non è chiaro cosa succede se il lavoro è già in corso
-- **Beppe** (step 4, su «🚀 Here we go: GO!»): non ci sono bottoni, devo digitare il testo
-- **Beppe** (step 5, su «🎬 GO!
+⏱ estim»): The '🎙 3 episodes' button doesn't seem to do anything. Is it supposed to be clickable?
+- **Rita** (step 10, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estimated: ~34-49»): Non è chiaro se il processo possa essere interrotto o modificato una volta avviato
-- **Beppe** (step 6, su «🚀 Here we go: GO!»): Is this the right way to proceed?
-- **Beppe** (step 7, su «🎬 GO!
+⏱ estim»): The flow of the bot seems complex, is there a simpler way to navigate?
+- **Rita** (step 10, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estimated: ~34-49»): Unclear if pressing GO! twice will interrupt the current task or create a new one
-- **Beppe** (step 8, su «🚀 Here we go: GO!»): Lack of clear instructions on what to type
-- **Beppe** (step 9, su «🎬 GO!
+⏱ estim»): The '🎙 3 episodes' button does not seem to do anything, is it supposed to be interactive?
+- **Rita** (step 11, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estimated: ~34-49»): What if the job is already in progress?
-
-## questions (35)
-
-- **Franco** (step 0, su «🎙️ PodcastLab!
-Write a topic (e.g., history of rom»): Non so cosa succede dopo, c'è una preview?
-- **Franco** (step 1, su «🎬 storia di roma
+⏱ estim»): Unclear label for '➖' button
+- **Rita** (step 12, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estima»): What does the - button do?
-- **Franco** (step 2, su «🎬 storia di roma
+⏱ estim»): The purpose of the '➖' and '➕' buttons is unclear without additional context or labels.
+- **Rita** (step 13, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estima»): What does the '-' button do?
-- **Franco** (step 3, su «🎬 storia di roma
+⏱ estim»): The estimated time range (~34-49 min) seems vague, can it be more precise?
+- **Omar** (step 0, su «🎙️ PodcastLab!
+Write a topic (e.g., history of rom»): Non ci sono opzioni per visualizzare i podcast esistenti
+- **Omar** (step 1, su «🎬 30 podcast vecchi
 
 Adjust and press ▶️ GO!
-⏱ estima»): What does the - button do?
-- **Franco** (step 4, su «🎬 storia di roma
+⏱ est»): Non è chiaro cosa faccia il pulsante 'n-'
+- **Omar** (step 2, su «🎬 30 podcast vecchi
 
 Adjust and press ▶️ GO!
-⏱ estima»): What happens when I click ➕?
-- **Franco** (step 4, su «🎬 storia di roma
+⏱ est»): Non è chiaro cosa significhi 'n-'
+- **Omar** (step 3, su «🎬 30 podcast vecchi
 
 Adjust and press ▶️ GO!
-⏱ estima»): How does it affect the estimated time?
-- **Franco** (step 5, su «🎬 storia di roma
+⏱ est»): Non è chiaro cosa significhi 'n-' nel pulsante '➖'
+- **Omar** (step 4, su «🎬 30 podcast vecchi
 
 Adjust and press ▶️ GO!
-⏱ estima»): What are the 3 episodes about?
-- **Franco** (step 5, su «🎬 storia di roma
+⏱ est»): Il pulsante ➖ potrebbe essere più chiaro se avesse una label come 'Indietro'
+- **Omar** (step 5, su «🎬 30 podcast vecchi
 
 Adjust and press ▶️ GO!
-⏱ estima»): Can I customize the episodes?
-- **Franco** (step 6, su «🎬 storia di roma
+⏱ est»): Non è chiaro cosa succede se si preme 'n-' senza episodi
+- **Omar** (step 6, su «🎬 30 podcast vecchi
 
 Adjust and press ▶️ GO!
-⏱ estima»): What does the + button do?
-- **Franco** (step 7, su «🎬 storia di roma
+⏱ est»): Il tasto 'n-' potrebbe essere confuso con un pulsante di rimozione
+- **Omar** (step 7, su «🎬 30 podcast vecchi
 
 Adjust and press ▶️ GO!
-⏱ estima»): What does the '-' button do?
-- **Franco** (step 8, su «🎬 storia di roma
+⏱ est»): Non sono sicuro se il bottone 'n-' funzioni correttamente
+- **Omar** (step 8, su «🎬 30 podcast vecchi
 
 Adjust and press ▶️ GO!
-⏱ estima»): What do the episodes represent?
-- **Franco** (step 9, su «🎬 storia di roma
+⏱ est»): Non è chiaro cosa significhi 'n-'
+- **Omar** (step 9, su «🎬 30 podcast vecchi
 
 Adjust and press ▶️ GO!
-⏱ estima»): What does the - button do?
-- **Ada** (step 0, su «🎙️ PodcastLab!
-Write a topic (e.g., history of rom»): Come posso sapere se il titolo è stato accettato?
-- **Ada** (step 1, su «🎬 history of artificial intelligence
-
-Adjust and p»): What is the current status of my podcast?
-- **Ada** (step 2, su «🗂 16 mp3 on PC.
-No work in progress.»): Dove mi porterà il pulsante 'Back'?
-- **Ada** (step 3, su «🎬 history of artificial intelligence
-
-Adjust and p»): Come posso essere sicura che il mio podcast sarà pronto entro il tempo stimato?
-- **Ada** (step 4, su «🗂 16 mp3 on PC.
-No work in progress.»): What happens if I click back now? Will I lose my progress?
-- **Ada** (step 5, su «🎬 history of artificial intelligence
-
-Adjust and p»): What does the 'Status' button do?
-- **Ada** (step 5, su «🎬 history of artificial intelligence
-
-Adjust and p»): How can I track the progress of my podcast?
-- **Ada** (step 6, su «🗂 16 mp3 on PC.
-No work in progress.»): Dov'è il mio podcast?
-- **Ada** (step 6, su «🗂 16 mp3 on PC.
-No work in progress.»): Come posso controllare lo stato del mio podcast?
-- **Ada** (step 7, su «🎬 history of artificial intelligence
-
-Adjust and p»): What does the 'Status' button do?
-- **Ada** (step 7, su «🎬 history of artificial intelligence
-
-Adjust and p»): How much time is left to generate my podcast?
-- **Ada** (step 8, su «🗂 16 mp3 on PC.
-No work in progress.»): Perché non vedo lo stato del mio podcast?
-- **Ada** (step 9, su «🎬 history of artificial intelligence
-
-Adjust and p»): Come posso essere sicura che il mio podcast sarà pronto tra 34-49 min?
-- **Beppe** (step 0, su «🎙️ PodcastLab!
-Write a topic (e.g., history of rom»): What happens if I type something and then click on a non-existent button?
-- **Beppe** (step 1, su «🎬 history of rome
+⏱ est»): Il pulsante 'n-' serve per andare indietro nella lista dei podcast?
+- **Omar** (step 10, su «🎬 30 podcast vecchi
 
 Adjust and press ▶️ GO!
-⏱ estim»): Will the bot start a new podcast creation process?
-- **Beppe** (step 2, su «🚀 Here we go: history of rome»): What happens if I type GO! while the work is in progress?
-- **Beppe** (step 3, su «🎬 GO!
+⏱ est»): Non sono sicuro se il pulsante '➖' scorre la lista in avanti o indietro
+- **Omar** (step 11, su «🎬 30 podcast vecchi
 
 Adjust and press ▶️ GO!
-⏱ estimated: ~34-49»): Cosa succede se premio GO! due volte di fretta?
-- **Beppe** (step 4, su «🚀 Here we go: GO!»): cosa succede se premo GO! due volte di fretta?
-- **Beppe** (step 5, su «🎬 GO!
+⏱ est»): Il bottone '➖' diminuirà la lista dei podcast?
+- **Omar** (step 12, su «🎬 30 podcast vecchi
 
 Adjust and press ▶️ GO!
-⏱ estimated: ~34-49»): Cosa succede se premio GO! mentre il lavoro è già in corso?
-- **Beppe** (step 6, su «🚀 Here we go: GO!»): Why no button for GO!?
-- **Beppe** (step 7, su «🎬 GO!
+⏱ est»): Non è chiaro cosa succede cliccando su '➖'
+- **Omar** (step 13, su «🎬 30 podcast vecchi
 
 Adjust and press ▶️ GO!
-⏱ estimated: ~34-49»): Will the bot start a new task while one is already in progress?
-- **Beppe** (step 8, su «🚀 Here we go: GO!»): Will the bot understand the command?
-- **Beppe** (step 8, su «🚀 Here we go: GO!»): What happens if the work is already in progress?
-
-## improvements (38)
-
-- **Franco** (step 0, su «🎙️ PodcastLab!
-Write a topic (e.g., history of rom»): Aggiungere una guida o un esempio di come scrivere il topic
-- **Franco** (step 1, su «🎬 storia di roma
+⏱ est»): Il pulsante '➖' diminuirà il numero di podcast?
+- **Vera** (step 0, su «🎙️ PodcastLab!
+Write a topic (e.g., history of rom»): Is the topic too broad?
+- **Vera** (step 1, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estima»): Add a preview of the podcast before starting
-- **Franco** (step 2, su «🎬 storia di roma
+⏱ estim»): Is the '➖' button supposed to delete a prompt or decrease a value?
+- **Ines** (step 0, su «🎙️ PodcastLab!
+Write a topic (e.g., history of rom»): Is the 'Step 1/14' indicator clear about the number of steps required?
+
+## questions (40)
+
+- **Rita** (step 0, su «🎙️ PodcastLab!
+Write a topic (e.g., history of rom»): Will the bot understand natural language input?
+- **Rita** (step 0, su «🎙️ PodcastLab!
+Write a topic (e.g., history of rom»): Are there any character limits for the topic?
+- **Rita** (step 1, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estima»): Add a preview of the podcast story
-- **Franco** (step 3, su «🎬 storia di roma
+⏱ estim»): What does the '🎙 3 episodes' button do?
+- **Rita** (step 1, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estima»): Add a tooltip or label to the - button for clarity
-- **Franco** (step 4, su «🎬 storia di roma
+⏱ estim»): What is the purpose of the '➖' and '➕' buttons?
+- **Rita** (step 2, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estima»): Add a preview of the podcast content
-- **Franco** (step 4, su «🎬 storia di roma
+⏱ estim»): What does 'default (no extra style)' mean in the context of the prompt?
+- **Rita** (step 3, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estima»): Provide a clear explanation of the buttons' functions
-- **Franco** (step 5, su «🎬 storia di roma
+⏱ estim»): What does the '➖' button do?
+- **Rita** (step 4, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estima»): Add episode previews or descriptions
-- **Franco** (step 5, su «🎬 storia di roma
+⏱ estim»): What does the '➖' button do? Is it to decrease the estimated time or to remove something?
+- **Rita** (step 5, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estima»): Use more descriptive button labels
-- **Franco** (step 6, su «🎬 storia di roma
+⏱ estim»): What does the 'DEEP (complete)' search option imply?
+- **Rita** (step 5, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estima»): Add a preview of the podcast before starting
-- **Franco** (step 7, su «🎬 storia di roma
+⏱ estim»): How do the 'n-' and 'n+' buttons affect the podcast?
+- **Rita** (step 6, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estima»): Add a tooltip or label to explain the '-' button's function
-- **Franco** (step 8, su «🎬 storia di roma
+⏱ estim»): What are the 3 episodes about?
+- **Rita** (step 6, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estima»): Add a preview or description of the episodes
-- **Franco** (step 9, su «🎬 storia di roma
+⏱ estim»): Can I preview the episodes before adjusting and going?
+- **Rita** (step 7, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estima»): Add a preview of the podcast content
-- **Ada** (step 0, su «🎙️ PodcastLab!
-Write a topic (e.g., history of rom»): Aggiungere una preview del titolo dopo l'inserimento
-- **Ada** (step 1, su «🎬 history of artificial intelligence
-
-Adjust and p»): Add a progress bar to visualize the steps
-- **Ada** (step 2, su «🗂 16 mp3 on PC.
-No work in progress.»): Aggiungere una breve descrizione dello stato attuale del podcast
-- **Ada** (step 3, su «🎬 history of artificial intelligence
-
-Adjust and p»): Aggiungere una barra di avanzamento visiva per mostrare lo stato di avanzamento del podcast
-- **Ada** (step 4, su «🗂 16 mp3 on PC.
-No work in progress.»): Add a preview of the current podcast state
-- **Ada** (step 5, su «🎬 history of artificial intelligence
-
-Adjust and p»): Add a progress bar or percentage to the main screen
-- **Ada** (step 6, su «🗂 16 mp3 on PC.
-No work in progress.»): Aggiungere un pulsante per visualizzare lo stato del podcast in tempo reale
-- **Ada** (step 6, su «🗂 16 mp3 on PC.
-No work in progress.»): Migliorare la descrizione dei pulsanti per una maggiore chiarezza
-- **Ada** (step 7, su «🎬 history of artificial intelligence
-
-Adjust and p»): Add a progress bar for the generation process
-- **Ada** (step 7, su «🎬 history of artificial intelligence
-
-Adjust and p»): Provide more detailed information about the generation process
-- **Ada** (step 8, su «🗂 16 mp3 on PC.
-No work in progress.»): Aggiungere un pulsante per visualizzare lo stato del podcast in tempo reale
-- **Ada** (step 9, su «🎬 history of artificial intelligence
-
-Adjust and p»): aggiungere una funzione di aggiornamento in tempo reale dello stato di generazione del podcast
-- **Beppe** (step 0, su «🎙️ PodcastLab!
-Write a topic (e.g., history of rom»): Add a preview of the podcast topic
-- **Beppe** (step 1, su «🎬 history of rome
+⏱ estim»): What does the '➖' and '➕' buttons do?
+- **Rita** (step 7, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estim»): Add a 'Cancel' or 'Back' button to revert changes
-- **Beppe** (step 1, su «🎬 history of rome
+⏱ estim»): What is the purpose of the '🎙 3 episodes' button?
+- **Rita** (step 8, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estim»): Display the current status of the podcast creation process
-- **Beppe** (step 2, su «🚀 Here we go: history of rome»): Add a preview of the podcast creation process
-- **Beppe** (step 2, su «🚀 Here we go: history of rome»): Provide a clear call-to-action or button to proceed
-- **Beppe** (step 3, su «🎬 GO!
+⏱ estim»): What happens when I click on '▶️ GO!'?
+- **Rita** (step 8, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estimated: ~34-49»): Aggiungere una preview dello stato di avanzamento del lavoro
-- **Beppe** (step 3, su «🎬 GO!
+⏱ estim»): Will the podcast start playing immediately?
+- **Rita** (step 9, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estimated: ~34-49»): Aggiungere un messaggio di conferma prima di avviare il lavoro
-- **Beppe** (step 4, su «🚀 Here we go: GO!»): aggiungere un pulsante 'GO!' per evitare errori di digitazione
-- **Beppe** (step 5, su «🎬 GO!
+⏱ estim»): What are the episode titles?
+- **Rita** (step 9, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estimated: ~34-49»): Aggiungere un messaggio di conferma prima di avviare il processo
-- **Beppe** (step 5, su «🎬 GO!
+⏱ estim»): Can I preview episode content?
+- **Rita** (step 10, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estimated: ~34-49»): Mostrare lo stato del processo in tempo reale
-- **Beppe** (step 6, su «🚀 Here we go: GO!»): Add a button for GO! instead of free text
-- **Beppe** (step 7, su «🎬 GO!
+⏱ estim»): What is the purpose of the 'n-' and 'n+' buttons?
+- **Rita** (step 10, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estimated: ~34-49»): Add a 'Cancel current task' button or a warning before starting a new task
-- **Beppe** (step 8, su «🚀 Here we go: GO!»): Add a clear call-to-action or a button for GO!
-- **Beppe** (step 9, su «🎬 GO!
+⏱ estim»): How does the 'DEEP (complete)' search mode differ from other modes?
+- **Rita** (step 11, su «🎬 history of rome
 
 Adjust and press ▶️ GO!
-⏱ estimated: ~34-49»): Add a loading indicator or a 'working' status to prevent multiple clicks
+⏱ estim»): What does the '➖' button do?
+- **Rita** (step 12, su «🎬 history of rome
+
+Adjust and press ▶️ GO!
+⏱ estim»): What does the '➖' button do? Is it to decrease the estimated time or episodes?
+- **Rita** (step 13, su «🎬 history of rome
+
+Adjust and press ▶️ GO!
+⏱ estim»): What does the 'n-' and 'n+' buttons do?
+- **Rita** (step 13, su «🎬 history of rome
+
+Adjust and press ▶️ GO!
+⏱ estim»): What is the purpose of the 'Search: DEEP (complete)' button?
+- **Omar** (step 0, su «🎙️ PodcastLab!
+Write a topic (e.g., history of rom»): Come posso scorre l'intera lista dei podcast vecchi?
+- **Omar** (step 1, su «🎬 30 podcast vecchi
+
+Adjust and press ▶️ GO!
+⏱ est»): Cosa succede se clicco su 'n-' senza avere elementi precedenti?
+- **Omar** (step 2, su «🎬 30 podcast vecchi
+
+Adjust and press ▶️ GO!
+⏱ est»): Cosa succede se vado oltre il primo podcast?
+- **Omar** (step 3, su «🎬 30 podcast vecchi
+
+Adjust and press ▶️ GO!
+⏱ est»): Cosa accade quando si clicca sul pulsante '➖'?
+- **Omar** (step 4, su «🎬 30 podcast vecchi
+
+Adjust and press ▶️ GO!
+⏱ est»): Cosa succede se clicco su ➖ senza avere podcast selezionati?
+- **Omar** (step 5, su «🎬 30 podcast vecchi
+
+Adjust and press ▶️ GO!
+⏱ est»): Come funziona la paginazione?
+- **Omar** (step 6, su «🎬 30 podcast vecchi
+
+Adjust and press ▶️ GO!
+⏱ est»): Come funziona la paginazione?
+- **Omar** (step 7, su «🎬 30 podcast vecchi
+
+Adjust and press ▶️ GO!
+⏱ est»): Come funziona la paginazione?
+- **Omar** (step 8, su «🎬 30 podcast vecchi
+
+Adjust and press ▶️ GO!
+⏱ est»): Come funziona la paginazione?
+- **Omar** (step 9, su «🎬 30 podcast vecchi
+
+Adjust and press ▶️ GO!
+⏱ est»): Come funziona la paginazione dei podcast?
+- **Omar** (step 10, su «🎬 30 podcast vecchi
+
+Adjust and press ▶️ GO!
+⏱ est»): Come funziona la paginazione?
+- **Omar** (step 11, su «🎬 30 podcast vecchi
+
+Adjust and press ▶️ GO!
+⏱ est»): Come funziona la paginazione?
+- **Omar** (step 12, su «🎬 30 podcast vecchi
+
+Adjust and press ▶️ GO!
+⏱ est»): Come funziona la paginazione con il pulsante '➖'?
+- **Omar** (step 13, su «🎬 30 podcast vecchi
+
+Adjust and press ▶️ GO!
+⏱ est»): Come funziona la paginazione?
+- **Vera** (step 0, su «🎙️ PodcastLab!
+Write a topic (e.g., history of rom»): Will the bot understand my topic?
+- **Vera** (step 1, su «🎬 history of rome
+
+Adjust and press ▶️ GO!
+⏱ estim»): What happens when I press the '➖' button?
+- **Ines** (step 0, su «🎙️ PodcastLab!
+Write a topic (e.g., history of rom»): What happens if I write a very long topic?
+
+## improvements (45)
+
+- **Rita** (step 0, su «🎙️ PodcastLab!
+Write a topic (e.g., history of rom»): Add a placeholder or example text for user guidance
+- **Rita** (step 0, su «🎙️ PodcastLab!
+Write a topic (e.g., history of rom»): Consider adding a character counter for topic input
+- **Rita** (step 1, su «🎬 history of rome
+
+Adjust and press ▶️ GO!
+⏱ estim»): Add a brief description or tooltip for each button to improve clarity
+- **Rita** (step 1, su «🎬 history of rome
+
+Adjust and press ▶️ GO!
+⏱ estim»): Consider adding a 'back' button to allow users to navigate to previous steps
+- **Rita** (step 2, su «🎬 history of rome
+
+Adjust and press ▶️ GO!
+⏱ estim»): Consider adding a brief description or tooltip for each button to improve clarity
+- **Rita** (step 2, su «🎬 history of rome
+
+Adjust and press ▶️ GO!
+⏱ estim»): Add a 'back' button to navigate through the steps
+- **Rita** (step 3, su «🎬 history of rome
+
+Adjust and press ▶️ GO!
+⏱ estim»): Consider adding a tooltip or a brief description for the '➖' button
+- **Rita** (step 4, su «🎬 history of rome
+
+Adjust and press ▶️ GO!
+⏱ estim»): Add tooltips or brief descriptions for the '➖' and '➕' buttons to clarify their functions.
+- **Rita** (step 4, su «🎬 history of rome
+
+Adjust and press ▶️ GO!
+⏱ estim»): Consider using more descriptive labels for the buttons to improve usability.
+- **Rita** (step 5, su «🎬 history of rome
+
+Adjust and press ▶️ GO!
+⏱ estim»): Add a preview of the podcast content before starting
+- **Rita** (step 5, su «🎬 history of rome
+
+Adjust and press ▶️ GO!
+⏱ estim»): Consider a more descriptive label for the 'GO!' button, e.g., 'Start Podcast'
+- **Rita** (step 6, su «🎬 history of rome
+
+Adjust and press ▶️ GO!
+⏱ estim»): Consider adding a brief description or preview of the podcast content
+- **Rita** (step 6, su «🎬 history of rome
+
+Adjust and press ▶️ GO!
+⏱ estim»): Add a 'Back' button to navigate through previous steps
+- **Rita** (step 7, su «🎬 history of rome
+
+Adjust and press ▶️ GO!
+⏱ estim»): Consider adding a brief description or tooltip for each button to improve clarity
+- **Rita** (step 7, su «🎬 history of rome
+
+Adjust and press ▶️ GO!
+⏱ estim»): Use a more prominent display for the current step (8/14) to provide better progress feedback
+- **Rita** (step 8, su «🎬 history of rome
+
+Adjust and press ▶️ GO!
+⏱ estim»): Consider adding a back button to return to the previous menu
+- **Rita** (step 8, su «🎬 history of rome
+
+Adjust and press ▶️ GO!
+⏱ estim»): Provide a preview of the podcast before starting playback
+- **Rita** (step 9, su «🎬 history of rome
+
+Adjust and press ▶️ GO!
+⏱ estim»): Add episode titles or descriptions for better discovery
+- **Rita** (step 9, su «🎬 history of rome
+
+Adjust and press ▶️ GO!
+⏱ estim»): Consider a 'preview' or 'details' option for each episode
+- **Rita** (step 10, su «🎬 history of rome
+
+Adjust and press ▶️ GO!
+⏱ estim»): Add a preview of the podcast before starting
+- **Rita** (step 10, su «🎬 history of rome
+
+Adjust and press ▶️ GO!
+⏱ estim»): Consider using a more prominent back button instead of '🏠 Menu'
+- **Rita** (step 10, su «🎬 history of rome
+
+Adjust and press ▶️ GO!
+⏱ estim»): Use bold or lists to differentiate between interactive and non-interactive elements
+- **Rita** (step 11, su «🎬 history of rome
+
+Adjust and press ▶️ GO!
+⏱ estim»): Add a tooltip or label to explain the function of '➖' button
+- **Rita** (step 12, su «🎬 history of rome
+
+Adjust and press ▶️ GO!
+⏱ estim»): Add a tooltip or a brief description for the '➖' and '➕' buttons to clarify their functions.
+- **Rita** (step 13, su «🎬 history of rome
+
+Adjust and press ▶️ GO!
+⏱ estim»): Consider adding a back button to return to previous steps
+- **Rita** (step 13, su «🎬 history of rome
+
+Adjust and press ▶️ GO!
+⏱ estim»): Use a more descriptive label for the '🎙 3 episodes' button
+- **Rita** (step 13, su «🎬 history of rome
+
+Adjust and press ▶️ GO!
+⏱ estim»): Provide a preview of the podcast before starting
+- **Omar** (step 0, su «🎙️ PodcastLab!
+Write a topic (e.g., history of rom»): Aggiungere un pulsante per visualizzare i podcast esistenti
+- **Omar** (step 1, su «🎬 30 podcast vecchi
+
+Adjust and press ▶️ GO!
+⏱ est»): Aggiungere una label più descrittiva per il pulsante 'n-'
+- **Omar** (step 2, su «🎬 30 podcast vecchi
+
+Adjust and press ▶️ GO!
+⏱ est»): Aggiungere una label più chiara per il pulsante 'n-'
+- **Omar** (step 3, su «🎬 30 podcast vecchi
+
+Adjust and press ▶️ GO!
+⏱ est»): Aggiungere una label più chiara per il pulsante '➖'
+- **Omar** (step 4, su «🎬 30 podcast vecchi
+
+Adjust and press ▶️ GO!
+⏱ est»): Aggiungere una preview dei podcast per aiutare l'utente a capire cosa sta facendo
+- **Omar** (step 5, su «🎬 30 podcast vecchi
+
+Adjust and press ▶️ GO!
+⏱ est»): Aggiungere una label o un tooltip per spiegare la funzione dei pulsanti 'n-' e 'n+'
+- **Omar** (step 6, su «🎬 30 podcast vecchi
+
+Adjust and press ▶️ GO!
+⏱ est»): Aggiungere una label più chiara per il pulsante 'n-'
+- **Omar** (step 7, su «🎬 30 podcast vecchi
+
+Adjust and press ▶️ GO!
+⏱ est»): Aggiungere una label più chiara per il bottone 'n-'
+- **Omar** (step 8, su «🎬 30 podcast vecchi
+
+Adjust and press ▶️ GO!
+⏱ est»): Aggiungere una label più descrittiva per il pulsante '➖'
+- **Omar** (step 9, su «🎬 30 podcast vecchi
+
+Adjust and press ▶️ GO!
+⏱ est»): Aggiungere una label più chiara per il pulsante 'n-'
+- **Omar** (step 10, su «🎬 30 podcast vecchi
+
+Adjust and press ▶️ GO!
+⏱ est»): Aggiungere una label più chiara per il pulsante '➖', ad esempio 'Indietro'
+- **Omar** (step 11, su «🎬 30 podcast vecchi
+
+Adjust and press ▶️ GO!
+⏱ est»): Aggiungere una label al bottone '➖' per chiarire la sua funzione
+- **Omar** (step 12, su «🎬 30 podcast vecchi
+
+Adjust and press ▶️ GO!
+⏱ est»): Aggiungere una label più chiara per il pulsante '➖', ad esempio 'Indietro'
+- **Omar** (step 13, su «🎬 30 podcast vecchi
+
+Adjust and press ▶️ GO!
+⏱ est»): Aggiungere una preview dei podcast nella lista
+- **Omar** (step 13, su «🎬 30 podcast vecchi
+
+Adjust and press ▶️ GO!
+⏱ est»): Utilizzare etichette più chiare per i pulsanti
+- **Vera** (step 0, su «🎙️ PodcastLab!
+Write a topic (e.g., history of rom»): Add suggestions or examples of topics
+- **Vera** (step 1, su «🎬 history of rome
+
+Adjust and press ▶️ GO!
+⏱ estim»): Add a clear label to the '➖' button to indicate its function
+- **Ines** (step 0, su «🎙️ PodcastLab!
+Write a topic (e.g., history of rom»): Consider adding a character limit for the topic input
