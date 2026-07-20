@@ -249,7 +249,7 @@ def kb_pannello(s):
     return KB([
         [B("➖", callback_data="n-"), B(f"🎙 {s['n']} episodes", callback_data="noop"), B("➕", callback_data="n+")],
         [B("🌐 Search: DEEP (complete)" if s["deep"] else "⚡ Search: FAST", callback_data="mode")],
-        [B(f"✏️ Prompt: {s['extra_nome'] or 'standard'}", callback_data="p_menu")],
+        [B(f"✏️ Prompt: {s['extra_nome'] or 'default (no extra style)'}", callback_data="p_menu")],
         [B(f"🎵 Music ({n_musica} types)" if n_musica else "🎵 Music (none in jingles/)", callback_data="mus_menu")],
         [B(f"📓 Notebook: {s.get('nb_nome') or 'new'}", callback_data="nb_menu")],
         [B("▶️ GO!", callback_data="go"), B("🏠 Menu", callback_data="m_home")],
@@ -265,9 +265,9 @@ def txt_pannello(ud):
 
 def kb_prompt_menu():
     righe = [[B("📝 Create new prompt", callback_data="p_nuovo")],
-             [B("🔙 Use standard", callback_data="p_std")]]
+             [B("🔙 No extra style (default)", callback_data="p_std")]]
     for i, c in enumerate(carica_custom()[:6]):
-        righe.append([B(f"⭐ {c['nome'][:35]}", callback_data=f"p_prev:{i}"),
+        righe.append([B(f"📄 {c['nome'][:35]}", callback_data=f"p_prev:{i}"),
                       B("🗑", callback_data=f"p_del:{i}")])
     righe.append([B("↩️ Back", callback_data="p_back")])
     return KB(righe)
@@ -290,17 +290,13 @@ async def testo_libero(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("👍 Now give it a short name (e.g., 'ironic style'):")
         return
     if attesa == "prompt_nome":
-        lista = carica_custom()
-        lista.insert(0, {"nome": testo[:50], "testo": ctx.user_data.pop("nuovo_prompt")})
-        salva_custom(lista[:20])
         ctx.user_data["attesa"] = None
-        s = ctx.user_data.setdefault("setup", setup_default())
-        s["extra"] = " Also: " + lista[0]["testo"]
-        s["extra_nome"] = lista[0]["nome"]
-        if ctx.user_data.get("topic"):
-            await update.message.reply_text(txt_pannello(ctx.user_data), reply_markup=kb_pannello(s))
-        else:
-            await update.message.reply_text("⭐ Saved and selected! Now write the podcast topic.")
+        nome, prompt_testo = testo[:50], ctx.user_data.pop("nuovo_prompt")
+        ctx.user_data["nuovo_prompt_pending"] = {"nome": nome, "testo": prompt_testo}
+        await update.message.reply_text(
+            f"⭐ {nome}\n\n📜 {prompt_testo[:800]}\n\nSave this prompt?",
+            reply_markup=KB([[B("✅ Save & use", callback_data="p_conferma"),
+                              B("↩️ Discard", callback_data="p_scarta")]]))
         return
     if attesa == "topic":
         ctx.user_data["attesa"] = None
@@ -410,6 +406,20 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     if d == "p_menu":
         await q.edit_message_text("✏️ Prompt for hosts:", reply_markup=kb_prompt_menu())
         return
+    if d in ("p_conferma", "p_scarta"):
+        pending = ud.pop("nuovo_prompt_pending", None)
+        if d == "p_conferma" and pending:
+            lista = carica_custom()
+            lista.insert(0, pending)
+            salva_custom(lista[:20])
+            s["extra"], s["extra_nome"] = " Also: " + pending["testo"], pending["nome"]
+        if ud.get("topic"):
+            await q.edit_message_text(txt_pannello(ud), reply_markup=kb_pannello(s))
+        else:
+            await q.edit_message_text(
+                "⭐ Saved and selected! Now write the podcast topic." if d == "p_conferma" else "Discarded.",
+                reply_markup=kb_menu())
+        return
     if d == "p_std":
         s["extra"], s["extra_nome"] = "", ""
     elif d == "p_nuovo":
@@ -469,9 +479,21 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         for nb_ in nbs:
             nid, nome = nb_.get("id"), (nb_.get("title") or nb_.get("id") or "?")[:35]
             if nid:
-                righe.append([B(f"📓 {nome}", callback_data=f"nb_use:{nid}")])
+                righe.append([B(f"📓 {nome}", callback_data=f"nb_prev:{nid}")])
         righe.append([B("↩️ Back", callback_data="nb_back")])
         await q.edit_message_text("📓 Notebook: create new or reuse existing sources?", reply_markup=KB(righe))
+        return
+    elif d.startswith("nb_prev:"):  # preview: title + sources before confirming
+        nid = d.split(":", 1)[1]
+        titolo = next(((n_.get("title") or "?") for n_ in (cli(["list"]).get("notebooks") or [])
+                       if n_.get("id") == nid), "?")
+        fonti = (cli(["source", "list", "-n", nid], timeout=120).get("sources") or [])
+        elenco = "\n".join(f"• {(f_.get('title') or f_.get('name') or '?')[:60]}" for f_ in fonti[:8])
+        extra_f = f"\n…+{len(fonti) - 8} more" if len(fonti) > 8 else ""
+        await q.edit_message_text(
+            f"📓 {titolo}\n\n📚 {len(fonti)} sources:\n{elenco or '(none)'}{extra_f}",
+            reply_markup=KB([[B("✅ Use this", callback_data=f"nb_use:{nid}"),
+                              B("↩️ Back", callback_data="nb_menu")]]))
         return
     elif d in ("nb_new", "nb_back"):
         if d == "nb_new":
