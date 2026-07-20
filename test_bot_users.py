@@ -49,6 +49,12 @@ sys.path.insert(0, r"C:\podcastlab")
 
 import bot
 
+# NEVER write test mp3s into the real out/ folder — isolate to a temp dir
+import tempfile
+bot.OUT = pathlib.Path(tempfile.mkdtemp(prefix="podcastlab_test_out_"))
+bot.PROMPTS_DIR = bot.OUT / "prompts"
+bot.PROMPTS_DIR.mkdir(exist_ok=True)
+
 # --- finti oggetti Telegram che REGISTRANO cosa fa il bot ---
 class FakeMsg:
     def __init__(self, log): self.log = log; self.message_id = 1; self.text = ""

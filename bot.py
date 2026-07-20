@@ -264,12 +264,23 @@ def txt_pannello(ud):
     return (f"🎬 {topic}\n\nAdjust and press ▶️ GO!\n⏱ estimated: ~{t}-{t + 15} min")
 
 
-def kb_prompt_menu():
+PAGE_SIZE = 6
+
+def kb_prompt_menu(page=0):
+    tutti = carica_custom()
+    lo = page * PAGE_SIZE
     righe = [[B("📝 Create new prompt", callback_data="p_nuovo")],
              [B("🔙 No extra style (default)", callback_data="p_std")]]
-    for i, c in enumerate(carica_custom()[:6]):
+    for i, c in enumerate(tutti[lo:lo + PAGE_SIZE], start=lo):
         righe.append([B(f"📄 {c['nome'][:35]}", callback_data=f"p_prev:{i}"),
                       B("🗑", callback_data=f"p_del:{i}")])
+    nav = []
+    if page > 0:
+        nav.append(B("⬅️ Prev", callback_data=f"p_page:{page-1}"))
+    if lo + PAGE_SIZE < len(tutti):
+        nav.append(B("➡️ Next", callback_data=f"p_page:{page+1}"))
+    if nav:
+        righe.append(nav)
     righe.append([B("↩️ Back", callback_data="p_back")])
     return KB(righe)
 
@@ -326,16 +337,26 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         ud["attesa"] = "topic"
         await q.edit_message_text("🎬 Write the podcast topic (e.g., history of rome) 👇")
         return
-    if d == "m_vecchi":
+    if d == "m_vecchi" or d.startswith("m_vecchi_page:"):
+        page = int(d.split(":")[1]) if ":" in d else 0
         # show COMPLETE podcasts (_UNITO); if a merge failed, fallback to singles
-        uniti = sorted(OUT.glob("*_UNITO.mp3"), key=lambda p: p.stat().st_mtime, reverse=True)[:10]
-        mp3s = uniti or sorted(OUT.glob("*.mp3"), key=lambda p: p.stat().st_mtime, reverse=True)[:10]
-        if not mp3s:
+        uniti = sorted(OUT.glob("*_UNITO.mp3"), key=lambda p: p.stat().st_mtime, reverse=True)
+        mp3s_all = uniti or sorted(OUT.glob("*.mp3"), key=lambda p: p.stat().st_mtime, reverse=True)
+        if not mp3s_all:
             await q.edit_message_text("📼 No podcast yet!", reply_markup=kb_menu())
             return
+        lo = page * PAGE_SIZE
+        mp3s = mp3s_all[lo:lo + PAGE_SIZE]
         righe = [[B(f"🎧 {f.stem.replace('_UNITO','')[:45]}", callback_data=f"v_send:{f.name[:55]}")] for f in mp3s]
+        nav = []
+        if page > 0:
+            nav.append(B("⬅️ Prev", callback_data=f"m_vecchi_page:{page-1}"))
+        if lo + PAGE_SIZE < len(mp3s_all):
+            nav.append(B("➡️ Next", callback_data=f"m_vecchi_page:{page+1}"))
+        if nav:
+            righe.append(nav)
         righe.append([B("🏠 Menu", callback_data="m_home")])
-        await q.edit_message_text("📼 Tap to listen again:", reply_markup=KB(righe))
+        await q.edit_message_text(f"📼 Tap to listen again ({len(mp3s_all)} total):", reply_markup=KB(righe))
         return
     if d.startswith("v_send:"):
         nome = d[7:]
@@ -412,6 +433,9 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     # --- menu prompt ---
     if d == "p_menu":
         await q.edit_message_text("✏️ Prompt for hosts:", reply_markup=kb_prompt_menu())
+        return
+    if d.startswith("p_page:"):
+        await q.edit_message_text("✏️ Prompt for hosts:", reply_markup=kb_prompt_menu(int(d.split(":")[1])))
         return
     if d in ("p_conferma", "p_scarta"):
         pending = ud.pop("nuovo_prompt_pending", None)
