@@ -856,6 +856,20 @@ async def esegui(chat, ctx):
         temi = macro_temi(nb_id, topic, n)
         files = []
         for i, tema in enumerate(temi, 1):
+            mp3 = OUT / f"{base}_parte{i}.mp3"
+            if mp3.exists() and mp3.stat().st_size > 1000:
+                # resume: this episode was already generated (e.g. a previous run got
+                # interrupted) — don't waste time/NotebookLM quota regenerating it
+                tema_precedente = tema
+                pj = PROMPTS_DIR / f"{mp3.stem}.json"
+                if pj.exists():
+                    try:
+                        tema_precedente = json.loads(pj.read_text(encoding="utf-8")).get("tema", tema)
+                    except Exception:
+                        pass
+                avvisa(0.25 + 0.65 * (i - 1) / n, f"Phase 2/3: 🎙 episode {i}/{n} — already done, skipping")
+                files.append((mp3, tema_precedente))
+                continue
             avvisa(0.25 + 0.65 * (i - 1) / n, f"Phase 2/3: 🎙 episode {i}/{n}\n{tema}")
             prompt = PART_PROMPT.format(i=i, n=n, tema=tema, marker=marker, extra=extra)
             g = cli(["generate", "audio", prompt, "-n", nb_id,
@@ -869,7 +883,6 @@ async def esegui(chat, ctx):
                 art_id = audio[0]["id"] if audio else None
             if not art_id:
                 return f"Episode {i} ({tema}) failed 😞\n(detail: {g})"
-            mp3 = OUT / f"{base}_parte{i}.mp3"
             cli(["download", "audio", "-n", nb_id, "-a", art_id, str(mp3)])
             (PROMPTS_DIR / f"{mp3.stem}.json").write_text(json.dumps(
                 {"topic": topic, "parte": i, "tema": tema, "prompt": prompt,
