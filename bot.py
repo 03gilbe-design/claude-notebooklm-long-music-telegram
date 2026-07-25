@@ -35,8 +35,9 @@ for line in (BASE / ".env").read_text().splitlines():
 TOKEN = os.environ["TELEGRAM_TOKEN"]
 
 PART_PROMPT = (
-    "Questa è la parte {i} di {n} di una serie. Inizia dicendo esattamente: "
-    "'Questa è la parte {i} di {n}: si parla di {tema}'. "
+    "Questo episodio è la parte {i} di {n} di una serie continua, ma NON dirlo agli ascoltatori: "
+    "gli host non devono MAI annunciare 'questa è la parte X' o numerare l'episodio a voce, "
+    "come se stessero semplicemente continuando una conversazione naturale. "
     "Tratta SOLO questo tema: {tema}. "
     "Niente sigla iniziale né saluti finali lunghi: entra dritto nel contenuto."
     "{marker}{extra}"
@@ -608,6 +609,10 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
             s.setdefault("musica", {})[cat] = dest.name
             salvati.append(f"✅ {cat}: {hit['name']} ({hit['duration']}s)")
         await q.edit_message_text("🤖 Auto-picked:\n" + "\n".join(salvati), reply_markup=kb_musica(s))
+        for cat in queries:
+            dest = JINGLES / (s.get("musica", {}).get(cat) or "")
+            if dest.exists():
+                await chat.send_audio(audio=open(dest, "rb"), title=f"{cat} — preview")
         return
     if d == "mus_yt":  # pick a category to search YouTube for (human picks the result, nothing auto)
         await q.edit_message_text(
@@ -640,6 +645,7 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
             return
         s.setdefault("musica", {})[cat] = dest.name
         await q.edit_message_text(f"✅ Downloaded and selected: {dest.name}", reply_markup=kb_musica(s))
+        await chat.send_audio(audio=open(dest, "rb"), title=f"{cat} — preview")
         return
     if d == "mus_cat":  # pick a category to browse the free catalog for
         await q.edit_message_text(
@@ -669,6 +675,7 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         dest.write_bytes(r.content)
         s.setdefault("musica", {})[cat] = dest.name
         await q.edit_message_text(f"✅ Downloaded and selected: {dest.name}", reply_markup=kb_musica(s))
+        await chat.send_audio(audio=open(dest, "rb"), title=f"{cat} — preview")
         return
     if d == "mus_back":
         await q.edit_message_text(txt_pannello(ud), reply_markup=kb_pannello(s), parse_mode="HTML")
