@@ -116,6 +116,28 @@ def freesound_cerca(query, n=5):
     return [{"id": h["id"], "name": h["name"][:40], "duration": round(h.get("duration", 0)),
              "preview_url": h["previews"]["preview-hq-mp3"]} for h in r.json().get("results", [])]
 
+
+def youtube_cerca(query, n=5):
+    """YouTube search — human picks from the list, nothing auto-downloaded here.
+    Returns [{'id','title','duration'}]."""
+    import yt_dlp
+    opts = {"quiet": True, "no_warnings": True, "extract_flat": True, "skip_download": True}
+    with yt_dlp.YoutubeDL(opts) as ydl:
+        info = ydl.extract_info(f"ytsearch{n}:{query}", download=False)
+    return [{"id": e["id"], "title": (e.get("title") or "?")[:50], "duration": e.get("duration") or 0}
+            for e in info.get("entries", []) if e.get("id")]
+
+
+def youtube_scarica_audio(video_id, dest_mp3):
+    """Downloads ONLY the exact video id the user picked, as mp3 to dest_mp3 (no extension)."""
+    import yt_dlp
+    opts = {"quiet": True, "no_warnings": True, "format": "bestaudio/best",
+            "outtmpl": str(dest_mp3.with_suffix("")), "postprocessors": [
+                {"key": "FFmpegExtractAudio", "preferredcodec": "mp3", "preferredquality": "5"}]}
+    with yt_dlp.YoutubeDL(opts) as ydl:
+        ydl.download([f"https://www.youtube.com/watch?v={video_id}"])
+
+
 def _opzioni(nome_prefix):
     """All sound options available for a category (intro/stacco/sottofondo)."""
     if not JINGLES.exists():
@@ -240,6 +262,7 @@ def kb_musica(setup):
     if FREESOUND_KEY:
         righe.append([B("🔎 Browse free catalog", callback_data="mus_cat"),
                       B("🤖 Auto (AI picks)", callback_data="mus_auto")])
+    righe.append([B("▶️ Search YouTube", callback_data="mus_yt")])
     righe.append([B("↩️ Back", callback_data="mus_back")])
     return KB(righe)
 
@@ -276,9 +299,12 @@ def kb_pannello(s):
 
 
 def txt_pannello(ud):
-    s = ud["setup"]
+    s = ud.setdefault("setup", setup_default())
     t = (10 if s["deep"] else 4) + s["n"] * 8
-    topic = ud['topic'] if len(ud['topic']) <= 100 else ud['topic'][:100] + "…"  # no wall of text
+    # ud["topic"] can be missing if the bot restarted since this chat's last message
+    # (in-memory session state, wiped on every deploy) — never crash, ask again instead
+    topic_raw = ud.get("topic") or ""
+    topic = topic_raw if len(topic_raw) <= 100 else topic_raw[:100] + "…"  # no wall of text
     return (f"🎬 {topic}\n\nAdjust and press ▶️ GO!\n⏱ estimated: ~{t}-{t + 15} min")
 
 
@@ -358,6 +384,25 @@ async def testo_libero(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
                  for h in hits]
         righe.append([B("↩️ Back", callback_data="mus_menu")])
         await update.message.reply_text("🔎 Pick one (free, Freesound.org):", reply_markup=KB(righe))
+        return
+    if attesa and attesa.startswith("ytsearch_"):
+        cat = attesa[len("ytsearch_"):]
+        ctx.user_data["attesa"] = None
+        try:
+            hits = youtube_cerca(testo, n=5)
+        except Exception as e:
+            await update.message.reply_text(f"⚠️ Search failed: {e}", reply_markup=kb_musica(
+                ctx.user_data.setdefault("setup", setup_default())))
+            return
+        if not hits:
+            await update.message.reply_text("😞 No results, try a different search.")
+            return
+        ctx.user_data["yt_results"] = {h["id"]: h for h in hits}
+        durata = lambda s: f"{s // 60}:{s % 60:02d}" if s else "?"
+        righe = [[B(f"▶️ {h['title']} ({durata(h['duration'])})", callback_data=f"mus_ytpick:{cat}:{h['id']}")]
+                 for h in hits]
+        righe.append([B("↩️ Back", callback_data="mus_menu")])
+        await update.message.reply_text("▶️ Pick one (downloads only this one):", reply_markup=KB(righe))
         return
     if attesa == "prompt_testo":
         ctx.user_data["nuovo_prompt"] = testo
@@ -530,6 +575,38 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
             s.setdefault("musica", {})[cat] = dest.name
             salvati.append(f"✅ {cat}: {hit['name']} ({hit['duration']}s)")
         await q.edit_message_text("🤖 Auto-picked:\n" + "\n".join(salvati), reply_markup=kb_musica(s))
+        return
+    if d == "mus_yt":  # pick a category to search YouTube for (human picks the result, nothing auto)
+        await q.edit_message_text(
+            "▶️ What category is this jingle for?",
+            reply_markup=KB([[B("🎬 Intro", callback_data="mus_yt:intro"),
+                              B("🔔 Transition", callback_data="mus_yt:stacco")],
+                             [B("🎵 Background", callback_data="mus_yt:sottofondo")],
+                             [B("↩️ Back", callback_data="mus_menu")]]))
+        return
+    if d.startswith("mus_yt:"):
+        cat = d.split(":", 1)[1]
+        ud["attesa"] = f"ytsearch_{cat}"
+        await q.edit_message_text("▶️ Type a YouTube search (e.g. \"lofi background music no copyright\"):")
+        return
+    if d.startswith("mus_ytpick:"):  # mus_ytpick:categoria:video_id — downloads ONLY the id the user picked
+        _, cat, vid = d.split(":", 2)
+        risultati = ud.get("yt_results") or {}
+        hit = risultati.get(vid)
+        if not hit:
+            await q.edit_message_text("⚠️ Search results expired, try again.", reply_markup=kb_musica(s))
+            return
+        await q.edit_message_text(f"⬇️ Downloading \"{hit['title']}\"…")
+        JINGLES.mkdir(exist_ok=True)
+        n_esistenti = len(_opzioni(cat))
+        dest = JINGLES / f"{cat}{'' if n_esistenti == 0 else '_' + str(n_esistenti + 1)}.mp3"
+        try:
+            youtube_scarica_audio(vid, dest)
+        except Exception as e:
+            await q.edit_message_text(f"⚠️ Download failed: {e}", reply_markup=kb_musica(s))
+            return
+        s.setdefault("musica", {})[cat] = dest.name
+        await q.edit_message_text(f"✅ Downloaded and selected: {dest.name}", reply_markup=kb_musica(s))
         return
     if d == "mus_cat":  # pick a category to browse the free catalog for
         await q.edit_message_text(
