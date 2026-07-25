@@ -326,12 +326,14 @@ def txt_pannello(ud):
 
 PAGE_SIZE = 6
 
-def kb_prompt_menu(page=0):
+def kb_prompt_menu(page=0, nome_scelto=None):
     tutti = carica_custom()
     lo = page * PAGE_SIZE
-    righe = [[B("📝 New", callback_data="p_nuovo"), B("🔙 Default", callback_data="p_std")]]
+    mark_std = "🔘" if not nome_scelto else "▫️"
+    righe = [[B("📝 New", callback_data="p_nuovo"), B(f"{mark_std} Default", callback_data="p_std")]]
     for i, c in enumerate(tutti[lo:lo + PAGE_SIZE], start=lo):
-        righe.append([B(f"📄 {c['nome'][:35]}", callback_data=f"p_prev:{i}"),
+        mark = "🔘" if c["nome"] == nome_scelto else "▫️"
+        righe.append([B(f"{mark} {c['nome'][:33]}", callback_data=f"p_prev:{i}"),
                       B("🗑", callback_data=f"p_del:{i}")])
     n_pagine = max(1, (len(tutti) + PAGE_SIZE - 1) // PAGE_SIZE)
     if n_pagine > 1:
@@ -516,7 +518,7 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
             await chat.send_message("⚠️ File not found on PC.")
         return
     if d == "m_prompt":
-        await q.edit_message_text("✏️ Prompt for podcast hosts:", reply_markup=kb_prompt_menu())
+        await q.edit_message_text("✏️ Prompt for podcast hosts:", reply_markup=kb_prompt_menu(nome_scelto=s["extra_nome"]))
         return
     if d == "p_back":
         if ud.get("topic"):
@@ -533,7 +535,7 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
                 reply_markup=KB([[B("✅ Use this", callback_data=f"p_use:{i}"),
                                   B("↩️ Back", callback_data="p_menu2")]]))
         except (IndexError, ValueError):
-            await q.edit_message_text("✏️ Prompt:", reply_markup=kb_prompt_menu())
+            await q.edit_message_text("✏️ Prompt:", reply_markup=kb_prompt_menu(nome_scelto=s["extra_nome"]))
         return
     if d == "p_menu2":
         await q.edit_message_text("✏️ Prompt for podcast hosts:", reply_markup=kb_prompt_menu())
@@ -687,10 +689,10 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
 
     # --- menu prompt ---
     if d == "p_menu":
-        await q.edit_message_text("<b>✏️ Prompt for hosts</b>", reply_markup=kb_prompt_menu(), parse_mode="HTML")
+        await q.edit_message_text("<b>✏️ Prompt for hosts</b>", reply_markup=kb_prompt_menu(nome_scelto=s["extra_nome"]), parse_mode="HTML")
         return
     if d.startswith("p_page:"):
-        await q.edit_message_text("<b>✏️ Prompt for hosts</b>", reply_markup=kb_prompt_menu(int(d.split(":")[1])), parse_mode="HTML")
+        await q.edit_message_text("<b>✏️ Prompt for hosts</b>", reply_markup=kb_prompt_menu(int(d.split(":")[1]), nome_scelto=s["extra_nome"]), parse_mode="HTML")
         return
     if d in ("p_conferma", "p_scarta"):
         pending = ud.pop("nuovo_prompt_pending", None)
@@ -732,7 +734,7 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
                 s["extra"], s["extra_nome"] = "", ""
         except IndexError:
             pass
-        await q.edit_message_text("🗑 Deleted.", reply_markup=kb_prompt_menu())
+        await q.edit_message_text("🗑 Deleted.", reply_markup=kb_prompt_menu(nome_scelto=s["extra_nome"]))
         return
 
     # --- new podcast panel ---
@@ -762,13 +764,16 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
                 reply_markup=kb_pannello(s))
             return
         nbs = (r.get("notebooks") or [])[:8]
-        righe = [[B("🆕 New notebook", callback_data="nb_new")]]
+        mark_new = "🔘" if not s.get("nb_id") else "▫️"
+        righe = [[B(f"{mark_new} New notebook", callback_data="nb_new")]]
         for nb_ in nbs:
-            nid, nome = nb_.get("id"), (nb_.get("title") or nb_.get("id") or "?")[:35]
+            nid, nome = nb_.get("id"), (nb_.get("title") or nb_.get("id") or "?")[:33]
             if nid:
-                righe.append([B(f"📓 {nome}", callback_data=f"nb_prev:{nid}")])
+                mark = "🔘" if nid == s.get("nb_id") else "▫️"
+                righe.append([B(f"{mark} {nome}", callback_data=f"nb_prev:{nid}")])
         righe.append([B("↩️ Back", callback_data="nb_back")])
-        await q.edit_message_text("📓 Notebook: create new or reuse existing sources?", reply_markup=KB(righe))
+        await q.edit_message_text("<b>📓 Notebook</b>\nCreate new or reuse existing sources?",
+                                  reply_markup=KB(righe), parse_mode="HTML")
         return
     elif d.startswith("nb_prev:"):  # preview: title + sources before confirming
         nid = d.split(":", 1)[1]
