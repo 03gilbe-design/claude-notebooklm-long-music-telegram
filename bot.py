@@ -48,6 +48,12 @@ MARKER_ISTR = (
     "pronuncia da solo, chiaramente, esattamente la parola 'STACCO MUSICALE', poi continua."
 )
 
+# Telegram Bot API hard limit: 50MB for both sendAudio and sendDocument (standard API,
+# not a local server) — confirmed via a real 413 "Request Entity Too Large" on a 63.7MB
+# file. 49MB used throughout as a safety margin. Would need a self-hosted Bot API server
+# (up to 2GB) to raise this; not worth the operational complexity for a personal bot.
+TELEGRAM_MAX_BYTES = 49 * 1024 * 1024
+
 BAR_LEN = 8
 
 
@@ -503,7 +509,7 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     if d.startswith("v_send:"):
         nome = d[7:]
         matches = [f for f in OUT.glob("*.mp3") if f.name.startswith(nome[:50])]
-        if matches and matches[0].stat().st_size >= 49 * 1024 * 1024:
+        if matches and matches[0].stat().st_size >= TELEGRAM_MAX_BYTES:
             await chat.send_message(f"ℹ️ File too large for Telegram (>50MB). It's on the PC: {matches[0]}")
         elif matches:
             await chat.send_chat_action(ChatAction.UPLOAD_VOICE)
@@ -979,18 +985,18 @@ async def esegui(chat, ctx):
             await chat.send_audio(audio=open(f, "rb"), title=f"Part {i}: {tema[:50]}",
                                   caption=f"🎙 Part {i}/{len(result['files'])} — {tema}")
     u = result["unito"]
-    if u and u.exists() and u.stat().st_size >= 49 * 1024 * 1024:
+    if u and u.exists() and u.stat().st_size >= TELEGRAM_MAX_BYTES:
         # too big for Telegram (50MB hard limit) — recompress at a lower bitrate instead
         # of just telling the user it's stuck on the PC
         compresso = u.with_stem(u.stem + "_compressed")
         r = subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(u), "-b:a", "96k", str(compresso)],
                            capture_output=True, text=True)
-        if r.returncode == 0 and compresso.exists() and compresso.stat().st_size < 49 * 1024 * 1024:
+        if r.returncode == 0 and compresso.exists() and compresso.stat().st_size < TELEGRAM_MAX_BYTES:
             u = compresso
         else:
             u = None
             await chat.send_message(f"ℹ️ The merged file is too large even compressed: it's on the PC in {result['unito']}")
-    if u and u.exists() and u.stat().st_size < 49 * 1024 * 1024:
+    if u and u.exists() and u.stat().st_size < TELEGRAM_MAX_BYTES:
         await chat.send_chat_action(ChatAction.UPLOAD_VOICE)
         await chat.send_audio(audio=open(u, "rb"), title=f"{topic} — COMPLETE",
                               caption="🎧 All episodes in one file")
