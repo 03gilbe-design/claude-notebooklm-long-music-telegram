@@ -122,6 +122,8 @@ async def main():
         if a0 == "generate": return {"artifact_id": "art1"}
         if a0 == "download":  # crea un mp3 finto VERO (>1000 byte) al path richiesto
             open(args[-1], "wb").write(b"x" * 2000); return {"ok": True}
+        if a0 == "research" and args[1] == "status":
+            return {"status": "completed", "sources": [{"title": "fake"}]}
         return {"ok": True}
     bot.cli = fake_cli
     def fake_unisci(files, dest):  # crea davvero il file unito
@@ -156,7 +158,11 @@ async def main():
 
     # ===== SCENARI AVVERSARIALI (cerco io i prossimi bug) =====
     # 9. cli create fallisce -> il bot deve dare errore pulito, non crashare
-    bot.cli = lambda args, timeout=1800: {"error": True, "message": "boom"} if args[0]=="create" else {"ok":True}
+    def _cli_create_fail(args, timeout=1800):
+        if args[0] == "create": return {"error": True, "message": "boom"}
+        if args[0] == "research" and args[1] == "status": return {"status": "completed", "sources": []}
+        return {"ok": True}
+    bot.cli = _cli_create_fail
     c = ctx_new()
     ok &= await scenario("cli create FALLISCE", [("msg","x fallito"),("click","go")], c)
 
@@ -166,6 +172,7 @@ async def main():
         if args[0]=="ask": return {"answer": ""}
         if args[0]=="generate": return {"artifact_id":"a"}
         if args[0]=="download": open(args[-1],"wb").write(b"x"*2000); return {"ok":True}
+        if args[0]=="research" and args[1]=="status": return {"status":"completed","sources":[]}
         return {"ok":True}
     bot.cli = cli_ask_vuoto
     c = ctx_new()
@@ -180,6 +187,7 @@ async def main():
             stato["n"]+=1
             return {"artifact_id":"a"} if stato["n"]==1 else {"error":True}
         if args[0]=="download": open(args[-1],"wb").write(b"x"*2000); return {"ok":True}
+        if args[0]=="research" and args[1]=="status": return {"status":"completed","sources":[]}
         return {"ok":True}
     bot.cli = cli_gen_fail
     c = ctx_new()

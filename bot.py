@@ -789,12 +789,29 @@ async def esegui(chat, ctx):
         nb_id = nb.get("id") or nb.get("notebook", {}).get("id")
         if not nb_id:
             return f"Cannot create the notebook 😞 Try again shortly.\n(detail: {nb})"
-        r = cli(["source", "add-research", "-n", nb_id, topic, "--mode", "deep" if deep else "fast"],
-                timeout=3600)
+        r = cli(["source", "add-research", "-n", nb_id, topic, "--mode", "deep" if deep else "fast", "--no-wait"],
+                timeout=60)
         if r.get("error"):
             return f"Web search did not start 😞\n(detail: {r})"
-        avvisa(0.15, "Phase 1/3: reading and choosing sources…")
-        w = cli(["research", "wait", "-n", nb_id, "--import-all", "--timeout", "1800"], timeout=2000)
+        # live progress: poll status ourselves instead of blocking on 'research wait' —
+        # shows the real source count as it grows, not just a frozen "searching..." message
+        import time
+        deadline = time.time() + 1800
+        n_fonti_prev = -1
+        while time.time() < deadline:
+            st = cli(["research", "status", "-n", nb_id], timeout=60)
+            n_fonti = len(st.get("sources") or [])
+            stato = st.get("status", "?")
+            if n_fonti != n_fonti_prev:
+                avvisa(0.10 + min(0.10, n_fonti * 0.01),
+                      f"Phase 1/3: reading and choosing sources… ({n_fonti} found, {stato})")
+                n_fonti_prev = n_fonti
+            if stato == "completed":
+                break
+            if stato == "error":
+                return f"Web search failed 😞\n(detail: {st})"
+            time.sleep(4)
+        w = cli(["research", "wait", "-n", nb_id, "--import-all", "--timeout", "300"], timeout=400)
         if w.get("error"):
             return f"Web search failed or too slow 😞\n(detail: {w})"
         avvisa(0.25, f"Sources OK! 🧩 Dividing into {n} macro-themes…")
@@ -856,7 +873,9 @@ async def esegui(chat, ctx):
                               caption="🎧 All episodes in one file")
     elif u:
         await chat.send_message(f"ℹ️ The merged file exceeds 50MB: it's on the PC in {u}")
-    await chat.send_message("🎧 Happy listening!", reply_markup=kb_menu())
+    await chat.send_message("🎧 Happy listening! What next?", reply_markup=KB([
+        [B("🎬 New podcast", callback_data="m_nuovo")],
+        [B("📼 My podcasts", callback_data="m_vecchi"), B("🏠 Menu", callback_data="m_home")]]))
 
 
 async def test_btn(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
