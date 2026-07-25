@@ -105,7 +105,7 @@ def unisci(files, dest):
     lst.write_text("\n".join(f"file '{f.resolve().as_posix()}'" for f in files), encoding="utf-8")
     r = subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0",
                         "-i", str(lst), "-acodec", "libmp3lame", "-q:a", "3", str(dest)],
-                       capture_output=True, text=True)
+                       capture_output=True, text=True, timeout=600)
     lst.unlink(missing_ok=True)
     return r.returncode == 0 and dest.exists()
 
@@ -128,7 +128,8 @@ def freesound_cerca(query, n=5):
         "fields": "id,name,previews,duration"}, timeout=15)
     r.raise_for_status()
     return [{"id": h["id"], "name": h["name"][:40], "duration": round(h.get("duration", 0)),
-             "preview_url": h["previews"]["preview-hq-mp3"]} for h in r.json().get("results", [])]
+             "preview_url": h.get("previews", {}).get("preview-hq-mp3")}
+            for h in r.json().get("results", []) if h.get("previews", {}).get("preview-hq-mp3")]
 
 
 def youtube_cerca(query, n=5):
@@ -176,7 +177,7 @@ def _mix_sottofondo(voce, musica, dest):
                         "-filter_complex",
                         f"[1:a]volume={SOTTOFONDO_VOL}[m];[0:a][m]amix=inputs=2:duration=first:dropout_transition=0[out]",
                         "-map", "[out]", "-acodec", "libmp3lame", "-q:a", "3", str(dest)],
-                       capture_output=True, text=True)
+                       capture_output=True, text=True, timeout=600)
     return r.returncode == 0 and dest.exists()
 
 
@@ -221,7 +222,7 @@ def unisci_con_musica(files, dest, scelta=None):
     r = subprocess.run(["ffmpeg", "-y", "-loglevel", "error", *inputs,
                         "-filter_complex", filtro, "-map", "[out]",
                         "-acodec", "libmp3lame", "-q:a", "3", str(dest)],
-                       capture_output=True, text=True)
+                       capture_output=True, text=True, timeout=600)
     for m in lavorate:  # clean up temporary mixes
         if m.name.startswith("_mix_"):
             m.unlink(missing_ok=True)
@@ -487,7 +488,10 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         await q.edit_message_text("🎬 Write the podcast topic (e.g., history of rome) 👇")
         return
     if d == "m_vecchi" or d.startswith("m_vecchi_page:"):
-        page = int(d.split(":")[1]) if ":" in d else 0
+        try:
+            page = int(d.split(":")[1]) if ":" in d else 0
+        except ValueError:
+            page = 0
         # show COMPLETE podcasts (_UNITO); if a merge failed, fallback to singles
         uniti = sorted(OUT.glob("*_UNITO.mp3"), key=lambda p: p.stat().st_mtime, reverse=True)
         mp3s_all = uniti or sorted(OUT.glob("*.mp3"), key=lambda p: p.stat().st_mtime, reverse=True)
@@ -578,7 +582,10 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
             reply_markup=KB([[B("↩️ Cancel", callback_data="mus_menu")]]))
         return
     if d.startswith("mus:"):  # mus:categoria:nomefile
-        _, cat, nome = d.split(":", 2)
+        try:
+            _, cat, nome = d.split(":", 2)
+        except ValueError:
+            return
         s.setdefault("musica", {})[cat] = nome
         await q.edit_message_text("<b>🎵 Music</b>", reply_markup=kb_musica(s), parse_mode="HTML")
         return
@@ -634,7 +641,10 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         await q.edit_message_text("▶️ Type a YouTube search (e.g. \"lofi background music no copyright\"):")
         return
     if d.startswith("mus_ytpick:"):  # mus_ytpick:categoria:video_id — downloads ONLY the id the user picked
-        _, cat, vid = d.split(":", 2)
+        try:
+            _, cat, vid = d.split(":", 2)
+        except ValueError:
+            return
         risultati = ud.get("yt_results") or {}
         hit = risultati.get(vid)
         if not hit:
@@ -667,7 +677,10 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         await q.edit_message_text("🔎 Type what kind of sound you're looking for (e.g. \"upbeat jingle\", \"soft piano\"):")
         return
     if d.startswith("mus_pick:"):  # mus_pick:categoria:freesound_id (URL looked up from last search, too long for callback_data)
-        _, cat, fs_id = d.split(":", 2)
+        try:
+            _, cat, fs_id = d.split(":", 2)
+        except ValueError:
+            return
         risultati = ud.get("fs_results") or {}
         hit = risultati.get(fs_id)
         if not hit:
@@ -723,7 +736,7 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         try:
             c = carica_custom()[int(d.split(":")[1])]
             s["extra"], s["extra_nome"] = " Also: " + c["testo"], c["nome"]
-        except IndexError:
+        except (IndexError, ValueError):
             pass
     elif d.startswith("p_del:"):
         lista = carica_custom()
@@ -732,7 +745,7 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
             salva_custom(lista)
             if s["extra_nome"] == rimosso["nome"]:
                 s["extra"], s["extra_nome"] = "", ""
-        except IndexError:
+        except (IndexError, ValueError):
             pass
         await q.edit_message_text("🗑 Deleted.", reply_markup=kb_prompt_menu(nome_scelto=s["extra_nome"]))
         return
@@ -1008,7 +1021,7 @@ async def esegui(chat, ctx):
         # of just telling the user it's stuck on the PC
         compresso = u.with_stem(u.stem + "_compressed")
         r = subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(u), "-b:a", "96k", str(compresso)],
-                           capture_output=True, text=True)
+                           capture_output=True, text=True, timeout=600)
         if r.returncode == 0 and compresso.exists() and compresso.stat().st_size < TELEGRAM_MAX_BYTES:
             u = compresso
         else:
@@ -1046,11 +1059,22 @@ async def on_error(update, ctx):
         pass
 
 
+async def _clear_stale_locks(app):
+    # a restart always kills any in-flight generation thread — a lock left over from
+    # before the restart is permanently stuck (nothing will ever clear it) unless we
+    # reset it here. This is exactly what caused a real user-visible incident.
+    for uid, ud in app.user_data.items():
+        if ud.get("lavoro_in_corso"):
+            log.info("Clearing stale lavoro_in_corso for user %s (bot restarted mid-job)", uid)
+            ud["lavoro_in_corso"] = None
+            ud["abort_richiesto"] = False
+
+
 def main():
     # persists ctx.user_data to disk so a bot restart (frequent during deploys) doesn't
     # wipe the topic/setup a user was mid-way through configuring
     persistence = PicklePersistence(filepath=str(BASE / "bot_session.pickle"))
-    app = Application.builder().token(TOKEN).persistence(persistence).build()
+    app = Application.builder().token(TOKEN).persistence(persistence).post_init(_clear_stale_locks).build()
     app.add_handler(CommandHandler(["start", "help"], start))
     app.add_handler(CommandHandler("menu", menu))
     app.add_handler(CommandHandler("test", test_btn))
