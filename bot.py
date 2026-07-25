@@ -104,6 +104,18 @@ def unisci(files, dest):
 JINGLES = BASE / "jingles"
 SOTTOFONDO_VOL = 0.18  # ponytail: background music volume; raise/lower if it covers/can't be heard
 
+FREESOUND_KEY = os.environ.get("FREESOUND_API_KEY", "")
+
+def freesound_cerca(query, n=5):
+    """Text search on Freesound's free catalog. Returns [{'id','name','preview_url'}]."""
+    import requests
+    r = requests.get("https://freesound.org/apiv2/search/text/", params={
+        "query": query, "token": FREESOUND_KEY, "page_size": n,
+        "fields": "id,name,previews,duration"}, timeout=15)
+    r.raise_for_status()
+    return [{"id": h["id"], "name": h["name"][:40], "duration": round(h.get("duration", 0)),
+             "preview_url": h["previews"]["preview-hq-mp3"]} for h in r.json().get("results", [])]
+
 def _opzioni(nome_prefix):
     """All sound options available for a category (intro/stacco/sottofondo)."""
     if not JINGLES.exists():
@@ -225,6 +237,8 @@ def kb_musica(setup):
     righe.append([B("🎬 Upload intro", callback_data="mus_up:intro"),
                   B("🔔 Upload transition", callback_data="mus_up:stacco")])
     righe.append([B("🎵 Upload background", callback_data="mus_up:sottofondo")])
+    if FREESOUND_KEY:
+        righe.append([B("🔎 Browse free catalog", callback_data="mus_cat")])
     righe.append([B("↩️ Back", callback_data="mus_back")])
     return KB(righe)
 
@@ -326,6 +340,24 @@ async def audio_ricevuto(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
 async def testo_libero(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     testo = update.message.text.strip()
     attesa = ctx.user_data.get("attesa")
+    if attesa and attesa.startswith("catsearch_"):
+        cat = attesa[len("catsearch_"):]
+        ctx.user_data["attesa"] = None
+        try:
+            hits = freesound_cerca(testo, n=5)
+        except Exception as e:
+            await update.message.reply_text(f"⚠️ Search failed: {e}", reply_markup=kb_musica(
+                ctx.user_data.setdefault("setup", setup_default())))
+            return
+        if not hits:
+            await update.message.reply_text("😞 No results, try a different search.")
+            return
+        ctx.user_data["fs_results"] = {str(h["id"]): h for h in hits}
+        righe = [[B(f"▶️ {h['name']} ({h['duration']}s)", callback_data=f"mus_pick:{cat}:{h['id']}")]
+                 for h in hits]
+        righe.append([B("↩️ Back", callback_data="mus_menu")])
+        await update.message.reply_text("🔎 Pick one (free, Freesound.org):", reply_markup=KB(righe))
+        return
     if attesa == "prompt_testo":
         ctx.user_data["nuovo_prompt"] = testo
         ctx.user_data["attesa"] = "prompt_nome"
@@ -463,6 +495,35 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         _, cat, nome = d.split(":", 2)
         s.setdefault("musica", {})[cat] = nome
         await q.edit_message_text("🎵 Choose the music:", reply_markup=kb_musica(s))
+        return
+    if d == "mus_cat":  # pick a category to browse the free catalog for
+        await q.edit_message_text(
+            "🔎 What category is this jingle for?",
+            reply_markup=KB([[B("🎬 Intro", callback_data="mus_cat:intro"),
+                              B("🔔 Transition", callback_data="mus_cat:stacco")],
+                             [B("🎵 Background", callback_data="mus_cat:sottofondo")],
+                             [B("↩️ Back", callback_data="mus_menu")]]))
+        return
+    if d.startswith("mus_cat:"):
+        cat = d.split(":", 1)[1]
+        ud["attesa"] = f"catsearch_{cat}"
+        await q.edit_message_text("🔎 Type what kind of sound you're looking for (e.g. \"upbeat jingle\", \"soft piano\"):")
+        return
+    if d.startswith("mus_pick:"):  # mus_pick:categoria:freesound_id (URL looked up from last search, too long for callback_data)
+        _, cat, fs_id = d.split(":", 2)
+        risultati = ud.get("fs_results") or {}
+        hit = risultati.get(fs_id)
+        if not hit:
+            await q.edit_message_text("⚠️ Search results expired, try again.", reply_markup=kb_musica(s))
+            return
+        JINGLES.mkdir(exist_ok=True)
+        n_esistenti = len(_opzioni(cat))
+        dest = JINGLES / f"{cat}{'' if n_esistenti == 0 else '_' + str(n_esistenti + 1)}.mp3"
+        import requests
+        r = requests.get(hit["preview_url"], timeout=30)
+        dest.write_bytes(r.content)
+        s.setdefault("musica", {})[cat] = dest.name
+        await q.edit_message_text(f"✅ Downloaded and selected: {dest.name}", reply_markup=kb_musica(s))
         return
     if d == "mus_back":
         await q.edit_message_text(txt_pannello(ud), reply_markup=kb_pannello(s))
