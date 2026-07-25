@@ -500,19 +500,25 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     if d == "mus_auto":  # AI picks a jingle for all 3 categories, no user interaction
         # NOTE: no topic mixed in — Freesound tags are English/generic, foreign or
         # specific topic words (e.g. "storia di roma") kill the match entirely.
-        queries = {"intro": "upbeat podcast intro jingle",
-                   "stacco": "short transition sound effect",
-                   "sottofondo": "soft background music loop"}
+        # multiple query candidates per category: retry the next one if a search comes back empty
+        queries = {"intro": ["upbeat podcast intro jingle", "podcast intro", "short jingle"],
+                   "stacco": ["short transition sound effect", "whoosh transition", "swoosh"],
+                   "sottofondo": ["soft background music loop", "ambient background music", "calm instrumental loop"]}
         await q.edit_message_text("🤖 Picking music for you…")
         salvati = []
-        for cat, query in queries.items():
-            try:
-                hits = freesound_cerca(query, n=1)
-            except Exception as e:
-                salvati.append(f"⚠️ {cat}: search failed ({e})")
-                continue
+        for cat, candidati in queries.items():
+            hits, query = [], None
+            for query in candidati:
+                try:
+                    hits = freesound_cerca(query, n=1)
+                except Exception as e:
+                    salvati.append(f"⚠️ {cat}: search failed ({e})")
+                    hits = []
+                    break
+                if hits:
+                    break
             if not hits:
-                salvati.append(f"⚠️ {cat}: no result for \"{query}\"")
+                salvati.append(f"⚠️ {cat}: no result after {len(candidati)} tries")
                 continue
             hit = hits[0]
             JINGLES.mkdir(exist_ok=True)
