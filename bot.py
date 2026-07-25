@@ -472,7 +472,7 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     # a stale inline keyboard (from before the current podcast started) can still mutate
     # ud["setup"] mid-run and confuse the NEXT podcast's config — block everything except
     # read-only navigation while a job is active
-    SAFE_WHILE_BUSY = {"m_home", "m_vecchi", "m_stato", "m_help"}
+    SAFE_WHILE_BUSY = {"m_home", "m_vecchi", "m_stato", "m_help", "stop_job"}
     SAFE_PREFIXES_WHILE_BUSY = ("v_send:", "m_vecchi_page:")
     if ud.get("lavoro_in_corso") and d not in SAFE_WHILE_BUSY and not d.startswith(SAFE_PREFIXES_WHILE_BUSY):
         # q.answer() already fired above (spinner-stop) — can't call it twice, so just ignore
@@ -801,10 +801,18 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         # set the lock BEFORE the next await — a double-click can interleave here and both
         # pass the check above before either sets the lock, launching 2 parallel jobs
         ud["lavoro_in_corso"] = ud["topic"]
+        ud["abort_richiesto"] = False
         # grammY docs: pass an EMPTY keyboard to actually REMOVE the buttons underneath,
         # not just leave the old (now inert) ones visible and confusingly clickable
         await q.edit_message_text(f"🚀 Here we go: {ud['topic']}", reply_markup=KB([]))
+        await chat.send_message(
+            "🛑 You can stop before the next episode starts (can't interrupt one already generating):",
+            reply_markup=KB([[B("🛑 Stop after this episode", callback_data="stop_job")]]))
         await esegui(chat, ctx)
+        return
+    if d == "stop_job":
+        ud["abort_richiesto"] = True
+        await q.edit_message_text("🛑 Stopping after the current episode finishes…")
         return
     await q.edit_message_text(txt_pannello(ud), reply_markup=kb_pannello(s), parse_mode="HTML")
 
@@ -883,6 +891,11 @@ async def esegui(chat, ctx):
         temi = macro_temi(nb_id, topic, n)
         files = []
         for i, tema in enumerate(temi, 1):
+            if ud.get("abort_richiesto"):
+                # can't interrupt an in-flight NotebookLM generate call, but we CAN skip
+                # starting the next one — files already made so far are still merged below
+                avvisa(0.25 + 0.65 * (i - 1) / n, f"🛑 Stopped by user before episode {i}/{n}")
+                break
             mp3 = OUT / f"{base}_parte{i}.mp3"
             if mp3.exists() and mp3.stat().st_size > 1000:
                 # resume: this episode was already generated (e.g. a previous run got
