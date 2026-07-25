@@ -222,6 +222,9 @@ def kb_musica(setup):
             riga.append(B(f"{mark} {o.stem.replace(cat+'_','').replace(cat,'')[:14] or 'default'}",
                           callback_data=f"mus:{cat}:{o.name[:40]}"))
         righe.append(riga)
+    righe.append([B("🎬 Upload intro", callback_data="mus_up:intro"),
+                  B("🔔 Upload transition", callback_data="mus_up:stacco")])
+    righe.append([B("🎵 Upload background", callback_data="mus_up:sottofondo")])
     righe.append([B("↩️ Back", callback_data="mus_back")])
     return KB(righe)
 
@@ -291,6 +294,33 @@ async def start(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "🎙️ PodcastLab!\nWrite a topic (e.g., history of rome) or use the menu 👇")
     await menu(update, ctx)
+
+
+async def audio_ricevuto(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
+    """Handles an audio/voice/document sent while attesa == upload_<categoria>."""
+    attesa = ctx.user_data.get("attesa", "")
+    if not attesa.startswith("upload_"):
+        return
+    cat = attesa[len("upload_"):]
+    ctx.user_data["attesa"] = None
+    file_obj = update.message.audio or update.message.voice or update.message.document
+    if not file_obj:
+        await update.message.reply_text("⚠️ That's not an audio file. Try again from 🎵 Music.")
+        return
+    tg_file = await file_obj.get_file()
+    ext = os.path.splitext(getattr(file_obj, "file_name", "") or "")[1].lower() or ".mp3"
+    if ext not in (".mp3", ".wav", ".m4a"):
+        ext = ".mp3"
+    JINGLES.mkdir(exist_ok=True)
+    n_esistenti = len(_opzioni(cat))
+    dest = JINGLES / f"{cat}{'' if n_esistenti == 0 else '_' + str(n_esistenti + 1)}{ext}"
+    await tg_file.download_to_drive(str(dest))
+    s = ctx.user_data.setdefault("setup", setup_default())
+    s.setdefault("musica", {})[cat] = dest.name
+    etichette = {"intro": "🎬 intro", "stacco": "🔔 transition", "sottofondo": "🎵 background"}
+    await update.message.reply_text(
+        f"✅ Saved as {etichette[cat]} and selected: {dest.name}",
+        reply_markup=kb_musica(s) if ctx.user_data.get("topic") else kb_menu())
 
 
 async def testo_libero(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
@@ -420,6 +450,14 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         await q.edit_message_text(
             "🎵 Choose the music (put more files in jingles/ to have options):",
             reply_markup=kb_musica(s))
+        return
+    if d.startswith("mus_up:"):  # ask for an audio upload for this category
+        cat = d.split(":", 1)[1]
+        ud["attesa"] = f"upload_{cat}"
+        etichette = {"intro": "🎬 intro", "stacco": "🔔 transition", "sottofondo": "🎵 background"}
+        await q.edit_message_text(
+            f"📤 Send me the {etichette[cat]} audio file now (as a Telegram audio/voice/document).",
+            reply_markup=KB([[B("↩️ Cancel", callback_data="mus_menu")]]))
         return
     if d.startswith("mus:"):  # mus:categoria:nomefile
         _, cat, nome = d.split(":", 2)
@@ -673,6 +711,7 @@ def main():
     app.add_handler(CommandHandler("menu", menu))
     app.add_handler(CommandHandler("test", test_btn))
     app.add_handler(CallbackQueryHandler(bottoni))
+    app.add_handler(MessageHandler(filters.AUDIO | filters.VOICE | filters.Document.AUDIO, audio_ricevuto))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, testo_libero))
     app.add_error_handler(on_error)
     log.info("PodcastLab bot started (v4 menu)")
