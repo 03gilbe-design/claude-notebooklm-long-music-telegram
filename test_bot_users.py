@@ -29,7 +29,7 @@ constants = types.ModuleType("telegram.constants")
 constants.ChatAction = types.SimpleNamespace(TYPING="typing", RECORD_VOICE="rec", UPLOAD_VOICE="up")
 telegram.constants = constants
 ext = types.ModuleType("telegram.ext")
-for n in ("Application","CallbackQueryHandler","CommandHandler","ContextTypes","MessageHandler","filters"):
+for n in ("Application","CallbackQueryHandler","CommandHandler","ContextTypes","MessageHandler","PicklePersistence","filters"):
     setattr(ext, n, mock.MagicMock())
 ext.ContextTypes = types.SimpleNamespace(DEFAULT_TYPE=object)
 telegram.ext = ext

@@ -26,3 +26,4 @@ LISTA_DA_FARE.txt
 *_test.mp3
 test[0-9]*.mp3
 test[0-9]*.json
+bot_session.pickle

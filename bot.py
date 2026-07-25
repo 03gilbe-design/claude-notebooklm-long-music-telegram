@@ -15,7 +15,7 @@ from pathlib import Path
 from telegram import InlineKeyboardButton as B, InlineKeyboardMarkup as KB, Update
 from telegram.constants import ChatAction
 from telegram.ext import (Application, CallbackQueryHandler, CommandHandler,
-                          ContextTypes, MessageHandler, filters)
+                          ContextTypes, MessageHandler, PicklePersistence, filters)
 
 BASE = Path(__file__).parent
 OUT = BASE / "out"
@@ -436,6 +436,9 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     s = ud.setdefault("setup", setup_default())
     d = q.data
     chat = update.effective_chat
+    # any button click cancels a pending "waiting for free text" state (Cancel buttons rely
+    # on this: branches below that need a fresh wait state set ud["attesa"] again explicitly)
+    ud["attesa"] = None
 
     # --- main menu (ALWAYS works, even after bot restart) ---
     if d == "m_home":
@@ -670,7 +673,8 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
             "📝 Write me extra instructions for the hosts, free text.\n\n"
             "Examples:\n• «ironic tone, practical examples, simple explanation»\n"
             "• «college professor style, cite sources»\n"
-            "• «fast pace, rhetorical questions»\n\nWrite and send 👇")
+            "• «fast pace, rhetorical questions»\n\nWrite and send 👇",
+            reply_markup=KB([[B("↩️ Cancel", callback_data="p_menu")]]))
         return
     elif d.startswith("p_use:"):
         try:
@@ -879,7 +883,10 @@ async def on_error(update, ctx):
 
 
 def main():
-    app = Application.builder().token(TOKEN).build()
+    # persists ctx.user_data to disk so a bot restart (frequent during deploys) doesn't
+    # wipe the topic/setup a user was mid-way through configuring
+    persistence = PicklePersistence(filepath=str(BASE / "bot_session.pickle"))
+    app = Application.builder().token(TOKEN).persistence(persistence).build()
     app.add_handler(CommandHandler(["start", "help"], start))
     app.add_handler(CommandHandler("menu", menu))
     app.add_handler(CommandHandler("test", test_btn))
