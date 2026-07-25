@@ -238,7 +238,8 @@ def kb_musica(setup):
                   B("🔔 Upload transition", callback_data="mus_up:stacco")])
     righe.append([B("🎵 Upload background", callback_data="mus_up:sottofondo")])
     if FREESOUND_KEY:
-        righe.append([B("🔎 Browse free catalog", callback_data="mus_cat")])
+        righe.append([B("🔎 Browse free catalog", callback_data="mus_cat"),
+                      B("🤖 Auto (AI picks)", callback_data="mus_auto")])
     righe.append([B("↩️ Back", callback_data="mus_back")])
     return KB(righe)
 
@@ -495,6 +496,33 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         _, cat, nome = d.split(":", 2)
         s.setdefault("musica", {})[cat] = nome
         await q.edit_message_text("🎵 Choose the music:", reply_markup=kb_musica(s))
+        return
+    if d == "mus_auto":  # AI picks a jingle for all 3 categories, no user interaction
+        topic = ud.get("topic", "")
+        queries = {"intro": f"upbeat podcast intro jingle {topic}".strip(),
+                   "stacco": "short transition sound effect",
+                   "sottofondo": f"soft background music loop {topic}".strip()}
+        await q.edit_message_text("🤖 Picking music for you…")
+        salvati = []
+        for cat, query in queries.items():
+            try:
+                hits = freesound_cerca(query, n=1)
+            except Exception as e:
+                salvati.append(f"⚠️ {cat}: search failed ({e})")
+                continue
+            if not hits:
+                salvati.append(f"⚠️ {cat}: no result for \"{query}\"")
+                continue
+            hit = hits[0]
+            JINGLES.mkdir(exist_ok=True)
+            n_esistenti = len(_opzioni(cat))
+            dest = JINGLES / f"{cat}{'' if n_esistenti == 0 else '_' + str(n_esistenti + 1)}.mp3"
+            import requests
+            r = requests.get(hit["preview_url"], timeout=30)
+            dest.write_bytes(r.content)
+            s.setdefault("musica", {})[cat] = dest.name
+            salvati.append(f"✅ {cat}: {hit['name']} ({hit['duration']}s)")
+        await q.edit_message_text("🤖 Auto-picked:\n" + "\n".join(salvati), reply_markup=kb_musica(s))
         return
     if d == "mus_cat":  # pick a category to browse the free catalog for
         await q.edit_message_text(
