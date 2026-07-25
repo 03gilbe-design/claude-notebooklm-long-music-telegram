@@ -254,30 +254,25 @@ MODI = {"noi": "🎼 Just us (intro/outro/transitions)",
 def kb_musica(setup):
     """Menu to CHOOSE among sound options available in jingles/."""
     righe = []
-    for cat, etichetta in (("intro", "🎬 Intro"), ("stacco", "🔔 Transition"), ("sottofondo", "🎵 Background")):
+    for cat, etichetta in (("intro", "🎬"), ("stacco", "🔔"), ("sottofondo", "🎵")):
         opts = _opzioni(cat)
         scelto = setup.get("musica", {}).get(cat)
         if not opts:
-            righe.append([B(f"{etichetta}: (no file — put them in jingles/)", callback_data="noop")])
+            righe.append([B(f"{etichetta} —", callback_data="noop")])
             continue
-        # chosen name (or "auto" = first option)
         nome_scelto = scelto or (opts[0].name if opts else "—")
-        righe.append([B(f"{etichetta}: {nome_scelto[:28]}", callback_data="noop")])
-        # a row of buttons for options (max 3 to avoid clutter)
-        riga = []
-        for o in opts[:4]:
+        riga = [B(etichetta, callback_data="noop")]
+        for o in opts[:3]:
             mark = "🔘" if o.name == nome_scelto else "▫️"
-            riga.append(B(f"{mark} {o.stem.replace(cat+'_','').replace(cat,'')[:14] or 'default'}",
+            riga.append(B(f"{mark}{o.stem.replace(cat+'_','').replace(cat,'')[:8] or 'std'}",
                           callback_data=f"mus:{cat}:{o.name[:40]}"))
         righe.append(riga)
-    righe.append([B("🎬 Upload intro", callback_data="mus_up:intro"),
-                  B("🔔 Upload transition", callback_data="mus_up:stacco")])
-    righe.append([B("🎵 Upload background", callback_data="mus_up:sottofondo")])
+    righe.append([B("🎬 Up", callback_data="mus_up:intro"),
+                  B("🔔 Up", callback_data="mus_up:stacco"),
+                  B("🎵 Up", callback_data="mus_up:sottofondo")])
     if FREESOUND_KEY:
-        righe.append([B("🔎 Browse free catalog", callback_data="mus_cat"),
-                      B("🤖 Auto (AI picks)", callback_data="mus_auto")])
-    righe.append([B("▶️ Search YouTube", callback_data="mus_yt")])
-    righe.append([B("↩️ Back", callback_data="mus_back")])
+        righe.append([B("🔎 Browse", callback_data="mus_cat"), B("🤖 Auto", callback_data="mus_auto")])
+    righe.append([B("▶️ YouTube", callback_data="mus_yt"), B("↩️ Back", callback_data="mus_back")])
     return KB(righe)
 
 
@@ -301,14 +296,14 @@ async def menu(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
 
 def kb_pannello(s):
     n_musica = sum(1 for c in ("intro", "stacco", "sottofondo") if _opzioni(c))
+    prompt_label = s["extra_nome"] or "default"
     return KB([
-        [B("➖ fewer", callback_data="n-"), B(f"🎙 {s['n']} episodes", callback_data="noop"), B("➕ more", callback_data="n+")],
-        [B("🌐 Search: DEEP (complete)" if s["deep"] else "⚡ Search: FAST", callback_data="mode")],
-        [B(f"✏️ Prompt: {s['extra_nome'] or 'default (no extra style)'}", callback_data="p_menu")],
-        [B(f"🎵 Music ({n_musica} types)" if n_musica else "🎵 Music (none in jingles/)", callback_data="mus_menu")],
-        [B(f"📓 Notebook: {s.get('nb_nome') or 'new'}", callback_data="nb_menu")],
-        [B("▶️ GO!", callback_data="go"), B("ℹ️ Status", callback_data="m_stato")],
-        [B("🏠 Menu", callback_data="m_home")],
+        [B("➖", callback_data="n-"), B(f"🎙 {s['n']}", callback_data="noop"), B("➕", callback_data="n+")],
+        [B("🌐 Deep" if s["deep"] else "⚡ Fast", callback_data="mode"),
+         B(f"✏️ {prompt_label[:18]}", callback_data="p_menu")],
+        [B(f"🎵 Music ({n_musica})" if n_musica else "🎵 Music", callback_data="mus_menu"),
+         B(f"📓 {(s.get('nb_nome') or 'New')[:18]}", callback_data="nb_menu")],
+        [B("▶️ GO!", callback_data="go"), B("ℹ️", callback_data="m_stato"), B("🏠", callback_data="m_home")],
     ])
 
 
@@ -334,8 +329,7 @@ PAGE_SIZE = 6
 def kb_prompt_menu(page=0):
     tutti = carica_custom()
     lo = page * PAGE_SIZE
-    righe = [[B("📝 Create new prompt", callback_data="p_nuovo")],
-             [B("🔙 No extra style (default)", callback_data="p_std")]]
+    righe = [[B("📝 New", callback_data="p_nuovo"), B("🔙 Default", callback_data="p_std")]]
     for i, c in enumerate(tutti[lo:lo + PAGE_SIZE], start=lo):
         righe.append([B(f"📄 {c['nome'][:35]}", callback_data=f"p_prev:{i}"),
                       B("🗑", callback_data=f"p_del:{i}")])
