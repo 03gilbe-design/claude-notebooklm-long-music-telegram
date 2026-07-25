@@ -796,7 +796,9 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         # set the lock BEFORE the next await — a double-click can interleave here and both
         # pass the check above before either sets the lock, launching 2 parallel jobs
         ud["lavoro_in_corso"] = ud["topic"]
-        await q.edit_message_text(f"🚀 Here we go: {ud['topic']}")
+        # grammY docs: pass an EMPTY keyboard to actually REMOVE the buttons underneath,
+        # not just leave the old (now inert) ones visible and confusingly clickable
+        await q.edit_message_text(f"🚀 Here we go: {ud['topic']}", reply_markup=KB([]))
         await esegui(chat, ctx)
         return
     await q.edit_message_text(txt_pannello(ud), reply_markup=kb_pannello(s), parse_mode="HTML")
