@@ -139,16 +139,40 @@ async def main():
     bot.salva_custom = _salva
     bot.cli = fake_cli
     bot.unisci_con_musica = lambda files, dest, scelta=None: (open(dest, "wb").write(b"x" * 3000), True)[1]
+    # NEVER let a fake-user agent trigger real network calls (Freesound/YouTube) — a picked
+    # persona action could otherwise download a real, potentially huge file and hang for ages
+    bot.freesound_cerca = lambda query, n=5: [
+        {"id": "fake1", "name": f"fake result for {query}", "duration": 30, "preview_url": "http://fake"}]
+    bot.youtube_cerca = lambda query, n=5: [
+        {"id": "fakeVID", "title": f"fake result for {query}", "duration": 30}]
+    bot.youtube_scarica_audio = lambda video_id, dest_mp3: dest_mp3.write_bytes(b"x" * 3000)
     # pre-seed 30 fake "old podcasts" in the isolated test out/ dir (Omar persona)
     for i in range(30):
         (bot.OUT / f"vecchio_podcast_{i:02d}_UNITO.mp3").write_bytes(b"x" * 3000)
 
+    # 10 psychology-grounded archetypes (impatient/confused/careful/power-user/anxious/distracted
+    # + task-specific ones), not ad-hoc names — per research into persona-driven QA testing
     personas = [
-        ("Rita, product designer esigente", "valuta ogni schermata come farebbe un critico UX professionista: chiarezza, coerenza, gerarchia visiva"),
-        ("Omar, ha 30 vecchi podcast salvati", "scorre l'intera lista dei podcast vecchi con la paginazione, avanti e indietro più volte, verifica che sia coerente"),
-        ("Vera, ha 15 prompt personalizzati salvati", "scorre tutta la lista prompt con paginazione avanti/indietro, elimina qualcuno, verifica che i numeri restino giusti"),
-        ("Dario, cambia idea sempre", "seleziona un notebook esistente, poi torna indietro e ne sceglie un altro, poi decide di farne uno nuovo"),
-        ("Ines, testa i testi", "legge OGNI messaggio del bot come farebbe un editor: frasi ambigue, incongruenze, tono, refusi"),
+        ("Impatient user — skips reading, wants speed",
+         "type the topic and mash GO! as fast as possible, ignore descriptions, get annoyed if slowed down"),
+        ("Confused first-timer — no context",
+         "has never used the bot, doesn't know what any button does, asks 'what is this' at every screen"),
+        ("Careful/skeptical user — verifies before trusting",
+         "reads every button label twice, checks previews before confirming anything, distrusts defaults"),
+        ("Power user — wants shortcuts and control",
+         "tries to skip steps, looks for advanced options, gets frustrated by hand-holding or missing settings"),
+        ("Anxious user — needs reassurance",
+         "worried about doing something wrong or irreversible, asks if actions can be undone, re-reads confirmations"),
+        ("Distracted user — half-attention, comes back later",
+         "starts a flow, does something unrelated (checks old podcasts), then tries to resume where left off"),
+        ("Rita, exacting product designer",
+         "evaluates every screen like a professional UX critic: clarity, consistency, visual hierarchy"),
+        ("Omar, has 30 old podcasts saved",
+         "pages through the whole old-podcasts list back and forth repeatedly, checks it stays consistent"),
+        ("Vera, has 15 custom prompts saved",
+         "pages through the whole prompts list, deletes some, checks the numbering stays correct"),
+        ("Dario, indecisive",
+         "picks an existing notebook, goes back, picks a different one, then decides to make a new one instead"),
     ]
     all_fb = []
     for p, g in personas:

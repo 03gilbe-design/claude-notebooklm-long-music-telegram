@@ -324,7 +324,9 @@ def txt_pannello(ud):
     # Card layout (research: go-telegram/ui pattern) — bold header, monospace value, clear CTA footer
     return (f"<b>🎬 {topic}</b>\n\n"
             f"Adjust below, then press ▶️ GO!\n"
-            f"⏱ Estimated time: <code>~{t}-{t + 15} min</code>")
+            f"⏱ Estimated time: <code>~{t}-{t + 15} min</code>\n\n"
+            f"<i>Episodes = how many parts the podcast is split into. "
+            f"DEEP search reads more sources (slower, more accurate) vs FAST (quicker, less thorough).</i>")
 
 
 PAGE_SIZE = 6
@@ -352,7 +354,11 @@ def kb_prompt_menu(page=0):
 
 async def start(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "🎙️ PodcastLab!\nWrite a topic (e.g., history of rome) or use the menu 👇")
+        "🎙️ <b>PodcastLab</b>\n"
+        "Tell me any topic and I'll research it, write a script, and generate a real "
+        "AI-voiced podcast (with music) split into episodes — delivered right here.\n\n"
+        "Write a topic (e.g., history of rome) or use the menu 👇",
+        parse_mode="HTML")
     await menu(update, ctx)
 
 
