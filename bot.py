@@ -776,6 +776,9 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         if ud.get("lavoro_in_corso"):  # block double-start (spam GO / second topic)
             await q.answer("⚠️ A podcast is already being processed!", show_alert=True)
             return
+        # set the lock BEFORE the next await — a double-click can interleave here and both
+        # pass the check above before either sets the lock, launching 2 parallel jobs
+        ud["lavoro_in_corso"] = ud["topic"]
         await q.edit_message_text(f"🚀 Here we go: {ud['topic']}")
         await esegui(chat, ctx)
         return
@@ -890,6 +893,51 @@ async def esegui(chat, ctx):
                 encoding="utf-8")
             files.append((mp3, tema))
             cli(["artifact", "delete", art_id, "-n", nb_id])  # 1 audio/notebook -> free up slot
+        avvisa(0.95, "Phase 3/3: 🎵 merging episodes + intro and transitions…")
+        unito = OUT / f"{base}_UNITO.mp3"
+        ok = unisci_con_musica([f for f, _ in files], unito, s.get("musica"))
+        return {"files": files, "unito": unito if ok else None, "temi": temi}
+
+    def _genera_un_episodio(nb_id, i, tema):
+        """One episode's generate+download+cleanup, safe to run concurrently with others
+        IF NotebookLM's 'generate audio' response reliably includes artifact_id directly
+        (the common path below) — the list-sorted-by-latest fallback is NOT concurrency-safe
+        (race: two episodes finishing close together could grab each other's artifact) and
+        is only expected to trigger rarely. UNTESTED under real concurrent load as of writing —
+        validate with a real NotebookLM run (2-3 episodes truly parallel) before trusting it."""
+        mp3 = OUT / f"{base}_parte{i}.mp3"
+        if mp3.exists() and mp3.stat().st_size > 1000:
+            tema_precedente = tema
+            pj = PROMPTS_DIR / f"{mp3.stem}.json"
+            if pj.exists():
+                try:
+                    tema_precedente = json.loads(pj.read_text(encoding="utf-8")).get("tema", tema)
+                except Exception:
+                    pass
+            return (mp3, tema_precedente)
+        prompt = PART_PROMPT.format(i=i, n=n, tema=tema, marker=marker, extra=extra)
+        g = cli(["generate", "audio", prompt, "-n", nb_id,
+                 "--length", "long", "--wait", "--timeout", "1800"], timeout=2000)
+        art_id = g.get("artifact_id") or g.get("id")
+        if not art_id:
+            raise RuntimeError(f"Episode {i} ({tema}) failed: no artifact_id in response (detail: {g})")
+        cli(["download", "audio", "-n", nb_id, "-a", art_id, str(mp3)])
+        (PROMPTS_DIR / f"{mp3.stem}.json").write_text(json.dumps(
+            {"topic": topic, "parte": i, "tema": tema, "prompt": prompt,
+             "notebook_id": nb_id, "artifact_id": art_id}, ensure_ascii=False, indent=1),
+            encoding="utf-8")
+        cli(["artifact", "delete", art_id, "-n", nb_id])
+        return (mp3, tema)
+
+    def _genera_parallela(nb_id):
+        """DRAFT, not wired in yet. Runs all n episodes concurrently via threads instead of
+        sequentially. Only use once validated for real against the NotebookLM API."""
+        import concurrent.futures
+        temi = macro_temi(nb_id, topic, n)
+        avvisa(0.25, f"Phase 2/3: 🎙 generating all {n} episodes in parallel…")
+        with concurrent.futures.ThreadPoolExecutor(max_workers=n) as ex:
+            futures = [ex.submit(_genera_un_episodio, nb_id, i, tema) for i, tema in enumerate(temi, 1)]
+            files = [f.result() for f in futures]  # raises if any episode failed
         avvisa(0.95, "Phase 3/3: 🎵 merging episodes + intro and transitions…")
         unito = OUT / f"{base}_UNITO.mp3"
         ok = unisci_con_musica([f for f, _ in files], unito, s.get("musica"))
