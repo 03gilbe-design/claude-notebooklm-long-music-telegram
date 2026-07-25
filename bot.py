@@ -75,12 +75,19 @@ def cli(args, timeout=1800):
 
 
 def macro_temi(nb_id, topic, n):
-    q = (f"Dividi l'argomento '{topic}' in esattamente {n} macro-temi per una serie di podcast, "
-         f"in ordine logico. Rispondi SOLO con {n} righe, una per tema, senza numeri né altro.")
+    # ask for a FULL, complete outline (not one-liners) since this becomes ONE continuous
+    # podcast split into n parts — richer per-part outline -> longer, more substantial episodes
+    q = (f"Dobbiamo creare UN UNICO podcast continuo sull'argomento '{topic}', diviso in esattamente "
+         f"{n} parti consecutive che insieme coprono l'argomento per intero, senza ripetizioni tra le parti. "
+         f"Scrivi prima un indice completo di TUTTI i sotto-argomenti rilevanti, poi raggruppali in "
+         f"{n} blocchi consecutivi e coerenti (uno per parte, in ordine logico). "
+         f"Per ogni blocco scrivi 2-4 frasi che elencano nel dettaglio TUTTI i sotto-punti da trattare "
+         f"in quella parte, così ogni episodio ha contenuto sostanzioso. "
+         f"Rispondi SOLO con i {n} blocchi separati dalla riga '---', senza numerazione né titoli.")
     r = cli(["ask", "-n", nb_id, q], timeout=600)
     testo = r.get("answer") or ""
-    temi = [re.sub(r"^[\d\.\-\*\s]+", "", riga).strip() for riga in str(testo).splitlines() if riga.strip()]
-    temi = [t for t in temi if 3 < len(t) < 200][:n]
+    temi = [re.sub(r"^[\d\.\-\*\s]+", "", blocco).strip() for blocco in str(testo).split("---")]
+    temi = [t for t in temi if len(t) > 10][:n]
     while len(temi) < n:
         temi.append(f"{topic} — in-depth {len(temi) + 1}")
     return temi
@@ -299,13 +306,18 @@ def kb_pannello(s):
 
 
 def txt_pannello(ud):
+    import html
     s = ud.setdefault("setup", setup_default())
     t = (10 if s["deep"] else 4) + s["n"] * 8
     # ud["topic"] can be missing if the bot restarted since this chat's last message
     # (in-memory session state, wiped on every deploy) — never crash, ask again instead
     topic_raw = ud.get("topic") or ""
-    topic = topic_raw if len(topic_raw) <= 100 else topic_raw[:100] + "…"  # no wall of text
-    return (f"🎬 {topic}\n\nAdjust and press ▶️ GO!\n⏱ estimated: ~{t}-{t + 15} min")
+    topic_raw = topic_raw if len(topic_raw) <= 100 else topic_raw[:100] + "…"  # no wall of text
+    topic = html.escape(topic_raw)  # user-controlled text -> must escape before HTML parse_mode
+    # Card layout (research: go-telegram/ui pattern) — bold header, monospace value, clear CTA footer
+    return (f"<b>🎬 {topic}</b>\n\n"
+            f"Adjust below, then press ▶️ GO!\n"
+            f"⏱ Estimated time: <code>~{t}-{t + 15} min</code>")
 
 
 PAGE_SIZE = 6
@@ -341,6 +353,10 @@ async def audio_ricevuto(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     """Handles an audio/voice/document sent while attesa == upload_<categoria>."""
     attesa = ctx.user_data.get("attesa", "")
     if not attesa.startswith("upload_"):
+        # orphaned audio: sent without going through Music -> Upload first — don't drop silently
+        await update.message.reply_text(
+            "🎧 Got your audio, but I don't know what to do with it.\n"
+            "To use it as a jingle: Music menu → Upload intro/transition/background, then send it again.")
         return
     cat = attesa[len("upload_"):]
     ctx.user_data["attesa"] = None
@@ -426,7 +442,7 @@ async def testo_libero(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     ctx.user_data["topic"] = testo
     s = ctx.user_data.setdefault("setup", setup_default())
     await update.message.reply_chat_action(ChatAction.TYPING)
-    await update.message.reply_text(txt_pannello(ctx.user_data), reply_markup=kb_pannello(s))
+    await update.message.reply_text(txt_pannello(ctx.user_data), reply_markup=kb_pannello(s), parse_mode="HTML")
 
 
 async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
@@ -439,6 +455,14 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     # any button click cancels a pending "waiting for free text" state (Cancel buttons rely
     # on this: branches below that need a fresh wait state set ud["attesa"] again explicitly)
     ud["attesa"] = None
+    # a stale inline keyboard (from before the current podcast started) can still mutate
+    # ud["setup"] mid-run and confuse the NEXT podcast's config — block everything except
+    # read-only navigation while a job is active
+    SAFE_WHILE_BUSY = {"m_home", "m_vecchi", "m_stato", "m_help"}
+    SAFE_PREFIXES_WHILE_BUSY = ("v_send:", "m_vecchi_page:")
+    if ud.get("lavoro_in_corso") and d not in SAFE_WHILE_BUSY and not d.startswith(SAFE_PREFIXES_WHILE_BUSY):
+        # q.answer() already fired above (spinner-stop) — can't call it twice, so just ignore
+        return
 
     # --- main menu (ALWAYS works, even after bot restart) ---
     if d == "m_home":
@@ -485,7 +509,7 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         return
     if d == "p_back":
         if ud.get("topic"):
-            await q.edit_message_text(txt_pannello(ud), reply_markup=kb_pannello(s))
+            await q.edit_message_text(txt_pannello(ud), reply_markup=kb_pannello(s), parse_mode="HTML")
         else:
             await q.edit_message_text("🎙️ PodcastLab — what do we do?", reply_markup=kb_menu())
         return
@@ -514,7 +538,7 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
             await q.edit_message_text(testo, reply_markup=kb_menu())
         return
     if d == "p_menu2b":
-        await q.edit_message_text(txt_pannello(ud), reply_markup=kb_pannello(s))
+        await q.edit_message_text(txt_pannello(ud), reply_markup=kb_pannello(s), parse_mode="HTML")
         return
     if d == "m_help":
         await q.edit_message_text(
@@ -641,7 +665,7 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         await q.edit_message_text(f"✅ Downloaded and selected: {dest.name}", reply_markup=kb_musica(s))
         return
     if d == "mus_back":
-        await q.edit_message_text(txt_pannello(ud), reply_markup=kb_pannello(s))
+        await q.edit_message_text(txt_pannello(ud), reply_markup=kb_pannello(s), parse_mode="HTML")
         return
 
     # --- menu prompt ---
@@ -659,7 +683,7 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
             salva_custom(lista[:20])
             s["extra"], s["extra_nome"] = " Also: " + pending["testo"], pending["nome"]
         if ud.get("topic"):
-            await q.edit_message_text(txt_pannello(ud), reply_markup=kb_pannello(s))
+            await q.edit_message_text(txt_pannello(ud), reply_markup=kb_pannello(s), parse_mode="HTML")
         else:
             await q.edit_message_text(
                 "⭐ Saved and selected! Now write the podcast topic." if d == "p_conferma" else "Discarded.",
@@ -697,7 +721,7 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     # --- new podcast panel ---
     if d in ("p_std",) or d.startswith("p_use:"):
         if ud.get("topic"):
-            await q.edit_message_text(txt_pannello(ud), reply_markup=kb_pannello(s))
+            await q.edit_message_text(txt_pannello(ud), reply_markup=kb_pannello(s), parse_mode="HTML")
         else:
             await q.edit_message_text("⭐ Selected! Write the podcast topic 👇")
         return
@@ -755,7 +779,7 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         await q.edit_message_text(f"🚀 Here we go: {ud['topic']}")
         await esegui(chat, ctx)
         return
-    await q.edit_message_text(txt_pannello(ud), reply_markup=kb_pannello(s))
+    await q.edit_message_text(txt_pannello(ud), reply_markup=kb_pannello(s), parse_mode="HTML")
 
 
 def slug(testo):
@@ -774,11 +798,22 @@ async def esegui(chat, ctx):
         f"🔬 {topic} — {n} episodes ({'deep' if deep else 'fast'})\n\n"
         f"{bar(0.05)} Phase 1/3: searching for sources on the web…\n(I'll write to you: you can close Telegram)")
     loop = asyncio.get_running_loop()
+    import time
+    t_start = time.time()
+    TIMING_LOG = BASE / "timing_dataset.jsonl"
 
     def avvisa(frac, testo):
         asyncio.run_coroutine_threadsafe(
             msg.edit_text(f"🔬 {topic} — {n} episodes\n\n{bar(frac)} {testo}"), loop)
         asyncio.run_coroutine_threadsafe(chat.send_chat_action(ChatAction.RECORD_VOICE), loop)
+        # phase-timing dataset: lets future runs show real ETAs instead of a fixed guess
+        try:
+            with open(TIMING_LOG, "a", encoding="utf-8") as f:
+                f.write(json.dumps({"ts": time.time(), "elapsed_s": round(time.time() - t_start, 1),
+                                    "topic": topic, "n_episodes": n, "deep": deep,
+                                    "frac": frac, "fase": testo}, ensure_ascii=False) + "\n")
+        except Exception:
+            pass
 
     def lavoro():
         if s.get("nb_id"):  # reuse existing notebook: sources already there, skip research
