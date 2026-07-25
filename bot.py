@@ -333,12 +333,11 @@ def kb_prompt_menu(page=0):
     for i, c in enumerate(tutti[lo:lo + PAGE_SIZE], start=lo):
         righe.append([B(f"📄 {c['nome'][:35]}", callback_data=f"p_prev:{i}"),
                       B("🗑", callback_data=f"p_del:{i}")])
-    nav = []
-    if page > 0:
-        nav.append(B("⬅️ Prev", callback_data=f"p_page:{page-1}"))
-    if lo + PAGE_SIZE < len(tutti):
-        nav.append(B("➡️ Next", callback_data=f"p_page:{page+1}"))
-    if nav:
+    n_pagine = max(1, (len(tutti) + PAGE_SIZE - 1) // PAGE_SIZE)
+    if n_pagine > 1:
+        nav = [B("⬅️", callback_data=f"p_page:{page-1}") if page > 0 else B(" ", callback_data="noop"),
+               B(f"{page+1}/{n_pagine}", callback_data="noop"),
+               B("➡️", callback_data=f"p_page:{page+1}") if lo + PAGE_SIZE < len(tutti) else B(" ", callback_data="noop")]
         righe.append(nav)
     righe.append([B("↩️ Back", callback_data="p_back")])
     return KB(righe)
@@ -496,13 +495,12 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         lo = page * PAGE_SIZE
         mp3s = mp3s_all[lo:lo + PAGE_SIZE]
         righe = [[B(f"🎧 {f.stem.replace('_UNITO','')[:45]}", callback_data=f"v_send:{f.name[:55]}")] for f in mp3s]
-        nav = []
-        if page > 0:
-            nav.append(B("⬅️ Prev", callback_data=f"m_vecchi_page:{page-1}"))
-        if lo + PAGE_SIZE < len(mp3s_all):
-            nav.append(B("➡️ Next", callback_data=f"m_vecchi_page:{page+1}"))
-        if nav:
-            righe.append(nav)
+        n_pagine = max(1, (len(mp3s_all) + PAGE_SIZE - 1) // PAGE_SIZE)
+        if n_pagine > 1:
+            righe.append([
+                B("⬅️", callback_data=f"m_vecchi_page:{page-1}") if page > 0 else B(" ", callback_data="noop"),
+                B(f"{page+1}/{n_pagine}", callback_data="noop"),
+                B("➡️", callback_data=f"m_vecchi_page:{page+1}") if lo + PAGE_SIZE < len(mp3s_all) else B(" ", callback_data="noop")])
         righe.append([B("🏠 Menu", callback_data="m_home")])
         await q.edit_message_text(f"📼 Tap to listen again ({len(mp3s_all)} total):", reply_markup=KB(righe))
         return
