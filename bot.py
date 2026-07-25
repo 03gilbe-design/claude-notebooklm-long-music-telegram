@@ -466,7 +466,7 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
 
     # --- main menu (ALWAYS works, even after bot restart) ---
     if d == "m_home":
-        await q.edit_message_text("🎙️ PodcastLab — what do we do?", reply_markup=kb_menu())
+        await q.edit_message_text("<b>🎙️ PodcastLab</b>\nWhat do we do?", reply_markup=kb_menu(), parse_mode="HTML")
         return
     if d == "m_nuovo":
         ud["attesa"] = "topic"
@@ -478,7 +478,7 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         uniti = sorted(OUT.glob("*_UNITO.mp3"), key=lambda p: p.stat().st_mtime, reverse=True)
         mp3s_all = uniti or sorted(OUT.glob("*.mp3"), key=lambda p: p.stat().st_mtime, reverse=True)
         if not mp3s_all:
-            await q.edit_message_text("📼 No podcast yet!", reply_markup=kb_menu())
+            await q.edit_message_text("<b>📼 No podcast yet!</b>", reply_markup=kb_menu(), parse_mode="HTML")
             return
         lo = page * PAGE_SIZE
         mp3s = mp3s_all[lo:lo + PAGE_SIZE]
@@ -511,7 +511,7 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         if ud.get("topic"):
             await q.edit_message_text(txt_pannello(ud), reply_markup=kb_pannello(s), parse_mode="HTML")
         else:
-            await q.edit_message_text("🎙️ PodcastLab — what do we do?", reply_markup=kb_menu())
+            await q.edit_message_text("<b>🎙️ PodcastLab</b>\nWhat do we do?", reply_markup=kb_menu(), parse_mode="HTML")
         return
     if d.startswith("p_prev:"):  # preview before choosing
         try:
@@ -553,8 +553,8 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     # --- music menu: choose among sound options ---
     if d == "mus_menu":
         await q.edit_message_text(
-            "🎵 Choose the music (put more files in jingles/ to have options):",
-            reply_markup=kb_musica(s))
+            "<b>🎵 Music</b>\nChoose below (put more files in jingles/ for options):",
+            reply_markup=kb_musica(s), parse_mode="HTML")
         return
     if d.startswith("mus_up:"):  # ask for an audio upload for this category
         cat = d.split(":", 1)[1]
@@ -567,7 +567,7 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     if d.startswith("mus:"):  # mus:categoria:nomefile
         _, cat, nome = d.split(":", 2)
         s.setdefault("musica", {})[cat] = nome
-        await q.edit_message_text("🎵 Choose the music:", reply_markup=kb_musica(s))
+        await q.edit_message_text("<b>🎵 Music</b>", reply_markup=kb_musica(s), parse_mode="HTML")
         return
     if d == "mus_auto":  # AI picks a jingle for all 3 categories, no user interaction
         # NOTE: no topic mixed in — Freesound tags are English/generic, foreign or
@@ -670,10 +670,10 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
 
     # --- menu prompt ---
     if d == "p_menu":
-        await q.edit_message_text("✏️ Prompt for hosts:", reply_markup=kb_prompt_menu())
+        await q.edit_message_text("<b>✏️ Prompt for hosts</b>", reply_markup=kb_prompt_menu(), parse_mode="HTML")
         return
     if d.startswith("p_page:"):
-        await q.edit_message_text("✏️ Prompt for hosts:", reply_markup=kb_prompt_menu(int(d.split(":")[1])))
+        await q.edit_message_text("<b>✏️ Prompt for hosts</b>", reply_markup=kb_prompt_menu(int(d.split(":")[1])), parse_mode="HTML")
         return
     if d in ("p_conferma", "p_scarta"):
         pending = ud.pop("nuovo_prompt_pending", None)
@@ -726,7 +726,7 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
             await q.edit_message_text("⭐ Selected! Write the podcast topic 👇")
         return
     if not ud.get("topic"):
-        await q.edit_message_text("🎙️ PodcastLab — what do we do?", reply_markup=kb_menu())
+        await q.edit_message_text("<b>🎙️ PodcastLab</b>\nWhat do we do?", reply_markup=kb_menu(), parse_mode="HTML")
         return
     if d == "noop":
         return
@@ -907,8 +907,11 @@ async def esegui(chat, ctx):
         await msg.edit_text(f"❌ {result}")
         await chat.send_message("🏠 Menu:", reply_markup=kb_menu())
         return
-    temi_txt = "\n".join(f"  {i}. {t}" for i, t in enumerate(result["temi"], 1))
-    await msg.edit_text(f"🎉 {topic} ready!\n\n{bar(1)} 100%\n\n📚 Episodes:\n{temi_txt}")
+    import html as _html
+    temi_txt = "\n".join(f"  {i}. {_html.escape(t)}" for i, t in enumerate(result["temi"], 1))
+    await msg.edit_text(
+        f"<b>🎉 {_html.escape(topic)} ready!</b>\n\n<code>{bar(1)} 100%</code>\n\n<b>📚 Episodes:</b>\n{temi_txt}",
+        parse_mode="HTML")
     for i, (f, tema) in enumerate(result["files"], 1):
         if f.exists() and f.stat().st_size > 1000:
             await chat.send_chat_action(ChatAction.UPLOAD_VOICE)
