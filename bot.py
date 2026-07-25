@@ -498,10 +498,11 @@ async def bottoni(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         await q.edit_message_text("🎵 Choose the music:", reply_markup=kb_musica(s))
         return
     if d == "mus_auto":  # AI picks a jingle for all 3 categories, no user interaction
-        topic = ud.get("topic", "")
-        queries = {"intro": f"upbeat podcast intro jingle {topic}".strip(),
+        # NOTE: no topic mixed in — Freesound tags are English/generic, foreign or
+        # specific topic words (e.g. "storia di roma") kill the match entirely.
+        queries = {"intro": "upbeat podcast intro jingle",
                    "stacco": "short transition sound effect",
-                   "sottofondo": f"soft background music loop {topic}".strip()}
+                   "sottofondo": "soft background music loop"}
         await q.edit_message_text("🤖 Picking music for you…")
         salvati = []
         for cat, query in queries.items():
