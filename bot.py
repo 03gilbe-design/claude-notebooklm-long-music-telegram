@@ -383,6 +383,12 @@ async def audio_ricevuto(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
 async def testo_libero(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     testo = update.message.text.strip()
     attesa = ctx.user_data.get("attesa")
+    if attesa and attesa.startswith("upload_"):
+        # was expecting an audio file, got text instead — don't silently fall through to
+        # the topic-setter below and overwrite their config
+        await update.message.reply_text(
+            "🎧 I'm waiting for an audio file, not text. Send the audio, or press Cancel above.")
+        return
     if attesa and attesa.startswith("catsearch_"):
         cat = attesa[len("catsearch_"):]
         ctx.user_data["attesa"] = None
@@ -966,12 +972,21 @@ async def esegui(chat, ctx):
             await chat.send_audio(audio=open(f, "rb"), title=f"Part {i}: {tema[:50]}",
                                   caption=f"🎙 Part {i}/{len(result['files'])} — {tema}")
     u = result["unito"]
+    if u and u.exists() and u.stat().st_size >= 49 * 1024 * 1024:
+        # too big for Telegram (50MB hard limit) — recompress at a lower bitrate instead
+        # of just telling the user it's stuck on the PC
+        compresso = u.with_stem(u.stem + "_compressed")
+        r = subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(u), "-b:a", "96k", str(compresso)],
+                           capture_output=True, text=True)
+        if r.returncode == 0 and compresso.exists() and compresso.stat().st_size < 49 * 1024 * 1024:
+            u = compresso
+        else:
+            u = None
+            await chat.send_message(f"ℹ️ The merged file is too large even compressed: it's on the PC in {result['unito']}")
     if u and u.exists() and u.stat().st_size < 49 * 1024 * 1024:
         await chat.send_chat_action(ChatAction.UPLOAD_VOICE)
         await chat.send_audio(audio=open(u, "rb"), title=f"{topic} — COMPLETE",
                               caption="🎧 All episodes in one file")
-    elif u:
-        await chat.send_message(f"ℹ️ The merged file exceeds 50MB: it's on the PC in {u}")
     await chat.send_message("🎧 Happy listening! What next?", reply_markup=KB([
         [B("🎬 New podcast", callback_data="m_nuovo")],
         [B("📼 My podcasts", callback_data="m_vecchi"), B("🏠 Menu", callback_data="m_home")]]))
